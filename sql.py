@@ -52,6 +52,14 @@ class SQL(dict):
         return sql
 
     @classmethod
+    def get(cls, table, *fields):
+        sql = cls()
+        sql.order = ('select', 'from', 'where', 'order by', 'limit', 'offset', 'asc', 'desc')
+        sql['from'] = table
+        sql['select'] = fields or '*'
+        return sql
+
+    @classmethod
     def update(cls, table):
         sql = cls()
         sql.order = ('update', 'set', 'from', 'where', 'returning')
@@ -138,3 +146,8 @@ if __name__ == '__main__':
     sql4 = SQL.delete_from('user').where(eq('uid', 'mosky'))
     print sql4
     # -> DELETE FROM user WHERE uid = 'mosky'
+
+    sql5 = SQL.get('user', 'uid', 'name', 'email')
+    sql5.limit = 1
+    print sql5
+    # -> SELECT uid, name, email FROM user LIMIT 1
