@@ -22,11 +22,14 @@ def stringify(obj, str_func=str):
         'str'      -> 'str'
         1          -> '1'
         ('x', 'y') -> 'x, y'
+        {'a': 'b'} -> "x='y'"
         callable   -> stringify(callable())
     '''
 
     if callable(obj):
         return stringify(obj(), str_func)
+    elif hasattr(obj, 'items'):
+        return ', '.join('%s=%s' % (stringify(k), quotes_stringify(v)) for k, v in obj.items())
     elif hasattr(obj, '__iter__'):
         return ', '.join(stringify(item, str_func) for item in obj)
 
@@ -64,6 +67,7 @@ if __name__ == '__main__':
     print stringify('str')
     print stringify(123)
     print stringify(('hello', 'world'))
+    print stringify({'hello': 'world', 'number': 123})
     print
     print '# test quotes_stringify'
     print quotes_stringify('str')
