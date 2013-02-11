@@ -34,6 +34,9 @@ def flat(obj):
 
     return str(obj)
 
+def escape_single_quotes(s):
+    return s.replace("'", "''")
+
 def param(key):
     return '?'
 
@@ -41,5 +44,11 @@ def eq(key, value=EMPTY):
     if value is EMPTY:
         value = param(key)
     else:
-        value = "'%s'" % value.replace("'", "''")
+        value = "'%s'" % escape_single_quotes(value)
     return '%s=%s' % (key, value)
+
+if __name__ == '__main__':
+
+    print '# test eq'
+    print eq('key')
+    print eq('key', 'value')
