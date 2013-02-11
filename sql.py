@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from sql_operator import flat, to_keyword
+from sql_operator import stringify, to_keyword
 
 class SQL(dict):
     '''A SQL builder lets you use Python's syntax to build SQL.'''
@@ -80,14 +80,14 @@ class SQL(dict):
     def __str__(self):
         '''It converts this object into a standard SQL query.'''
 
-        flated_sql = []
+        sql_components = []
         for keyword in self.order:
             if keyword in self:
-                flated_sql.append(keyword.upper())
-                flated_value = flat(self[keyword])
-                if flated_value: flated_sql.append(flated_value)
+                sql_components.append(keyword.upper())
+                stringified_value = stringify(self[keyword])
+                if stringified_value: sql_components.append(stringified_value)
 
-        return ' '.join(flated_sql)
+        return ' '.join(sql_components)
 
 if __name__ == '__main__':
 

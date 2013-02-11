@@ -14,25 +14,23 @@ def to_keyword(key):
     '''
     return key.replace('_', ' ').rstrip()
 
-def flat(obj):
-    '''It flats an object.
+def stringify(obj, str_func=str):
+    '''It stringifies an object.
 
     Examples:
 
         'str'      -> 'str'
         1          -> '1'
         ('x', 'y') -> 'x, y'
-        callable   -> flat(callable())
+        callable   -> stringify(callable())
     '''
 
-    if isinstance(obj, basestring):
-        return obj
-    elif callable(obj):
-        return flat(obj())
+    if callable(obj):
+        return stringify(obj(), str_func)
     elif hasattr(obj, '__iter__'):
-        return ', '.join(flat(item) for item in obj)
+        return ', '.join(stringify(item, str_func) for item in obj)
 
-    return str(obj)
+    return str_func(obj)
 
 def escape_single_quotes(s):
     return s.replace("'", "''")
@@ -52,3 +50,8 @@ if __name__ == '__main__':
     print '# test eq'
     print eq('key')
     print eq('key', 'value')
+    print
+    print '# test stringify'
+    print stringify('str')
+    print stringify(123)
+    print stringify(('hello', 'world'))
