@@ -14,7 +14,12 @@ def to_keyword(key):
     '''
     return key.replace('_', ' ').rstrip()
 
-def stringify(obj, str_func=str):
+def escape_single_quotes(s):
+    return s.replace("'", "''")
+
+ENCODING = 'utf-8'
+
+def stringify(obj, escape_it=False):
     '''It stringifies an object.
 
     Examples:
@@ -26,26 +31,22 @@ def stringify(obj, str_func=str):
         callable   -> stringify(callable())
     '''
 
-    if callable(obj):
-        return stringify(obj(), str_func)
+    if isinstance(obj, unicode):
+        return obj.encode(ENCODING)
+    elif callable(obj):
+        return stringify(obj(), escape_it)
     elif hasattr(obj, 'items'):
-        return ', '.join('%s=%s' % (stringify(k), quotes_stringify(v)) for k, v in obj.items())
+        return ', '.join('%s=%s' % (stringify(k, escape_it=False), stringify(v, escape_it=True)) for k, v in obj.items())
     elif hasattr(obj, '__iter__'):
-        return ', '.join(stringify(item, str_func) for item in obj)
+        return ', '.join(stringify(item, escape_it) for item in obj)
 
-    return str_func(obj)
-
-def escape_single_quotes(s):
-    return s.replace("'", "''")
-
-def quotes_stringify(obj):
-    return stringify(obj, lambda x: "'%s'" % escape_single_quotes(str(x)))
-
-def parentheses_stringify(obj):
-    return '(%s)' % stringify(obj)
-
-def parentheses_quotes_stringify(obj):
-    return '(%s)' % quotes_stringify(obj)
+    if isinstance(obj, str):
+        if escape_it:
+            return "'%s'" % escape_single_quotes(obj)
+        else:
+            return obj
+    else:
+        return str(obj)
 
 def param(key):
     return '?'
@@ -68,19 +69,4 @@ if __name__ == '__main__':
     print stringify(123)
     print stringify(('hello', 'world'))
     print stringify({'hello': 'world', 'number': 123})
-    print
-    print '# test quotes_stringify'
-    print quotes_stringify('str')
-    print quotes_stringify(123)
-    print quotes_stringify(('hello', 'world'))
-    print
-    print '# test parentheses_stringify'
-    print parentheses_stringify('str')
-    print parentheses_stringify(123)
-    print parentheses_stringify(('hello', 'world'))
-    print
-    print '# test parentheses_quotes_stringify'
-    print parentheses_quotes_stringify('str')
-    print parentheses_quotes_stringify(123)
-    print parentheses_quotes_stringify(('hello', 'world'))
     print
