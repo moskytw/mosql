@@ -35,6 +35,15 @@ def stringify(obj, str_func=str):
 def escape_single_quotes(s):
     return s.replace("'", "''")
 
+def quotes_stringify(obj):
+    return stringify(obj, lambda x: "'%s'" % escape_single_quotes(str(x)))
+
+def parentheses_stringify(obj):
+    return '(%s)' % stringify(obj)
+
+def parentheses_quotes_stringify(obj):
+    return '(%s)' % quotes_stringify(obj)
+
 def param(key):
     return '?'
 
@@ -55,3 +64,19 @@ if __name__ == '__main__':
     print stringify('str')
     print stringify(123)
     print stringify(('hello', 'world'))
+    print
+    print '# test quotes_stringify'
+    print quotes_stringify('str')
+    print quotes_stringify(123)
+    print quotes_stringify(('hello', 'world'))
+    print
+    print '# test parentheses_stringify'
+    print parentheses_stringify('str')
+    print parentheses_stringify(123)
+    print parentheses_stringify(('hello', 'world'))
+    print
+    print '# test parentheses_quotes_stringify'
+    print parentheses_quotes_stringify('str')
+    print parentheses_quotes_stringify(123)
+    print parentheses_quotes_stringify(('hello', 'world'))
+    print
