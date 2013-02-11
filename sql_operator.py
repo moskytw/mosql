@@ -25,9 +25,9 @@ def flat(obj):
 
     if isinstance(obj, basestring):
         return obj
-    elif isinstance(obj, (int, float, long)):
-        return str(obj)
-    elif hasattr(obj, '__iter__'):
-        return ', '.join(flat(item) for item in obj)
     elif callable(obj):
         return flat(obj())
+    elif hasattr(obj, '__iter__'):
+        return ', '.join(flat(item) for item in obj)
+
+    return str(obj)
