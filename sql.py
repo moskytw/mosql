@@ -1,41 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from sql_operator import flat, to_keyword
+
 class SQL(dict):
     '''A SQL builder lets you use Python's syntax to build SQL.'''
-
-    @staticmethod
-    def to_keyword(key):
-        '''It converts the attribute name to the SQL keyword.
-
-        Examples:
-
-            from_    -> form
-            order_by -> order by
-            values_  -> values
-        '''
-        return key.replace('_', ' ').rstrip()
-
-    @classmethod
-    def flat(cls, obj):
-        '''It flats an object.
-
-        Examples:
-
-            'str'      -> 'str'
-            1          -> '1'
-            ('x', 'y') -> 'x, y'
-            callable   -> flat(callable())
-        '''
-
-        if isinstance(obj, basestring):
-            return obj
-        elif isinstance(obj, (int, float, long)):
-            return str(obj)
-        elif hasattr(obj, '__iter__'):
-            return ', '.join(cls.flat(item) for item in obj)
-        elif callable(obj):
-            return self.flat(obj())
 
     @classmethod
     def insert_into(cls, table):
@@ -84,7 +53,7 @@ class SQL(dict):
             sql = SQL.delete_from(table).where("key='value'")
         '''
 
-        keyword = self.to_keyword(key)
+        keyword = to_keyword(key)
         if keyword in self.order:
             def setitem(*args):
                 self[keyword] = args
@@ -102,7 +71,7 @@ class SQL(dict):
             sql.where = "key='value'"
         '''
 
-        keyword = self.to_keyword(key)
+        keyword = to_keyword(key)
         if keyword in self.order:
             self[keyword] = value
         else:
@@ -115,7 +84,7 @@ class SQL(dict):
         for keyword in self.order:
             if keyword in self:
                 flated_sql.append(keyword.upper())
-                flated_value = self.flat(self[keyword])
+                flated_value = flat(self[keyword])
                 if flated_value: flated_sql.append(flated_value)
 
         return ' '.join(flated_sql)
