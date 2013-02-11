@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 class SQL(dict):
-    '''A SQL builder let you use Python's syntax to build SQL.'''
+    '''A SQL builder lets you use Python's syntax to build SQL.'''
 
     @staticmethod
     def to_keyword(key):
-        '''It converts the attribute name to the keyword.
+        '''It converts the attribute name to the SQL keyword.
 
         Examples:
 
@@ -86,7 +86,7 @@ class SQL(dict):
             return object.__getattribute__(self, key)
 
     def __setattr__(self, key, value):
-        '''It let you use attribute to access item
+        '''It let you use attributes to access items (this class inherits the dict).
 
         Example:
 
