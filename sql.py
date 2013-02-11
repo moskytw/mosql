@@ -91,8 +91,7 @@ class SQL(dict):
 
 if __name__ == '__main__':
 
-    def eq(key, value):
-        return "%s='%s'" % (key, value)
+    from sql_operator import eq
 
     sql1 = SQL.insert_into('user')
     sql1.values_(repr(('mosky', 'Mosky Liu', 'moskytw@gmail.com')))
@@ -120,3 +119,11 @@ if __name__ == '__main__':
     sql5.limit = 1
     print sql5
     # -> SELECT uid, name, email FROM user LIMIT 1
+
+    sql6 = SQL.select('password').from_('shadow').where(eq('uid', "hacker' or 1=1; DROP TABLE user; --"))
+    print sql6
+    # -> SELECT password FROM shadow WHERE uid=''' or 1=1; DROP TABLE user; --'
+
+    sql7 = SQL.select('password').from_('shadow').where(eq('uid'))
+    print sql7
+    # -> SELECT password FROM shadow WHERE uid=?

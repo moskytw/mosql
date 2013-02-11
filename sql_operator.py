@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+EMPTY = object()
+
 def to_keyword(key):
     '''It converts the attribute name to the SQL keyword.
 
@@ -31,3 +33,13 @@ def flat(obj):
         return ', '.join(flat(item) for item in obj)
 
     return str(obj)
+
+def param(key):
+    return '?'
+
+def eq(key, value=EMPTY):
+    if value is EMPTY:
+        value = param(key)
+    else:
+        value = "'%s'" % value.replace("'", "''")
+    return '%s=%s' % (key, value)
