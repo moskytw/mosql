@@ -207,8 +207,16 @@ class SQL(dict):
 
     def __init__(self, *template_groups):
         self.template_groups = template_groups
+        self.cached = None
+
+    def __setitem__(self, key, value):
+        self.cached = None
+        super(self.__class__, self).__setitem__(key, value)
 
     def __str__(self):
+
+        if self.cached: return self.cached
+
         sql_components = []
 
         for template_group in self.template_groups:
@@ -246,7 +254,8 @@ class SQL(dict):
             if all(rendered_templates):
                 sql_components.append(' '.join(rendered_templates))
 
-        return ' '.join(sql_components)+';'
+        self.cached = ' '.join(sql_components)+';'
+        return self.cached
 
 if __name__ == '__main__':
     import doctest
