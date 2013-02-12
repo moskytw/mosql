@@ -138,7 +138,8 @@ class SQL(object):
             ('insert into', '<table>'),
             # It is another template group.
             ('<columns>', ),
-            ('values', '<values>')
+            ('values', '<values>'),
+            ('returning', '<returning>'),
         )
         sql.filled['table'] = table
         sql.filled.update(kargs)
@@ -162,11 +163,13 @@ class SQL(object):
             ('select', '<select>'),
             ('from', '<table>'),
             ('where', '<where>'),
+            ('group by', '<group by>'),
+            ('having', '<having>'),
             ('order by', '<order_by>'),
             ('<asc>', ),
             ('<desc>', ),
             ('limit', '<limit>'),
-            ('offset', '<offset>')
+            ('offset', '<offset>'),
         )
         sql.filled['table'] = table
         sql.filled.update(kargs)
@@ -183,7 +186,8 @@ class SQL(object):
         sql = cls(
             ('update', '<table>'),
             ('set', '<set>'),
-            ('where', '<where>')
+            ('where', '<where>'),
+            ('returning', '<returning>'),
         )
         sql.filled['table'] = table
         sql.filled.update(kargs)
@@ -199,7 +203,8 @@ class SQL(object):
 
         sql = cls(
             ('delete from', '<table>'),
-            ('where', '<where>')
+            ('where', '<where>'),
+            ('returning', '<returning>'),
         )
         sql.filled['table'] = table
         sql.filled.update(kargs)
