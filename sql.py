@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 def quoted(s):
-    '''Quote a string and escape the single quotes.
+    '''Add single quotes around ``s`` and replace the single quote (') to double quotes ('') in ``s``.
 
     >>> print quoted('string without single quote')
     'string without single quote'
