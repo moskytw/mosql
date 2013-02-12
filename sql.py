@@ -26,9 +26,6 @@ class SQL(dict):
     def __init__(self, *template_groups):
         self.template_groups = template_groups
 
-    def __setattr__(self, key, value):
-        pass
-
     def __str__(self):
         pass
 
