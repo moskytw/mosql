@@ -119,7 +119,7 @@ Empty = type('Empty', (object,), {
     '__repr__'   : lambda self: 'Empty',
 })()
 
-class SQL(dict):
+class SQL(object):
 
     @classmethod
     def insert(cls, table, **kargs):
@@ -140,8 +140,8 @@ class SQL(dict):
             ('<columns>', ),
             ('values', '<values>')
         )
-        sql['table'] = table
-        super(cls, sql).update(kargs)
+        sql.filled['table'] = table
+        sql.filled.update(kargs)
         return sql
 
     @classmethod
@@ -168,8 +168,8 @@ class SQL(dict):
             ('limit', '<limit>'),
             ('offset', '<offset>')
         )
-        sql['table'] = table
-        super(cls, sql).update(kargs)
+        sql.filled['table'] = table
+        sql.filled.update(kargs)
         return sql
 
     @classmethod
@@ -185,8 +185,8 @@ class SQL(dict):
             ('set', '<set>'),
             ('where', '<where>')
         )
-        sql['table'] = table
-        super(cls, sql).update(kargs)
+        sql.filled['table'] = table
+        sql.filled.update(kargs)
         return sql
 
     @classmethod
@@ -201,12 +201,13 @@ class SQL(dict):
             ('delete from', '<table>'),
             ('where', '<where>')
         )
-        sql['table'] = table
-        super(cls, sql).update(kargs)
+        sql.filled['table'] = table
+        sql.filled.update(kargs)
         return sql
 
     def __init__(self, *template_groups):
         self.template_groups = template_groups
+        self.filled = {}
         self.cached = None
 
     def __setitem__(self, key, value):
@@ -229,7 +230,7 @@ class SQL(dict):
                 if template.startswith('<'):
 
                     key = template[1:-1]
-                    value = self.get(key, Empty)
+                    value = self.filled.get(key, Empty)
 
                     # handles special cases
                     # TODO: it could be abstracted as a parameter of initialization
