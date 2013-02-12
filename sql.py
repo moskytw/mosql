@@ -116,16 +116,18 @@ def stringify_values(iterable):
 class SQL(dict):
 
     @classmethod
-    def insert(cls, table):
+    def insert(cls, table, **kargs):
         sql = cls(
             ('insert into', '<table>'),
             ('<columns>', ),
             ('values', '<values>')
         )
+        sql['table'] = table
+        super(cls, sql).update(kargs)
         return sql
 
     @classmethod
-    def select(cls, *fields):
+    def select(cls, *fields, **kargs):
         sql = cls(
             ('select', '<select>'),
             ('from', '<table>'),
@@ -136,23 +138,29 @@ class SQL(dict):
             ('limit', '<limit>'),
             ('offset', '<offset>')
         )
+        sql['selected'] = fields
+        super(cls, sql).update(kargs)
         return sql
 
     @classmethod
-    def update(cls, table):
+    def update(cls, table, **kargs):
         sql = cls(
             ('update', '<table>'),
             ('set', '<set>'),
             ('where', '<where>')
         )
+        sql['table'] = table
+        super(cls, sql).update(kargs)
         return sql
 
     @classmethod
-    def delete(cls, table):
+    def delete(cls, table, **kargs):
         sql = cls(
             ('delete from', '<table>'),
             ('where', '<where>')
         )
+        sql['table'] = table
+        super(cls, sql).update(kargs)
         return sql
 
     def __init__(self, *template_groups):
