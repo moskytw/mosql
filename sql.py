@@ -127,7 +127,7 @@ class SQL(dict):
         return sql
 
     @classmethod
-    def select(cls, *fields, **kargs):
+    def select(cls, table, **kargs):
         sql = cls(
             ('select', '<select>'),
             ('from', '<table>'),
@@ -138,7 +138,7 @@ class SQL(dict):
             ('limit', '<limit>'),
             ('offset', '<offset>')
         )
-        sql['selected'] = fields
+        sql['table'] = table
         super(cls, sql).update(kargs)
         return sql
 
