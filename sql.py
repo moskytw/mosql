@@ -15,10 +15,10 @@ class SQL(dict):
     @classmethod
     def select(cls, *fields):
         sql = cls(
-            ('select', '<columns>'),
+            ('select', '<select>'),
             ('from', '<table>'),
-            ('where', '<condictions>'),
-            ('order by', '<order by>'),
+            ('where', '<where>'),
+            ('order by', '<order_by>'),
             ('<asc>', ),
             ('<desc>', ),
             ('limit', '<limit>'),
@@ -31,7 +31,7 @@ class SQL(dict):
         sql = cls(
             ('update', '<table>'),
             ('set', '<set>'),
-            ('where' '<condictions>')
+            ('where', '<where>')
         )
         return sql
 
@@ -39,7 +39,7 @@ class SQL(dict):
     def delete(cls, table):
         sql = cls(
             ('delete from', '<table>'),
-            ('where', '<condictions>')
+            ('where', '<where>')
         )
         return sql
 
