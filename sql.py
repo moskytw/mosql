@@ -151,7 +151,7 @@ class SQL(dict):
         >>> print SQL.select('users')
         SELECT * FROM users;
 
-        >>> print SQL.select('users', limit=1, where={'id': 'mosky.tw@gmail.com'})
+        >>> print SQL.select('users', limit=1, where={'id': 'mosky'})
         SELECT * FROM users WHERE id='mosky' LIMIT 1;
 
         >>> print SQL.select('users', select=('id', 'email'), order_by='id', desc=True)
