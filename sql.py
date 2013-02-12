@@ -10,8 +10,8 @@ def quoted(s):
     >>> print quoted("' or 1=1 --")
     '\'' or 1=1 --'
 
-    >>> print quoted("' DROP TABLE user; --")
-    '\'' DROP TABLE user; --'
+    >>> print quoted("' DROP TABLE users; --")
+    '\'' DROP TABLE users; --'
     '''
     return "'%s'" % s.replace("'", "''")
 
@@ -125,11 +125,11 @@ class SQL(dict):
     def insert(cls, table, **kargs):
         '''A SQL builder for ``insert into`` statement.
 
-        >>> print SQL.insert('user', values=('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'))
-        INSERT INTO user VALUES ('mosky', 'Mosky Liu', 'mosky.tw@gmail.com');
+        >>> print SQL.insert('users', values=('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'))
+        INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky.tw@gmail.com');
 
-        >>> print SQL.insert('user', columns=('id', 'name', 'email'), values=('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'))
-        INSERT INTO user (id, name, email) VALUES ('mosky', 'Mosky Liu', 'mosky.tw@gmail.com');
+        >>> print SQL.insert('users', columns=('id', 'name', 'email'), values=('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'))
+        INSERT INTO users (id, name, email) VALUES ('mosky', 'Mosky Liu', 'mosky.tw@gmail.com');
         '''
 
         sql = cls(
@@ -148,14 +148,14 @@ class SQL(dict):
     def select(cls, table, **kargs):
         '''A SQL builder for ``select`` statement.
 
-        >>> print SQL.select('user')
-        SELECT * FROM user;
+        >>> print SQL.select('users')
+        SELECT * FROM users;
 
-        >>> print SQL.select('user', limit=1, where={'id': 'mosky.tw@gmail.com'})
-        SELECT * FROM user WHERE id='mosky.tw@gmail.com' LIMIT 1;
+        >>> print SQL.select('users', limit=1, where={'id': 'mosky.tw@gmail.com'})
+        SELECT * FROM users WHERE id='mosky.tw@gmail.com' LIMIT 1;
 
-        >>> print SQL.select('user', select=('id', 'email'), order_by='id', desc=True)
-        SELECT id, email FROM user ORDER BY id DESC;
+        >>> print SQL.select('users', select=('id', 'email'), order_by='id', desc=True)
+        SELECT id, email FROM users ORDER BY id DESC;
         '''
 
         sql = cls(
@@ -176,8 +176,8 @@ class SQL(dict):
     def update(cls, table, **kargs):
         '''A SQL builder for ``update`` statement.
 
-        >>> print SQL.update('user', set={'email': 'mosky.tw@gmail.com'}, where={'id': 'mosky'})
-        UPDATE user SET email='mosky.tw@gmail.com' WHERE id='mosky';
+        >>> print SQL.update('users', set={'email': 'mosky.tw@gmail.com'}, where={'id': 'mosky'})
+        UPDATE users SET email='mosky.tw@gmail.com' WHERE id='mosky';
         '''
 
         sql = cls(
@@ -193,8 +193,8 @@ class SQL(dict):
     def delete(cls, table, **kargs):
         '''A SQL builder for ``delete`` statement.
 
-        >>> print SQL.delete('user', where={'id': 'mosky'})
-        DELETE FROM user WHERE id='mosky';
+        >>> print SQL.delete('users', where={'id': 'mosky'})
+        DELETE FROM users WHERE id='mosky';
         '''
 
         sql = cls(
