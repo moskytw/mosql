@@ -212,8 +212,42 @@ class SQL(object):
 
     def __init__(self, *template_groups):
         self.template_groups = template_groups
+        self.field_names = set()
+        for template_group in template_groups:
+            for template in template_group:
+                if template.startswith('<'):
+                    self.field_names.add(template[1:-1])
         self.filled = {}
         self.cached = None
+
+    def __setattr__(self, key, value):
+        '''
+        >>> sql = SQL.select('users')
+        >>> print sql
+        SELECT * FROM users;
+        >>> sql.where = {'id': 'mosky.tw@gmail.com'}
+        >>> print sql
+        SELECT * FROM users WHERE id='mosky.tw@gmail.com';
+        '''
+        field_names = getattr(self, 'field_names', None)
+        if field_names and key in field_names:
+            self.filled[key] = value
+            self.cached = None
+        else:
+            object.__setattr__(self, key, value)
+
+    def __getattr__(self, key):
+        '''
+        >>> sql = SQL.select('users', where={'id': 'mosky.tw@gmail.com'})
+        >>> sql.where
+        {'id': 'mosky.tw@gmail.com'}
+        >>> sql.x
+        Traceback (most recent call last):
+            ...
+        KeyError: 'x'
+        '''
+        field_names = object.__getattribute__(self, 'field_names')
+        return self.filled[key]
 
     def __str__(self):
 
