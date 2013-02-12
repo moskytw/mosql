@@ -215,10 +215,6 @@ class SQL(object):
         self.filled = {}
         self.cached = None
 
-    def __setitem__(self, key, value):
-        self.cached = None
-        super(self.__class__, self).__setitem__(key, value)
-
     def __str__(self):
 
         if self.cached: return self.cached
