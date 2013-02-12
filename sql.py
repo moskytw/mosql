@@ -152,7 +152,7 @@ class SQL(dict):
         SELECT * FROM users;
 
         >>> print SQL.select('users', limit=1, where={'id': 'mosky.tw@gmail.com'})
-        SELECT * FROM users WHERE id='mosky.tw@gmail.com' LIMIT 1;
+        SELECT * FROM users WHERE id='mosky' LIMIT 1;
 
         >>> print SQL.select('users', select=('id', 'email'), order_by='id', desc=True)
         SELECT id, email FROM users ORDER BY id DESC;
@@ -191,7 +191,7 @@ class SQL(dict):
 
     @classmethod
     def delete(cls, table, **kargs):
-        '''A SQL builder for ``delete`` statement.
+        '''A SQL builder for ``delete from`` statement.
 
         >>> print SQL.delete('users', where={'id': 'mosky'})
         DELETE FROM users WHERE id='mosky';
