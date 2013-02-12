@@ -5,31 +5,26 @@ class SQL(dict):
 
     @classmethod
     def insert(cls, table):
-        sql = cls('insert into <table> <columns> values <values>')
+        sql = cls(('insert into', '<table>'), ('<columns>', ), ('values', '<values>'))
         return sql
 
     @classmethod
     def select(cls, *fields):
-        sql = cls('select <columns> from <table> where <condictions> limit <limit> offset <offset>')
+        sql = cls(('select', '<columns>'), ('from', '<table>'), ('where', '<condictions>'), ('order by', '<order by>'), ('<asc>', ), ('<desc>', ), ('limit', '<limit>'), ('offset', '<offset>'))
         return sql
 
     @classmethod
     def update(cls, table):
-        sql = cls('update <table> set <set> where <condictions>')
+        sql = cls(('update', '<table>'), ('set', '<set>'), ('where' '<condictions>'))
         return sql
 
     @classmethod
     def delete(cls, table):
-        sql = cls('delete from <table> where <condictions>')
+        sql = cls(('delete from', '<table>'), ('where', '<condictions>'))
         return sql
 
-    def __init__(self, template):
-
-        if isinstance(template, str):
-            self.template = tuple(template.split(' '))
-        else:
-            assert hasattr(template, '__iter__'), "argumnet 'template; must be str or iterable"
-            self.template = template
+    def __init__(self, *template_groups):
+        self.template_groups = template_groups
 
     def __setattr__(self, key, value):
         pass
