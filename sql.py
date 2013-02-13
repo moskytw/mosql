@@ -4,8 +4,23 @@
 '''It contains some useful funtions to build SQL with basic Python's data type.'''
 
 ENCODING = 'UTF-8'
+paramstyle = 'pyformat'
 
-def dumps(x, quote=False, tuple=False, expression=False):
+param_makers = {
+    'pyformat': lambda k: '%%(%s)s' % k,
+    'qmark'   : lambda k: '?',
+    'named'   : lambda k: ':%s' % k,
+    'format'  : lambda k: '%s',
+    # 'numberic': lambda k: ':%d' % d, # TODO
+}
+
+def param_maker(k, paramstyle_=None):
+    '''Retrun a parameter maker.
+
+    If ``paramstyle_`` is not set, it will read global ``paramstyle``.'''
+    return param_makers.get(paramstyle_ or paramstyle)(k)
+
+def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
     '''Dump any object ``x`` to SQL's representation.
 
     It supports:
@@ -60,9 +75,48 @@ def dumps(x, quote=False, tuple=False, expression=False):
     >>> print dumps({'key': ('a', 'b')}, expression=True)
     key IN ('a', 'b')
 
-    >>> print dumps({'time >': 0}, expression=True)
-    time > 0
+    >>> print dumps({'created >': 0}, expression=True)
+    created > 0
+
+    >>> print dumps(('name', 'created >'), expression=True)
+    name = %(name)s AND created > %(created)s
     '''
+
+    if expression:
+
+        items = None
+        if hasattr(x, 'items'):
+            is_param_maker = False
+            items = x.items()
+        elif hasattr(x, '__iter__'):
+            items = ((k, Empty) for k in x)
+        else:
+            return dumps(x)
+
+        strs = []
+        for k, v in items:
+            # find the expression out
+            str_k = dumps(k, tuple=True).strip()
+            # NOTE: It can't handle iterable or dict-like correctly.
+            space_pos = str_k.rfind(' ')
+            op = None
+            if space_pos != -1:
+                str_k, op = str_k[:space_pos], str_k[space_pos+1:]
+            # if we can't find an expression
+            if not op:
+                if hasattr(v, '__iter__'):
+                    op = 'in'
+                else:
+                    op = '='
+            # use parameter maker if `v` is Empty
+            if v is Empty:
+                str_v = param_maker(str_k, paramstyle)
+            else:
+                str_v = dumps(v, quote=True, tuple=True)
+
+            strs.append('%s %s %s' % (str_k, op.upper(), str_v))
+
+        return ' AND '.join(strs)
 
     if x is None:
         return 'null'
@@ -78,27 +132,8 @@ def dumps(x, quote=False, tuple=False, expression=False):
         if quote:
             s = "'%s'" % s.replace("'", "''")
         return s
-
     if hasattr(x, 'items'):
-        if expression:
-            strs = []
-            for k, v in x.items():
-                # find the operator out
-                str_k = dumps(k).strip()
-                space_pos = str_k.rfind(' ')
-                op = None
-                if space_pos != -1:
-                    str_k, op = str_k[:space_pos], str_k[space_pos+1:]
-                # if we can't find an operator
-                if not op:
-                    if hasattr(v, '__iter__'):
-                        op = 'in'
-                    else:
-                        op = '='
-                strs.append('%s %s %s' % (str_k, op.upper(), dumps(v, quote=True, tuple=True)))
-            return ' AND '.join(strs)
-        else:
-            return  ', '.join('%s=%s' % (dumps(k), dumps(v, quote=True, tuple=True)) for k, v in x.items())
+        return  ', '.join('%s=%s' % (dumps(k), dumps(v, quote=True, tuple=True)) for k, v in x.items())
 
     if hasattr(x, '__iter__'):
         s = ', '.join(dumps(i, quote, tuple) for i in x)
@@ -151,6 +186,7 @@ class SQL(object):
                     self.field_names.add(template[1:-1])
         self.filled = {}
         self.cached = None
+        self.paramstyle = None
 
     def update(self, dict):
         '''Use a dict to update the fields' values.'''
@@ -216,7 +252,7 @@ class SQL(object):
                             value = '*'
                     else:
                         if key in ('where', 'having'):
-                            value = dumps(value, expression=True)
+                            value = dumps(value, expression=True, paramstyle=self.paramstyle)
                         elif key == 'desc' and value:
                             value = 'DESC'
                         elif key == 'asc' and value:
@@ -287,6 +323,14 @@ def select(table, **fields):
 
     >>> print select('users', where={'email like': '%@gmail.com'})
     SELECT * FROM users WHERE email LIKE '%@gmail.com';
+
+    >>> print select('users', where=('name', 'email'))
+    SELECT * FROM users WHERE name = %(name)s AND email = %(email)s;
+
+    >>> sql = select('users', where=('name', 'email'))
+    >>> sql.paramstyle = 'qmark'
+    >>> print sql
+    SELECT * FROM users WHERE name = ? AND email = ?;
 
     >>> print select('users').field_names == set(
     ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'asc', 'desc', 'limit', 'offset']
