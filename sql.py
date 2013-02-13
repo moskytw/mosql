@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It contains some useful funtions to build SQL with basic Python's data type.'''
+'''It contains some useful funtions to build SQL with common Python's data type.'''
 
 encoding = 'UTF-8'
 paramstyle = 'pyformat'
@@ -14,11 +14,11 @@ param_markers = {
     # 'numberic': lambda k: ':%d' % d, # TODO
 }
 
-def param_marker(k, paramstyle_=None):
+def param_marker(k, style=None):
     '''Retrun a parameter marker.
 
-    If ``paramstyle_`` is not set, it will read global ``paramstyle``.'''
-    return param_markers.get(paramstyle_ or paramstyle)(k)
+    If ``style`` is not set, it will use the global ``paramstyle``.'''
+    return param_markers.get(style or paramstyle)(k)
 
 # A hyper None, because None represents null in SQL.
 Empty = type('Empty', (object,), {
@@ -160,7 +160,7 @@ def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=N
 class SQL(object):
     '''It builds a SQL statement by given template.
 
-    An example of `select ...` statement:
+    Here is an example of SQL's `select ...` statement:
 
     >>> sql = SQL(
     ...     # It is a template group, and
@@ -176,7 +176,7 @@ class SQL(object):
     ...     ('offset', '<offset>'),
     ... )
 
-    And use attribute ``field_names`` to get the field names:
+    If you want to know what fields it have, the attribute, ``field_names``, could help you.
 
     >>> sql.field_names == set(
     ...     ['select', 'table', 'where', 'groupby', 'having', 'orderby', 'limit', 'offset']
@@ -200,12 +200,12 @@ class SQL(object):
         self.filled.update(dict)
 
     def __setattr__(self, key, value):
-        '''It supports to use attribute to update field.
+        '''It supports using attribute to update field.
 
-        >>> sql = SQL(('field', '<field>'))
-        >>> sql.field = {'id': 'mosky.tw@gmail.com'}
+        >>> sql = SQL(('key', '<value>'))
+        >>> sql.value = 'data'
         >>> print sql
-        FIELD id='mosky.tw@gmail.com';
+        KEY data;
         '''
 
         field_names = getattr(self, 'field_names', None)
@@ -216,13 +216,13 @@ class SQL(object):
             object.__setattr__(self, key, value)
 
     def __getattr__(self, key):
-        '''It supports to use attribute to get value of field.
+        '''It supports using attribute to get value of field.
 
-        >>> sql = SQL(('field', '<field>'))
-        >>> sql.field = {'id': 'mosky.tw@gmail.com'}
+        >>> sql = SQL(('key', '<value>'))
+        >>> sql.value = 'data'
 
-        >>> print sql.field
-        {'id': 'mosky.tw@gmail.com'}
+        >>> print sql.value
+        data
 
         >>> print sql.x
         Traceback (most recent call last):
@@ -294,7 +294,11 @@ class SQL(object):
         )
 
 def insert(table, **fields):
-    '''Return a `SQL` instance of SQL statement ``insert into ...``.
+    '''It is a shortcut for the SQL statement, ``insert into ...``.
+
+    Return: a ``SQL`` instance
+
+    Examples:
 
     >>> print insert('users', pairs={'id': 'mosky'})
     INSERT INTO users (id) VALUES ('mosky');
@@ -331,7 +335,11 @@ def insert(table, **fields):
     return sql
 
 def select(table, **fields):
-    '''Return a `SQL` instance of SQL statement ``select ...``.
+    '''It is a shortcut for the SQL statement, ``select ...``.
+
+    Return: a ``SQL`` instance
+
+    Examples:
 
     >>> print select('users')
     SELECT * FROM users;
@@ -380,7 +388,11 @@ def select(table, **fields):
     return sql
 
 def update(table, **fields):
-    '''Return a `SQL` instance of SQL statement ``update ...``.
+    '''It is a shortcut for the SQL statement, ``update ...``.
+
+    Return: a ``SQL`` instance
+
+    Examples:
 
     >>> print update('users', set={'email': 'mosky.tw@gmail.com'}, where={'id': 'mosky'})
     UPDATE users SET email='mosky.tw@gmail.com' WHERE id = 'mosky';
@@ -402,7 +414,11 @@ def update(table, **fields):
     return sql
 
 def delete(table, **fields):
-    '''Return a `SQL` instance of SQL statement ``delete from ...``.
+    '''It is a shortcut for the SQL statement, ``delete from ...``.
+
+    Return: a ``SQL`` instance
+
+    Examples:
 
     >>> print delete('users', where={'id': 'mosky'})
     DELETE FROM users WHERE id = 'mosky';
