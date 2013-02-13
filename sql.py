@@ -26,24 +26,10 @@ Empty = type('Empty', (object,), {
     '__repr__'   : lambda self: 'Empty',
 })()
 
-def dumps(x, quote=False, tuple=False, expression=False, marker=None, paramstyle=None):
+def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=None):
     '''Dump any object ``x`` into SQL's representation.
 
-    It supports:
-
-    - ``None`` (as ``null`` in SQL)
-    - ``unicode``
-    - number (includes ``int`` ,``float`` and ``long``)
-    - ``dict``
-    - iterable (includes ``tuple``, ``list``, ...)
-
-    It returns None if it doesn't know how to convert.
-
-    The additionally format arguments:
-
-    - ``quote`` works on strings. It adds the single quotes around a string, and replaces single quote to two single quotes ('') in this string.
-    - ``tuple`` works on iterable. It adds the parentheses around a stringified iterable.
-    - ``expression`` works on dict. It will find the operator out from key, or automatically generate an operator by type of value.
+    The basic types:
 
     >>> print dumps(None)
     null
@@ -54,81 +40,63 @@ def dumps(x, quote=False, tuple=False, expression=False, marker=None, paramstyle
     >>> print dumps('It is a string.')
     It is a string.
 
-    >>> print dumps('It is a string.', quote=True)
+    >>> print dumps('It is a string.', value=True)
     'It is a string.'
 
-    >>> print dumps("' or 1=1 --", quote=True)
+    >>> print dumps("' or 1=1 --", value=True)
     '\'' or 1=1 --'
 
-    >>> print dumps("' DROP TABLE users; --", quote=True)
+    >>> print dumps("' DROP TABLE users; --", value=True)
     '\'' DROP TABLE users; --'
 
-    >>> print dumps({'key': 'value'})
-    key='value'
+    >>> print dumps('key', param=True)
+    %(key)s
+
+    >>> dumps('key', param=True) == dumps('key', param=True, value=True)
+    True
+
+    >>> print dumps('key', param=True, paramstyle='named')
+    :key
+
+    >>> print dumps('key', param=True, paramstyle='qmark')
+    ?
+
+    The tuple (represents iterable):
 
     >>> print dumps(('string', 123, 123.456))
     string, 123, 123.456
 
-    >>> print dumps(('string', 123, 123.456), quote=True)
-    'string', 123, 123.456
-
     >>> print dumps(('string', 123, 123.456), tuple=True)
     (string, 123, 123.456)
 
-    >>> print dumps(('string', 123, 123.456), quote=True, tuple=True)
+    >>> print dumps(('string', 123, 123.456), value=True, tuple=True)
     ('string', 123, 123.456)
 
-    >>> print dumps({'key': ('a', 'b')}, expression=True)
-    key IN ('a', 'b')
+    >>> print dumps(('key1', 'key2'), param=True, tuple=True)
+    (%(key1)s, %(key2)s)
 
-    >>> print dumps({'created >': 0}, expression=True)
-    created > 0
+    >>> print dumps(('key1', 'key2'), param=True, tuple=True, operator=True)
+    key2 = %(key2)s AND key1 = %(key1)s
 
-    >>> print dumps(('name', 'created >'), expression=True)
-    name = %(name)s AND created > %(created)s
+    The dict-like (has `items` method):
 
-    >>> print dumps({('k1', 'k2'): 'v'}, expression=True)
-    Traceback (most recent call last):
-        ...
-    AssertionError: left operand of expression should be a string
+    >>> print dumps({'key': 'value'})
+    key='value'
+
+    >>> print dumps({'key': 'value'}, operator=True)
+    key = 'value'
+
+    >>> print dumps({'key': ('value1', 'value2')}, operator=True)
+    key IN ('value1', 'value2')
+
+    >>> print dumps({'key like': '%alu%'}, operator=True)
+    key LIKE '%alu%'
+
+    >>> print dumps({'key': 'key'}, param=True, operator=True)
+    key = %(key)s
     '''
 
-    if expression:
-
-        items = None
-        if hasattr(x, 'items'):
-            is_param_marker = False
-            items = x.items()
-        elif hasattr(x, '__iter__'):
-            items = ((k, Empty) for k in x)
-        else:
-            return dumps(x)
-
-        strs = []
-        for k, v in items:
-            assert isinstance(k, basestring), 'left operand of expression should be a string'
-            # find the operator out
-            # NOTE: It can't handle iterable or dict-like correctly.
-            str_k = dumps(k).strip()
-            space_pos = str_k.rfind(' ')
-            op = None
-            if space_pos != -1:
-                str_k, op = str_k[:space_pos], str_k[space_pos+1:]
-            # if we can't find an operator
-            if not op:
-                if hasattr(v, '__iter__'):
-                    op = 'in'
-                else:
-                    op = '='
-            # use parameter marker if `v` is Empty
-            if v is Empty:
-                str_v = param_marker(str_k, paramstyle)
-            else:
-                str_v = dumps(v, quote=True, tuple=True)
-
-            strs.append('%s %s %s' % (str_k, op.upper(), str_v))
-
-        return ' AND '.join(strs)
+    # basic types
 
     if x is None:
         return 'null'
@@ -141,22 +109,53 @@ def dumps(x, quote=False, tuple=False, expression=False, marker=None, paramstyle
 
     if isinstance(x, str):
         s = x
-        if quote:
+        if param:
+            s = param_marker(s, paramstyle)
+        elif value:
             # NOTE: In MySQL, it can't ensure the security if MySQL doesn't run in ANSI mode.
             s = "'%s'" % s.replace("'", "''")
-        elif marker:
-            s = param_marker(s)
         return s
 
+    # dict-like
     if hasattr(x, 'items'):
-        return  ', '.join('%s=%s' % (dumps(k), dumps(v, quote=True, tuple=True)) for k, v in x.items())
+        if operator:
+            expressions = []
+            for k, v in x.items():
 
-    if hasattr(x, '__iter__'):
-        s = ', '.join(dumps(i, quote, tuple, marker=marker) for i in x)
-        if tuple:
-            return '(%s)' % s
+                # k must be a basestring
+                assert isinstance(k, basestring), 'left operand must be a string: %r' % k
+
+                # try to find operator out
+                op = None
+                str_k = dumps(k)
+                space_pos = str_k.rfind(' ')
+                if space_pos != -1:
+                    str_k, op = str_k[:space_pos], str_k[space_pos+1:]
+
+                # if user doesn't give operator, generate an operator automatically
+                if not op:
+                    if hasattr(v, '__iter__'):
+                        op = 'in'
+                    else:
+                        op = '='
+
+                # render expression
+                expressions.append('%s %s %s' % (str_k, op.upper(), dumps(v, param=param, value=True, tuple=True, operator=False, paramstyle=paramstyle)))
+
+            return ' AND '.join(expressions)
         else:
-            return s
+            return  ', '.join('%s=%s' % (dumps(k), dumps(v, param=param, value=True, tuple=tuple, operator=False, paramstyle=paramstyle)) for k, v in x.items())
+
+    # iterable
+    if hasattr(x, '__iter__'):
+        if operator:
+            return dumps(dict((k, k) for k in x), param=param, value=value, tuple=tuple, operator=True, paramstyle=paramstyle)
+        else:
+            s = ', '.join(dumps(i, tuple=tuple, value=value, param=param, operator=operator, paramstyle=paramstyle) for i in x)
+            if tuple:
+                return '(%s)' % s
+            else:
+                return s
 
 class SQL(object):
     '''It builds a SQL statement by given template.
@@ -239,6 +238,7 @@ class SQL(object):
 
         if self.cached: return self.cached
 
+        values_param = False
         sql_components = []
 
         for template_group in self.template_groups:
@@ -260,22 +260,17 @@ class SQL(object):
                             value = '*'
                     else:
                         if key in ('where', 'having'):
-                            value = dumps(value, expression=True, paramstyle=self.paramstyle)
-                        # a hack for `insert into`
+                            value = dumps(value, param=(not hasattr(value, 'items')), operator=True, paramstyle=self.paramstyle)
                         elif key == 'pairs':
                             if hasattr(value, 'items'):
                                 self.filled['columns'], self.filled['values'] = zip(*value.items())
                             elif hasattr(value, '__iter__'):
                                 self.filled['columns'] = value
                                 self.filled['values'] = value
-                                self.filled['values_expression'] = value
+                                values_param = True
                             value = None
                         elif key == 'values':
-                            values_expression = self.filled.get('values_expression', Empty)
-                            if values_expression is not Empty:
-                                value = dumps(values_expression, marker=True, tuple=True)
-                            else:
-                                value = dumps(value, quote=True, tuple=True)
+                            value = dumps(value, param=values_param, value=True, tuple=True)
                         elif key == 'columns':
                             value = dumps(value, tuple=True)
                         else:
@@ -314,7 +309,8 @@ def insert(table, **fields):
     '''
 
     sql = SQL(
-        # It is a hack for `insert into` for supporting prepared statement.
+        # The <pairs> could be a dict or iterable (prepared statement),
+        # It will be disassembled into <columns> and <values>.
         ('<pairs>', ),
         # It is a template group, and
         # it only be rendered if every <field> is be filled.
