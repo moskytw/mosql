@@ -17,8 +17,8 @@ def quoted(s):
 
 ENCODING = 'UTF-8'
 
-def stringify(x, quote=False, tuple=False, operator=False):
-    '''Convert any object ``x`` to SQL's representation.
+def dumps(x, quote=False, tuple=False, operator=False):
+    '''Dump any object ``x`` to SQL's representation.
 
     It supports:
 
@@ -36,37 +36,37 @@ def stringify(x, quote=False, tuple=False, operator=False):
     - ``tuple`` works on iterable. It adds the parentheses around a stringified iterable.
     - ``operator`` works on dict. It will find the operator out from key, or automatically generate an operator by type of value.
 
-    >>> print stringify(None)
+    >>> print dumps(None)
     null
 
-    >>> print stringify(123)
+    >>> print dumps(123)
     123
 
-    >>> print stringify('It is a string.')
+    >>> print dumps('It is a string.')
     It is a string.
 
-    >>> print stringify('It is a string.', quote=True)
+    >>> print dumps('It is a string.', quote=True)
     'It is a string.'
 
-    >>> print stringify({'key': 'value'})
+    >>> print dumps({'key': 'value'})
     key='value'
 
-    >>> print stringify(('string', 123, 123.456))
+    >>> print dumps(('string', 123, 123.456))
     string, 123, 123.456
 
-    >>> print stringify(('string', 123, 123.456), quote=True)
+    >>> print dumps(('string', 123, 123.456), quote=True)
     'string', 123, 123.456
 
-    >>> print stringify(('string', 123, 123.456), tuple=True)
+    >>> print dumps(('string', 123, 123.456), tuple=True)
     (string, 123, 123.456)
 
-    >>> print stringify(('string', 123, 123.456), quote=True, tuple=True)
+    >>> print dumps(('string', 123, 123.456), quote=True, tuple=True)
     ('string', 123, 123.456)
 
-    >>> print stringify({'key': ('a', 'b')}, operator=True)
+    >>> print dumps({'key': ('a', 'b')}, operator=True)
     key IN ('a', 'b')
 
-    >>> print stringify({'time >': 0}, operator=True)
+    >>> print dumps({'time >': 0}, operator=True)
     time > 0
     '''
 
@@ -92,7 +92,7 @@ def stringify(x, quote=False, tuple=False, operator=False):
             for k, v in x.items():
 
                 op = ''
-                str_k = stringify(k)
+                str_k = dumps(k)
                 space_count = str_k.count(' ')
                 if space_count == 0:
                     if hasattr(v, '__iter__'):
@@ -102,13 +102,13 @@ def stringify(x, quote=False, tuple=False, operator=False):
                 elif space_count == 1:
                     op = ' '
 
-                strs.append('%s%s%s' % (str_k, op, stringify(v, quote=True, tuple=True)))
+                strs.append('%s%s%s' % (str_k, op, dumps(v, quote=True, tuple=True)))
             return ' AND '.join(strs)
         else:
-            return  ', '.join('%s=%s' % (stringify(k), stringify(v, quote=True, tuple=True)) for k, v in x.items())
+            return  ', '.join('%s=%s' % (dumps(k), dumps(v, quote=True, tuple=True)) for k, v in x.items())
 
     if hasattr(x, '__iter__'):
-        s = ', '.join(stringify(i, quote, tuple) for i in x)
+        s = ', '.join(dumps(i, quote, tuple) for i in x)
         if tuple:
             return '(%s)' % s
         else:
@@ -189,17 +189,17 @@ class SQL(object):
                     if key == 'select' and not value:
                         value = '*'
                     elif key in ('where', 'having'):
-                        value = stringify(value, operator=True)
+                        value = dumps(value, operator=True)
                     elif key == 'desc' and value:
                         value = 'DESC'
                     elif key == 'asc' and value:
                         value = 'ASC'
                     elif key == 'values':
-                        value = stringify(value, quote=True, tuple=True)
+                        value = dumps(value, quote=True, tuple=True)
                     elif key == 'columns':
-                        value = stringify(value, tuple=True)
+                        value = dumps(value, tuple=True)
                     else:
-                        value = stringify(value)
+                        value = dumps(value)
 
                     rendered_templates.append(value)
                 else:
