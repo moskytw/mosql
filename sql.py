@@ -20,6 +20,12 @@ def param_maker(k, paramstyle_=None):
     If ``paramstyle_`` is not set, it will read global ``paramstyle``.'''
     return param_makers.get(paramstyle_ or paramstyle)(k)
 
+# A hyper None, because None represent null in SQL.
+Empty = type('Empty', (object,), {
+    '__nonzero__': lambda self: False,
+    '__repr__'   : lambda self: 'Empty',
+})()
+
 def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
     '''Dump any object ``x`` into SQL's representation.
 
@@ -141,12 +147,6 @@ def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
             return '(%s)' % s
         else:
             return s
-
-# A hyper None, because None represent null in SQL.
-Empty = type('Empty', (object,), {
-    '__nonzero__': lambda self: False,
-    '__repr__'   : lambda self: 'Empty',
-})()
 
 class SQL(object):
     '''It builds a SQL statement by given template.
