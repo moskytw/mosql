@@ -17,7 +17,7 @@ def quoted(s):
 
 ENCODING = 'UTF-8'
 
-def stringify(x, quote=False):
+def stringify(x, quote=False, tuple=False):
     '''Convert any object ``x`` to SQL's representation.
 
     It supports:
@@ -30,11 +30,25 @@ def stringify(x, quote=False):
 
     It returns None if it doesn't know how to convert.
 
+    The additionally format arguments:
+
+    - ``quote`` works on strings. It adds the single quotes around a string, and replaces single quote to two single quotes ('') in this string.
+    - ``tuple`` works on iterable. It adds the parentheses around a stringified iterable.
+
+    >>> print stringify(None)
+    null
+
+    >>> print stringify(123)
+    123
+
     >>> print stringify('It is a string.')
     It is a string.
 
     >>> print stringify('It is a string.', quote=True)
     'It is a string.'
+
+    >>> print stringify({'key': 'value'})
+    key='value'
 
     >>> print stringify(('string', 123, 123.456))
     string, 123, 123.456
@@ -42,26 +56,11 @@ def stringify(x, quote=False):
     >>> print stringify(('string', 123, 123.456), quote=True)
     'string', 123, 123.456
 
-    >>> print stringify(None)
-    null
+    >>> print stringify(('string', 123, 123.456), tuple=True)
+    (string, 123, 123.456)
 
-    >>> print stringify(None, quote=True)
-    null
-
-    >>> print stringify(123)
-    123
-
-    >>> print stringify(123, quote=True)
-    123
-
-    >>> print stringify({'number': 123})
-    number=123
-
-    >>> print stringify({'number': 123}, quote=True)
-    number=123
-
-    >>> print stringify({'key': 'value'})
-    key='value'
+    >>> print stringify(('string', 123, 123.456), quote=True, tuple=True)
+    ('string', 123, 123.456)
 
     >>> print stringify({'key': 'value'}, quote=True)
     key='value'
@@ -83,35 +82,14 @@ def stringify(x, quote=False):
         return s
 
     if hasattr(x, 'items'):
-        return ', '.join('%s=%s' % (stringify(k), stringify(v, quote=True)) for k, v in x.items())
+        return ', '.join('%s=%s' % (stringify(k), stringify(v, quote=True, tuple=True)) for k, v in x.items())
 
     if hasattr(x, '__iter__'):
-        strs = (stringify(i, quote) for i in x)
-        return ', '.join(strs)
-
-def stringify_columns(iterable):
-    '''It is a customized stringify function for ``insert`` in SQL.
-
-    >>> print stringify_columns(('string', 123, 123.456))
-    (string, 123, 123.456)
-
-    >>> print stringify_columns('any else')
-    None
-    '''
-    if hasattr(iterable, '__iter__'):
-        return '(%s)' % stringify(iterable)
-
-def stringify_values(iterable):
-    '''It is a customized stringify function for ``insert`` in SQL.
-
-    >>> print stringify_values(('string', 123, 123.456))
-    ('string', 123, 123.456)
-
-    >>> print stringify_columns('any else')
-    None
-    '''
-    if hasattr(iterable, '__iter__'):
-        return '(%s)' % ', '.join(stringify(x, quote=True) for x in iterable)
+        s = ', '.join(stringify(i, quote, tuple) for i in x)
+        if tuple:
+            return '(%s)' % s
+        else:
+            return s
 
 # A hyper None, because None represent null in SQL.
 Empty = type('Empty', (object,), {
@@ -276,9 +254,9 @@ class SQL(object):
                     elif key == 'asc' and value:
                         value = 'ASC'
                     elif key == 'values':
-                        value = stringify_values(value)
+                        value = stringify(value, quote=True, tuple=True)
                     elif key == 'columns':
-                        value = stringify_columns(value)
+                        value = stringify(value, tuple=True)
                     else:
                         value = stringify(value)
 
