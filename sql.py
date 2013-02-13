@@ -6,7 +6,7 @@
 encoding = 'UTF-8'
 paramstyle = 'pyformat'
 
-param_makers = {
+param_markers = {
     'pyformat': lambda k: '%%(%s)s' % k,
     'qmark'   : lambda k: '?',
     'named'   : lambda k: ':%s' % k,
@@ -14,11 +14,11 @@ param_makers = {
     # 'numberic': lambda k: ':%d' % d, # TODO
 }
 
-def param_maker(k, paramstyle_=None):
-    '''Retrun a parameter maker.
+def param_marker(k, paramstyle_=None):
+    '''Retrun a parameter marker.
 
     If ``paramstyle_`` is not set, it will read global ``paramstyle``.'''
-    return param_makers.get(paramstyle_ or paramstyle)(k)
+    return param_markers.get(paramstyle_ or paramstyle)(k)
 
 # A hyper None, because None represents null in SQL.
 Empty = type('Empty', (object,), {
@@ -97,7 +97,7 @@ def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
 
         items = None
         if hasattr(x, 'items'):
-            is_param_maker = False
+            is_param_marker = False
             items = x.items()
         elif hasattr(x, '__iter__'):
             items = ((k, Empty) for k in x)
@@ -120,9 +120,9 @@ def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
                     op = 'in'
                 else:
                     op = '='
-            # use parameter maker if `v` is Empty
+            # use parameter marker if `v` is Empty
             if v is Empty:
-                str_v = param_maker(str_k, paramstyle)
+                str_v = param_marker(str_k, paramstyle)
             else:
                 str_v = dumps(v, quote=True, tuple=True)
 
