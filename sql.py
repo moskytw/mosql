@@ -145,6 +145,7 @@ def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
             # NOTE: In MySQL, it can't ensure the security if MySQL doesn't run in ANSI mode.
             s = "'%s'" % s.replace("'", "''")
         return s
+
     if hasattr(x, 'items'):
         return  ', '.join('%s=%s' % (dumps(k), dumps(v, quote=True, tuple=True)) for k, v in x.items())
 
