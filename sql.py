@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+'''It contains some useful funtions to build SQL with basic Python's data type.'''
+
 def quoted(s):
     '''Add single quotes around ``s`` and replace the single quote (') to double quotes ('') in ``s``.
 
@@ -121,6 +123,33 @@ Empty = type('Empty', (object,), {
 })()
 
 class SQL(object):
+    '''It builds a SQL statement by given template.
+
+    An example of `select ...` statement:
+
+    >>> sql = SQL(
+    ...     # It is a template group, and
+    ...     # it only be rendered if every <field> is be filled.
+    ...     ('select', '<select>'),
+    ...     # It is another template group.
+    ...     ('from', '<table>'),
+    ...     ('where', '<where>'),
+    ...     ('group by', '<group_by>'),
+    ...     ('having', '<having>'),
+    ...     ('order by', '<order_by>'),
+    ...     ('<asc>', ),
+    ...     ('<desc>', ),
+    ...     ('limit', '<limit>'),
+    ...     ('offset', '<offset>'),
+    ... )
+
+    And use attribute ``field_names`` to get the field names:
+
+    >>> sql.field_names == set(
+    ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'asc', 'desc', 'limit', 'offset']
+    ... )
+    True
+    '''
 
     def __init__(self, *template_groups):
         self.template_groups = template_groups
@@ -133,16 +162,16 @@ class SQL(object):
         self.cached = None
 
     def update(self, dict):
+        '''Use a dict to update the fields' values.'''
         self.filled.update(dict)
 
     def __setattr__(self, key, value):
-        '''
-        >>> sql = select('users')
+        '''It supports to use attribute to update field.
+
+        >>> sql = SQL(('field', '<field>'))
+        >>> sql.field = {'id': 'mosky.tw@gmail.com'}
         >>> print sql
-        SELECT * FROM users;
-        >>> sql.where = {'id': 'mosky.tw@gmail.com'}
-        >>> print sql
-        SELECT * FROM users WHERE id='mosky.tw@gmail.com';
+        FIELD id='mosky.tw@gmail.com';
         '''
 
         field_names = getattr(self, 'field_names', None)
@@ -153,11 +182,15 @@ class SQL(object):
             object.__setattr__(self, key, value)
 
     def __getattr__(self, key):
-        '''
-        >>> sql = select('users', where={'id': 'mosky.tw@gmail.com'})
-        >>> sql.where
+        '''It supports to use attribute to get value of field.
+
+        >>> sql = SQL(('field', '<field>'))
+        >>> sql.field = {'id': 'mosky.tw@gmail.com'}
+
+        >>> print sql.field
         {'id': 'mosky.tw@gmail.com'}
-        >>> sql.x
+
+        >>> print sql.x
         Traceback (most recent call last):
             ...
         KeyError: 'x'
@@ -167,6 +200,7 @@ class SQL(object):
         return self.filled[key]
 
     def __str__(self):
+        '''Render given SQL template by filled field.'''
 
         if self.cached: return self.cached
 
@@ -213,13 +247,18 @@ class SQL(object):
         return self.cached
 
 def insert(table, **kargs):
-    '''A SQL builder for ``insert into`` statement.
+    '''Return a `SQL` instance of SQL statement ``insert into ...``.
 
     >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'))
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky.tw@gmail.com');
 
-    >>> print insert('users', columns=('id', 'name', 'email'), values=('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'))
-    INSERT INTO users (id, name, email) VALUES ('mosky', 'Mosky Liu', 'mosky.tw@gmail.com');
+    >>> print insert('users', columns=('email', 'id', 'name'), values=('mosky.tw@gmail.com', 'mosky', 'Mosky Liu'))
+    INSERT INTO users (email, id, name) VALUES ('mosky.tw@gmail.com', 'mosky', 'Mosky Liu');
+
+    >>> print insert('users').field_names == set(
+    ...     ['table', 'values', 'columns', 'returning']
+    ... )
+    True
     '''
 
     sql = SQL(
@@ -236,23 +275,30 @@ def insert(table, **kargs):
     return sql
 
 def select(table, **kargs):
-    '''A SQL builder for ``select`` statement.
+    '''Return a `SQL` instance of SQL statement ``select ...``.
 
     >>> print select('users')
     SELECT * FROM users;
 
+    >>> print select('users', order_by='id', desc=True)
+    SELECT * FROM users ORDER BY id DESC;
+
+    >>> print select('users', select='id', order_by=('id', 'email'), desc=True)
+    SELECT id FROM users ORDER BY id, email DESC;
+
     >>> print select('users', limit=1, where={'id': 'mosky'})
     SELECT * FROM users WHERE id='mosky' LIMIT 1;
 
-    >>> print select('users', select=('id', 'email'), order_by='id', desc=True)
-    SELECT id, email FROM users ORDER BY id DESC;
-
-    >>> # It may be fail in doctest, because dict is unordered.
-    >>> print select('users', where={'id': 'mosky', 'email': 'mosky.tw@gmail.com'})
-    SELECT * FROM users WHERE id='mosky' AND email='mosky.tw@gmail.com';
-
     >>> print select('users', where={'id': ('mosky', 'moskytw')})
     SELECT * FROM users WHERE id IN ('mosky', 'moskytw');
+
+    >>> print select('users', where={'email LIKE': '%@gmail.com'})
+    SELECT * FROM users WHERE email LIKE '%@gmail.com';
+
+    >>> print select('users').field_names == set(
+    ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'asc', 'desc', 'limit', 'offset']
+    ... )
+    True
     '''
 
     sql = SQL(
@@ -272,10 +318,15 @@ def select(table, **kargs):
     return sql
 
 def update(table, **kargs):
-    '''A SQL builder for ``update`` statement.
+    '''Return a `SQL` instance of SQL statement ``update ...``.
 
     >>> print update('users', set={'email': 'mosky.tw@gmail.com'}, where={'id': 'mosky'})
     UPDATE users SET email='mosky.tw@gmail.com' WHERE id='mosky';
+
+    >>> print update('users').field_names == set(
+    ...     ['table', 'set', 'where', 'returning']
+    ... )
+    True
     '''
 
     sql = SQL(
@@ -289,10 +340,15 @@ def update(table, **kargs):
     return sql
 
 def delete(table, **kargs):
-    '''A SQL builder for ``delete from`` statement.
+    '''Return a `SQL` instance of SQL statement ``delete from ...``.
 
     >>> print delete('users', where={'id': 'mosky'})
     DELETE FROM users WHERE id='mosky';
+
+    >>> print delete('users').field_names == set(
+    ...     ['table', 'where', 'returning']
+    ... )
+    True
     '''
 
     sql = SQL(
