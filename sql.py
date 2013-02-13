@@ -287,6 +287,12 @@ class SQL(object):
         self.cached = ' '.join(sql_components)+';'
         return self.cached
 
+    def __repr__(self):
+        return '%s(%s)' % (
+            self.__class__.__name__,
+            ', '.join(repr(t) for t in self.template_groups)
+        )
+
 def insert(table, **fields):
     '''Return a `SQL` instance of SQL statement ``insert into ...``.
 
