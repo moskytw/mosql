@@ -104,6 +104,11 @@ def dumps(x, quote=False, tuple=False, operator=False):
                 elif space_count == 1:
                     op = ' '
 
+                # convert the operator to uppercase automatically
+                if space_count >= 1:
+                    i = str_k.rfind(' ')
+                    str_k = str_k[:i]+str_k[i:].upper()
+
                 strs.append('%s%s%s' % (str_k, op, dumps(v, quote=True, tuple=True)))
             return ' AND '.join(strs)
         else:
@@ -292,7 +297,7 @@ def select(table, **fields):
     >>> print select('users', where={'id': ('mosky', 'moskytw')})
     SELECT * FROM users WHERE id IN ('mosky', 'moskytw');
 
-    >>> print select('users', where={'email LIKE': '%@gmail.com'})
+    >>> print select('users', where={'email like': '%@gmail.com'})
     SELECT * FROM users WHERE email LIKE '%@gmail.com';
 
     >>> print select('users').field_names == set(
