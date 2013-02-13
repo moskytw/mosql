@@ -169,7 +169,13 @@ def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=N
                 paramstyle=paramstyle
             )
         else:
-            s = ', '.join(dumps(i, tuple=tuple, value=value, param=param, operator=operator, paramstyle=paramstyle) for i in x)
+            s = ', '.join(dumps(i,
+                tuple=tuple,
+                value=value,
+                param=param,
+                operator=operator,
+                paramstyle=paramstyle
+            ) for i in x)
             if tuple:
                 return '(%s)' % s
             else:
