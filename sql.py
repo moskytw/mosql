@@ -27,9 +27,9 @@ def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
 
     - ``None`` (as ``null`` in SQL)
     - ``unicode``
-    - number (include ``int`` and ``float``)
+    - number (includes ``int`` ,``float`` and ``long``)
     - ``dict``
-    - iterable (include ``tuple``, ``list``, ...)
+    - iterable (includes ``tuple``, ``list``, ...)
 
     It returns None if it doesn't know how to convert.
 
