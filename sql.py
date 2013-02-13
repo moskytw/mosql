@@ -386,8 +386,8 @@ def delete(table, **fields):
         ('where', '<where>'),
         ('returning', '<returning>'),
     )
-    sql.filled['table'] = table
-    sql.filled.update(fields)
+    fields['table'] = table
+    sql.update(fields)
     return sql
 
 if __name__ == '__main__':
