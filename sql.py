@@ -252,15 +252,16 @@ class SQL(object):
 
                     key = template[1:-1]
                     value = self.filled.get(key, Empty)
+                    rendered = None
 
                     # handles special cases
                     # TODO: it could be abstracted as a parameter of initialization
                     if value is Empty:
                         if key == 'select':
-                            value = '*'
+                            rendered = '*'
                     else:
                         if key in ('where', 'having'):
-                            value = dumps(value, param=(not hasattr(value, 'items')), operator=True, paramstyle=self.paramstyle)
+                            rendered = dumps(value, param=(not hasattr(value, 'items')), operator=True, paramstyle=self.paramstyle)
                         elif key == 'pairs':
                             if hasattr(value, 'items'):
                                 self.filled['columns'], self.filled['values'] = zip(*value.items())
@@ -268,15 +269,14 @@ class SQL(object):
                                 self.filled['columns'] = value
                                 self.filled['values'] = value
                                 values_param = True
-                            value = None
                         elif key == 'values':
-                            value = dumps(value, param=values_param, value=True, tuple=True)
+                            rendered = dumps(value, param=values_param, value=True, tuple=True)
                         elif key == 'columns':
-                            value = dumps(value, tuple=True)
+                            rendered = dumps(value, tuple=True)
                         else:
-                            value = dumps(value)
+                            rendered = dumps(value)
 
-                    rendered_templates.append(value)
+                    rendered_templates.append(rendered)
                 else:
                     rendered_templates.append(template.upper())
 
