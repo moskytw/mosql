@@ -5,7 +5,7 @@
 
 ENCODING = 'UTF-8'
 
-def dumps(x, quote=False, tuple=False, operator=False):
+def dumps(x, quote=False, tuple=False, expression=False):
     '''Dump any object ``x`` to SQL's representation.
 
     It supports:
@@ -22,7 +22,7 @@ def dumps(x, quote=False, tuple=False, operator=False):
 
     - ``quote`` works on strings. It adds the single quotes around a string, and replaces single quote to two single quotes ('') in this string.
     - ``tuple`` works on iterable. It adds the parentheses around a stringified iterable.
-    - ``operator`` works on dict. It will find the operator out from key, or automatically generate an operator by type of value.
+    - ``expression`` works on dict. It will find the operator out from key, or automatically generate an operator by type of value.
 
     >>> print dumps(None)
     null
@@ -57,10 +57,10 @@ def dumps(x, quote=False, tuple=False, operator=False):
     >>> print dumps(('string', 123, 123.456), quote=True, tuple=True)
     ('string', 123, 123.456)
 
-    >>> print dumps({'key': ('a', 'b')}, operator=True)
+    >>> print dumps({'key': ('a', 'b')}, expression=True)
     key IN ('a', 'b')
 
-    >>> print dumps({'time >': 0}, operator=True)
+    >>> print dumps({'time >': 0}, expression=True)
     time > 0
     '''
 
@@ -80,7 +80,7 @@ def dumps(x, quote=False, tuple=False, operator=False):
         return s
 
     if hasattr(x, 'items'):
-        if operator:
+        if expression:
             strs = []
             for k, v in x.items():
                 # find the operator out
@@ -214,7 +214,7 @@ class SQL(object):
                     if key == 'select' and not value:
                         value = '*'
                     elif key in ('where', 'having'):
-                        value = dumps(value, operator=True)
+                        value = dumps(value, expression=True)
                     elif key == 'desc' and value:
                         value = 'DESC'
                     elif key == 'asc' and value:
