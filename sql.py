@@ -3,20 +3,6 @@
 
 '''It contains some useful funtions to build SQL with basic Python's data type.'''
 
-def quoted(s):
-    '''Add single quotes around ``s`` and replace the single quote (') to double quotes ('') in ``s``.
-
-    >>> print quoted('string without single quote')
-    'string without single quote'
-
-    >>> print quoted("' or 1=1 --")
-    '\'' or 1=1 --'
-
-    >>> print quoted("' DROP TABLE users; --")
-    '\'' DROP TABLE users; --'
-    '''
-    return "'%s'" % s.replace("'", "''")
-
 ENCODING = 'UTF-8'
 
 def dumps(x, quote=False, tuple=False, operator=False):
@@ -49,6 +35,12 @@ def dumps(x, quote=False, tuple=False, operator=False):
 
     >>> print dumps('It is a string.', quote=True)
     'It is a string.'
+
+    >>> print dumps("' or 1=1 --", quote=True)
+    '\'' or 1=1 --'
+
+    >>> print dumps("' DROP TABLE users; --", quote=True)
+    '\'' DROP TABLE users; --'
 
     >>> print dumps({'key': 'value'})
     key='value'
@@ -84,7 +76,7 @@ def dumps(x, quote=False, tuple=False, operator=False):
     if isinstance(x, str):
         s = x
         if quote:
-            s = quoted(x)
+            s = "'%s'" % s.replace("'", "''")
         return s
 
     if hasattr(x, 'items'):
