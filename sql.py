@@ -20,7 +20,7 @@ def param_maker(k, paramstyle_=None):
     If ``paramstyle_`` is not set, it will read global ``paramstyle``.'''
     return param_makers.get(paramstyle_ or paramstyle)(k)
 
-# A hyper None, because None represent null in SQL.
+# A hyper None, because None represents null in SQL.
 Empty = type('Empty', (object,), {
     '__nonzero__': lambda self: False,
     '__repr__'   : lambda self: 'Empty',
@@ -101,14 +101,14 @@ def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
 
         strs = []
         for k, v in items:
-            # find the expression out
+            # find the operator out
             str_k = dumps(k, tuple=True).strip()
             # NOTE: It can't handle iterable or dict-like correctly.
             space_pos = str_k.rfind(' ')
             op = None
             if space_pos != -1:
                 str_k, op = str_k[:space_pos], str_k[space_pos+1:]
-            # if we can't find an expression
+            # if we can't find an operator
             if not op:
                 if hasattr(v, '__iter__'):
                     op = 'in'
