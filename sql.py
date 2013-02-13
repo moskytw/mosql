@@ -160,9 +160,9 @@ class SQL(object):
     ...     # It is another template group.
     ...     ('from', '<table>'),
     ...     ('where', '<where>'),
-    ...     ('group by', '<group_by>'),
+    ...     ('group by', '<groupby>'),
     ...     ('having', '<having>'),
-    ...     ('order by', '<order_by>'),
+    ...     ('order by', '<orderby>'),
     ...     ('limit', '<limit>'),
     ...     ('offset', '<offset>'),
     ... )
@@ -170,7 +170,7 @@ class SQL(object):
     And use attribute ``field_names`` to get the field names:
 
     >>> sql.field_names == set(
-    ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'limit', 'offset']
+    ...     ['select', 'table', 'where', 'groupby', 'having', 'orderby', 'limit', 'offset']
     ... )
     True
     '''
@@ -303,10 +303,10 @@ def select(table, **fields):
     >>> print select('users')
     SELECT * FROM users;
 
-    >>> print select('users', order_by='id')
+    >>> print select('users', orderby='id')
     SELECT * FROM users ORDER BY id;
 
-    >>> print select('users', select='id', order_by=('id DESC', 'email'))
+    >>> print select('users', select='id', orderby=('id DESC', 'email'))
     SELECT id FROM users ORDER BY id DESC, email;
 
     >>> print select('users', limit=1, where={'id': 'mosky'})
@@ -327,7 +327,7 @@ def select(table, **fields):
     SELECT * FROM users WHERE name = ? AND email = ?;
 
     >>> print select('users').field_names == set(
-    ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'limit', 'offset']
+    ...     ['select', 'table', 'where', 'groupby', 'having', 'orderby', 'limit', 'offset']
     ... )
     True
     '''
@@ -336,9 +336,9 @@ def select(table, **fields):
         ('select', '<select>'),
         ('from', '<table>'),
         ('where', '<where>'),
-        ('group by', '<group_by>'),
+        ('group by', '<groupby>'),
         ('having', '<having>'),
-        ('order by', '<order_by>'),
+        ('order by', '<orderby>'),
         ('limit', '<limit>'),
         ('offset', '<offset>'),
     )
