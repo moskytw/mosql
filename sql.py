@@ -170,9 +170,9 @@ def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=N
             )
         else:
             s = ', '.join(dumps(i,
-                tuple=tuple,
-                value=value,
                 param=param,
+                value=value,
+                tuple=tuple,
                 operator=operator,
                 paramstyle=paramstyle
             ) for i in x)
