@@ -26,7 +26,7 @@ Empty = type('Empty', (object,), {
     '__repr__'   : lambda self: 'Empty',
 })()
 
-def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
+def dumps(x, quote=False, tuple=False, expression=False, marker=None, paramstyle=None):
     '''Dump any object ``x`` into SQL's representation.
 
     It supports:
@@ -144,13 +144,15 @@ def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
         if quote:
             # NOTE: In MySQL, it can't ensure the security if MySQL doesn't run in ANSI mode.
             s = "'%s'" % s.replace("'", "''")
+        elif marker:
+            s = param_marker(s)
         return s
 
     if hasattr(x, 'items'):
         return  ', '.join('%s=%s' % (dumps(k), dumps(v, quote=True, tuple=True)) for k, v in x.items())
 
     if hasattr(x, '__iter__'):
-        s = ', '.join(dumps(i, quote, tuple) for i in x)
+        s = ', '.join(dumps(i, quote, tuple, marker=marker) for i in x)
         if tuple:
             return '(%s)' % s
         else:
@@ -259,8 +261,21 @@ class SQL(object):
                     else:
                         if key in ('where', 'having'):
                             value = dumps(value, expression=True, paramstyle=self.paramstyle)
+                        # a hack for `insert into`
+                        elif key == 'pairs':
+                            if hasattr(value, 'items'):
+                                self.filled['columns'], self.filled['values'] = zip(*value.items())
+                            elif hasattr(value, '__iter__'):
+                                self.filled['columns'] = value
+                                self.filled['values'] = value
+                                self.filled['values_expression'] = value
+                            value = None
                         elif key == 'values':
-                            value = dumps(value, quote=True, tuple=True)
+                            values_expression = self.filled.get('values_expression', Empty)
+                            if values_expression is not Empty:
+                                value = dumps(values_expression, marker=True, tuple=True)
+                            else:
+                                value = dumps(value, quote=True, tuple=True)
                         elif key == 'columns':
                             value = dumps(value, tuple=True)
                         else:
@@ -280,6 +295,12 @@ class SQL(object):
 def insert(table, **fields):
     '''Return a `SQL` instance of SQL statement ``insert into ...``.
 
+    >>> print insert('users', pairs={'id': 'mosky'})
+    INSERT INTO users (id) VALUES ('mosky');
+
+    >>> print insert('users', pairs=('id', ))
+    INSERT INTO users (id) VALUES (%(id)s);
+
     >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'))
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky.tw@gmail.com');
 
@@ -287,12 +308,14 @@ def insert(table, **fields):
     INSERT INTO users (email, id, name) VALUES ('mosky.tw@gmail.com', 'mosky', 'Mosky Liu');
 
     >>> print insert('users').field_names == set(
-    ...     ['table', 'values', 'columns', 'returning']
+    ...     ['table', 'pairs', 'values', 'columns', 'returning']
     ... )
     True
     '''
 
     sql = SQL(
+        # It is a hack for `insert into` for supporting prepared statement.
+        ('<pairs>', ),
         # It is a template group, and
         # it only be rendered if every <field> is be filled.
         ('insert into', '<table>'),
