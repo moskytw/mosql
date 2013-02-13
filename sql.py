@@ -302,7 +302,7 @@ def insert(table, **fields):
     >>> print insert('users', columns=('email', 'id', 'name'), values=('mosky.tw@gmail.com', 'mosky', 'Mosky Liu'))
     INSERT INTO users (email, id, name) VALUES ('mosky.tw@gmail.com', 'mosky', 'Mosky Liu');
 
-    >>> print insert('users').field_names == set(
+    >>> insert('users').field_names == set(
     ...     ['table', 'pairs', 'values', 'columns', 'returning']
     ... )
     True
@@ -353,7 +353,7 @@ def select(table, **fields):
     >>> print sql
     SELECT * FROM users WHERE name = ? AND email = ?;
 
-    >>> print select('users').field_names == set(
+    >>> select('users').field_names == set(
     ...     ['select', 'table', 'where', 'groupby', 'having', 'orderby', 'limit', 'offset']
     ... )
     True
@@ -379,7 +379,7 @@ def update(table, **fields):
     >>> print update('users', set={'email': 'mosky.tw@gmail.com'}, where={'id': 'mosky'})
     UPDATE users SET email='mosky.tw@gmail.com' WHERE id = 'mosky';
 
-    >>> print update('users').field_names == set(
+    >>> update('users').field_names == set(
     ...     ['table', 'set', 'where', 'returning']
     ... )
     True
@@ -401,7 +401,7 @@ def delete(table, **fields):
     >>> print delete('users', where={'id': 'mosky'})
     DELETE FROM users WHERE id = 'mosky';
 
-    >>> print delete('users').field_names == set(
+    >>> delete('users').field_names == set(
     ...     ['table', 'where', 'returning']
     ... )
     True
