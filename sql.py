@@ -86,6 +86,11 @@ def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
 
     >>> print dumps(('name', 'created >'), expression=True)
     name = %(name)s AND created > %(created)s
+
+    >>> print dumps({('k1', 'k2'): 'v'}, expression=True)
+    Traceback (most recent call last):
+        ...
+    AssertionError: left operand of expression should be a string
     '''
 
     if expression:
@@ -101,9 +106,10 @@ def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
 
         strs = []
         for k, v in items:
+            assert isinstance(k, basestring), 'left operand of expression should be a string'
             # find the operator out
-            str_k = dumps(k, tuple=True).strip()
             # NOTE: It can't handle iterable or dict-like correctly.
+            str_k = dumps(k).strip()
             space_pos = str_k.rfind(' ')
             op = None
             if space_pos != -1:
