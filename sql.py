@@ -163,8 +163,6 @@ class SQL(object):
     ...     ('group by', '<group_by>'),
     ...     ('having', '<having>'),
     ...     ('order by', '<order_by>'),
-    ...     ('<asc>', ),
-    ...     ('<desc>', ),
     ...     ('limit', '<limit>'),
     ...     ('offset', '<offset>'),
     ... )
@@ -172,7 +170,7 @@ class SQL(object):
     And use attribute ``field_names`` to get the field names:
 
     >>> sql.field_names == set(
-    ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'asc', 'desc', 'limit', 'offset']
+    ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'limit', 'offset']
     ... )
     True
     '''
@@ -253,10 +251,6 @@ class SQL(object):
                     else:
                         if key in ('where', 'having'):
                             value = dumps(value, expression=True, paramstyle=self.paramstyle)
-                        elif key == 'desc' and value:
-                            value = 'DESC'
-                        elif key == 'asc' and value:
-                            value = 'ASC'
                         elif key == 'values':
                             value = dumps(value, quote=True, tuple=True)
                         elif key == 'columns':
@@ -309,11 +303,11 @@ def select(table, **fields):
     >>> print select('users')
     SELECT * FROM users;
 
-    >>> print select('users', order_by='id', desc=True)
-    SELECT * FROM users ORDER BY id DESC;
+    >>> print select('users', order_by='id')
+    SELECT * FROM users ORDER BY id;
 
-    >>> print select('users', select='id', order_by=('id', 'email'), desc=True)
-    SELECT id FROM users ORDER BY id, email DESC;
+    >>> print select('users', select='id', order_by=('id DESC', 'email'))
+    SELECT id FROM users ORDER BY id DESC, email;
 
     >>> print select('users', limit=1, where={'id': 'mosky'})
     SELECT * FROM users WHERE id = 'mosky' LIMIT 1;
@@ -333,7 +327,7 @@ def select(table, **fields):
     SELECT * FROM users WHERE name = ? AND email = ?;
 
     >>> print select('users').field_names == set(
-    ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'asc', 'desc', 'limit', 'offset']
+    ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'limit', 'offset']
     ... )
     True
     '''
@@ -345,8 +339,6 @@ def select(table, **fields):
         ('group by', '<group_by>'),
         ('having', '<having>'),
         ('order by', '<order_by>'),
-        ('<asc>', ),
-        ('<desc>', ),
         ('limit', '<limit>'),
         ('offset', '<offset>'),
     )
