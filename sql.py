@@ -211,20 +211,22 @@ class SQL(object):
 
                     # handles special cases
                     # TODO: it could be abstracted as a parameter of initialization
-                    if key == 'select' and not value:
-                        value = '*'
-                    elif key in ('where', 'having'):
-                        value = dumps(value, expression=True)
-                    elif key == 'desc' and value:
-                        value = 'DESC'
-                    elif key == 'asc' and value:
-                        value = 'ASC'
-                    elif key == 'values':
-                        value = dumps(value, quote=True, tuple=True)
-                    elif key == 'columns':
-                        value = dumps(value, tuple=True)
+                    if value is Empty:
+                        if key == 'select':
+                            value = '*'
                     else:
-                        value = dumps(value)
+                        if key in ('where', 'having'):
+                            value = dumps(value, expression=True)
+                        elif key == 'desc' and value:
+                            value = 'DESC'
+                        elif key == 'asc' and value:
+                            value = 'ASC'
+                        elif key == 'values':
+                            value = dumps(value, quote=True, tuple=True)
+                        elif key == 'columns':
+                            value = dumps(value, tuple=True)
+                        else:
+                            value = dumps(value)
 
                     rendered_templates.append(value)
                 else:
