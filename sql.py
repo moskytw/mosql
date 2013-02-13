@@ -259,7 +259,7 @@ def select(table, **kargs):
         ('select', '<select>'),
         ('from', '<table>'),
         ('where', '<where>'),
-        ('group by', '<group by>'),
+        ('group by', '<group_by>'),
         ('having', '<having>'),
         ('order by', '<order_by>'),
         ('<asc>', ),
