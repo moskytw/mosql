@@ -3,7 +3,7 @@
 
 '''It contains some useful funtions to build SQL with basic Python's data type.'''
 
-ENCODING = 'UTF-8'
+encoding = 'UTF-8'
 paramstyle = 'pyformat'
 
 param_makers = {
@@ -125,7 +125,7 @@ def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
         return str(x)
 
     if isinstance(x, unicode):
-        x = x.encode(ENCODING)
+        x = x.encode(encoding)
 
     if isinstance(x, str):
         s = x
