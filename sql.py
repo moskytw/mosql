@@ -93,23 +93,23 @@ def dumps(x, quote=False, tuple=False, operator=False):
             strs = []
             for k, v in x.items():
 
-                op = ''
+                auto_op = ''
                 str_k = dumps(k)
                 space_count = str_k.count(' ')
                 if space_count == 0:
                     if hasattr(v, '__iter__'):
-                        op = ' IN '
+                        auto_op = ' IN '
                     else:
-                        op = '='
+                        auto_op = '='
                 elif space_count == 1:
-                    op = ' '
+                    auto_op = ' '
 
                 # convert the operator to uppercase automatically
                 if space_count >= 1:
                     i = str_k.rfind(' ')
                     str_k = str_k[:i]+str_k[i:].upper()
 
-                strs.append('%s%s%s' % (str_k, op, dumps(v, quote=True, tuple=True)))
+                strs.append('%s%s%s' % (str_k, auto_op, dumps(v, quote=True, tuple=True)))
             return ' AND '.join(strs)
         else:
             return  ', '.join('%s=%s' % (dumps(k), dumps(v, quote=True, tuple=True)) for k, v in x.items())
