@@ -21,7 +21,7 @@ def param_maker(k, paramstyle_=None):
     return param_makers.get(paramstyle_ or paramstyle)(k)
 
 def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
-    '''Dump any object ``x`` to SQL's representation.
+    '''Dump any object ``x`` into SQL's representation.
 
     It supports:
 
