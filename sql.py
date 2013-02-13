@@ -169,9 +169,9 @@ class SQL(object):
     ...     # It is another template group.
     ...     ('from', '<table>'),
     ...     ('where', '<where>'),
-    ...     ('group by', '<groupby>'),
+    ...     ('group by', '<group_by>'),
     ...     ('having', '<having>'),
-    ...     ('order by', '<orderby>'),
+    ...     ('order by', '<order_by>'),
     ...     ('limit', '<limit>'),
     ...     ('offset', '<offset>'),
     ... )
@@ -179,7 +179,7 @@ class SQL(object):
     If you want to know what fields it have, the attribute, ``field_names``, could help you.
 
     >>> sql.field_names == set(
-    ...     ['select', 'table', 'where', 'groupby', 'having', 'orderby', 'limit', 'offset']
+    ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'limit', 'offset']
     ... )
     True
     '''
@@ -344,10 +344,10 @@ def select(table, **fields):
     >>> print select('users')
     SELECT * FROM users;
 
-    >>> print select('users', orderby='id')
+    >>> print select('users', order_by='id')
     SELECT * FROM users ORDER BY id;
 
-    >>> print select('users', select='id', orderby=('id DESC', 'email'))
+    >>> print select('users', select='id', order_by=('id DESC', 'email'))
     SELECT id FROM users ORDER BY id DESC, email;
 
     >>> print select('users', limit=1, where={'id': 'mosky'})
@@ -368,7 +368,7 @@ def select(table, **fields):
     SELECT * FROM users WHERE name = ? AND email = ?;
 
     >>> select('users').field_names == set(
-    ...     ['select', 'table', 'where', 'groupby', 'having', 'orderby', 'limit', 'offset']
+    ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'limit', 'offset']
     ... )
     True
     '''
@@ -377,9 +377,9 @@ def select(table, **fields):
         ('select', '<select>'),
         ('from', '<table>'),
         ('where', '<where>'),
-        ('group by', '<groupby>'),
+        ('group by', '<group_by>'),
         ('having', '<having>'),
-        ('order by', '<orderby>'),
+        ('order by', '<order_by>'),
         ('limit', '<limit>'),
         ('offset', '<offset>'),
     )
