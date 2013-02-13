@@ -65,6 +65,9 @@ def stringify(x, quote=False, tuple=False, operator=False):
 
     >>> print stringify({'key': ('a', 'b')}, operator=True)
     key IN ('a', 'b')
+
+    >>> print stringify({'time >': 0}, operator=True)
+    time > 0
     '''
 
     if x is None:
@@ -162,7 +165,6 @@ class SQL(object):
 
         >>> print SQL.select('users', where={'id': ('mosky', 'moskytw')})
         SELECT * FROM users WHERE id IN ('mosky', 'moskytw');
-
         '''
 
         sql = cls(
