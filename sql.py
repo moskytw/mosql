@@ -140,16 +140,34 @@ def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=N
                         op = '='
 
                 # render expression
-                expressions.append('%s %s %s' % (str_k, op.upper(), dumps(v, param=param, value=True, tuple=True, operator=False, paramstyle=paramstyle)))
+                expressions.append('%s %s %s' % (str_k, op.upper(), dumps(v,
+                    param=param,
+                    value=True,
+                    tuple=True,
+                    operator=False,
+                    paramstyle=paramstyle
+                )))
 
             return ' AND '.join(expressions)
         else:
-            return  ', '.join('%s=%s' % (dumps(k), dumps(v, param=param, value=True, tuple=tuple, operator=False, paramstyle=paramstyle)) for k, v in x.items())
+            return  ', '.join('%s=%s' % (dumps(k), dumps(v,
+                param=param,
+                value=True,
+                tuple=tuple,
+                operator=False,
+                paramstyle=paramstyle
+            )) for k, v in x.items())
 
     # iterable
     if hasattr(x, '__iter__'):
         if operator:
-            return dumps(dict((k, k) for k in x), param=param, value=value, tuple=tuple, operator=True, paramstyle=paramstyle)
+            return dumps(dict((k, k) for k in x),
+                param=param,
+                value=value,
+                tuple=tuple,
+                operator=True,
+                paramstyle=paramstyle
+            )
         else:
             s = ', '.join(dumps(i, tuple=tuple, value=value, param=param, operator=operator, paramstyle=paramstyle) for i in x)
             if tuple:
