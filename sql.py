@@ -136,6 +136,7 @@ def dumps(x, quote=False, tuple=False, expression=False, paramstyle=None):
     if isinstance(x, str):
         s = x
         if quote:
+            # NOTE: In MySQL, it can't ensure the security if MySQL doesn't run in ANSI mode.
             s = "'%s'" % s.replace("'", "''")
         return s
     if hasattr(x, 'items'):
