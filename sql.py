@@ -17,7 +17,7 @@ def quoted(s):
 
 ENCODING = 'UTF-8'
 
-def stringify(x, quote=False, tuple=False):
+def stringify(x, quote=False, tuple=False, operator=False):
     '''Convert any object ``x`` to SQL's representation.
 
     It supports:
@@ -34,6 +34,7 @@ def stringify(x, quote=False, tuple=False):
 
     - ``quote`` works on strings. It adds the single quotes around a string, and replaces single quote to two single quotes ('') in this string.
     - ``tuple`` works on iterable. It adds the parentheses around a stringified iterable.
+    - ``operator`` works on dict. It will find the operator out from key, or automatically generate an operator by type of value.
 
     >>> print stringify(None)
     null
@@ -62,8 +63,8 @@ def stringify(x, quote=False, tuple=False):
     >>> print stringify(('string', 123, 123.456), quote=True, tuple=True)
     ('string', 123, 123.456)
 
-    >>> print stringify({'key': 'value'}, quote=True)
-    key='value'
+    >>> print stringify({'key': ('a', 'b')}, operator=True)
+    key IN ('a', 'b')
     '''
 
     if x is None:
@@ -82,7 +83,26 @@ def stringify(x, quote=False, tuple=False):
         return s
 
     if hasattr(x, 'items'):
-        return ', '.join('%s=%s' % (stringify(k), stringify(v, quote=True, tuple=True)) for k, v in x.items())
+
+        if operator:
+            strs = []
+            for k, v in x.items():
+
+                op = ''
+                str_k = stringify(k)
+                space_count = str_k.count(' ')
+                if space_count == 0:
+                    if hasattr(v, '__iter__'):
+                        op = ' IN '
+                    else:
+                        op = '='
+                elif space_count == 1:
+                    op = ' '
+
+                strs.append('%s%s%s' % (str_k, op, stringify(v, quote=True, tuple=True)))
+            return ' AND '.join(strs)
+        else:
+            return  ', '.join('%s=%s' % (stringify(k), stringify(v, quote=True, tuple=True)) for k, v in x.items())
 
     if hasattr(x, '__iter__'):
         s = ', '.join(stringify(i, quote, tuple) for i in x)
@@ -135,6 +155,14 @@ class SQL(object):
 
         >>> print SQL.select('users', select=('id', 'email'), order_by='id', desc=True)
         SELECT id, email FROM users ORDER BY id DESC;
+
+        >>> # It may be fail in doctest, because dict is unordered.
+        >>> print SQL.select('users', where={'id': 'mosky', 'email': 'mosky.tw@gmail.com'})
+        SELECT * FROM users WHERE id='mosky' AND email='mosky.tw@gmail.com';
+
+        >>> print SQL.select('users', where={'id': ('mosky', 'moskytw')})
+        SELECT * FROM users WHERE id IN ('mosky', 'moskytw');
+
         '''
 
         sql = cls(
@@ -249,6 +277,8 @@ class SQL(object):
                     # TODO: it could be abstracted as a parameter of initialization
                     if key == 'select' and not value:
                         value = '*'
+                    elif key in ('where', 'having'):
+                        value = stringify(value, operator=True)
                     elif key == 'desc' and value:
                         value = 'DESC'
                     elif key == 'asc' and value:
