@@ -246,7 +246,7 @@ class SQL(object):
         self.cached = ' '.join(sql_components)+';'
         return self.cached
 
-def insert(table, **kargs):
+def insert(table, **fields):
     '''Return a `SQL` instance of SQL statement ``insert into ...``.
 
     >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'))
@@ -270,11 +270,11 @@ def insert(table, **kargs):
         ('values', '<values>'),
         ('returning', '<returning>'),
     )
-    kargs['table'] = table
-    sql.update(kargs)
+    fields['table'] = table
+    sql.update(fields)
     return sql
 
-def select(table, **kargs):
+def select(table, **fields):
     '''Return a `SQL` instance of SQL statement ``select ...``.
 
     >>> print select('users')
@@ -313,11 +313,11 @@ def select(table, **kargs):
         ('limit', '<limit>'),
         ('offset', '<offset>'),
     )
-    kargs['table'] = table
-    sql.update(kargs)
+    fields['table'] = table
+    sql.update(fields)
     return sql
 
-def update(table, **kargs):
+def update(table, **fields):
     '''Return a `SQL` instance of SQL statement ``update ...``.
 
     >>> print update('users', set={'email': 'mosky.tw@gmail.com'}, where={'id': 'mosky'})
@@ -335,11 +335,11 @@ def update(table, **kargs):
         ('where', '<where>'),
         ('returning', '<returning>'),
     )
-    kargs['table'] = table
-    sql.update(kargs)
+    fields['table'] = table
+    sql.update(fields)
     return sql
 
-def delete(table, **kargs):
+def delete(table, **fields):
     '''Return a `SQL` instance of SQL statement ``delete from ...``.
 
     >>> print delete('users', where={'id': 'mosky'})
@@ -357,7 +357,7 @@ def delete(table, **kargs):
         ('returning', '<returning>'),
     )
     sql.filled['table'] = table
-    sql.filled.update(kargs)
+    sql.filled.update(fields)
     return sql
 
 if __name__ == '__main__':
