@@ -88,28 +88,22 @@ def dumps(x, quote=False, tuple=False, operator=False):
         return s
 
     if hasattr(x, 'items'):
-
         if operator:
             strs = []
             for k, v in x.items():
-
-                auto_op = ''
-                str_k = dumps(k)
-                space_count = str_k.count(' ')
-                if space_count == 0:
+                # find the operator out
+                str_k = dumps(k).strip()
+                space_pos = str_k.rfind(' ')
+                op = None
+                if space_pos != -1:
+                    str_k, op = str_k[:space_pos], str_k[space_pos+1:]
+                # if we can't find an operator
+                if not op:
                     if hasattr(v, '__iter__'):
-                        auto_op = ' IN '
+                        op = 'in'
                     else:
-                        auto_op = '='
-                elif space_count == 1:
-                    auto_op = ' '
-
-                # convert the operator to uppercase automatically
-                if space_count >= 1:
-                    i = str_k.rfind(' ')
-                    str_k = str_k[:i]+str_k[i:].upper()
-
-                strs.append('%s%s%s' % (str_k, auto_op, dumps(v, quote=True, tuple=True)))
+                        op = '='
+                strs.append('%s %s %s' % (str_k, op.upper(), dumps(v, quote=True, tuple=True)))
             return ' AND '.join(strs)
         else:
             return  ', '.join('%s=%s' % (dumps(k), dumps(v, quote=True, tuple=True)) for k, v in x.items())
@@ -292,7 +286,7 @@ def select(table, **fields):
     SELECT id FROM users ORDER BY id, email DESC;
 
     >>> print select('users', limit=1, where={'id': 'mosky'})
-    SELECT * FROM users WHERE id='mosky' LIMIT 1;
+    SELECT * FROM users WHERE id = 'mosky' LIMIT 1;
 
     >>> print select('users', where={'id': ('mosky', 'moskytw')})
     SELECT * FROM users WHERE id IN ('mosky', 'moskytw');
@@ -326,7 +320,7 @@ def update(table, **fields):
     '''Return a `SQL` instance of SQL statement ``update ...``.
 
     >>> print update('users', set={'email': 'mosky.tw@gmail.com'}, where={'id': 'mosky'})
-    UPDATE users SET email='mosky.tw@gmail.com' WHERE id='mosky';
+    UPDATE users SET email='mosky.tw@gmail.com' WHERE id = 'mosky';
 
     >>> print update('users').field_names == set(
     ...     ['table', 'set', 'where', 'returning']
@@ -348,7 +342,7 @@ def delete(table, **fields):
     '''Return a `SQL` instance of SQL statement ``delete from ...``.
 
     >>> print delete('users', where={'id': 'mosky'})
-    DELETE FROM users WHERE id='mosky';
+    DELETE FROM users WHERE id = 'mosky';
 
     >>> print delete('users').field_names == set(
     ...     ['table', 'where', 'returning']
