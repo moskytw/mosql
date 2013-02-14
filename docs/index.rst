@@ -3,15 +3,38 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to sql-helper's documentation!
-======================================
+MoSQL - More than SQL
+=====================
 
-.. automodule:: sql
-    :members:
-    :undoc-members:
+Here is the basic four functions for 'create', 'read', 'update' and 'delete':
+
+`INSERT INTO ...`
+-----------------
+
+.. autofunction:: sql.insert
+
+`SELECT ...`
+-----------------
+
+.. autofunction:: sql.select
+
+`UPDATE ...`
+-----------------
+
+.. autofunction:: sql.update
+
+`DELETE FROM ...`
+-----------------
+.. autofunction:: sql.delete
+
+
+The documentions
+================
 
 .. toctree::
-   :maxdepth: 
+   :maxdepth: 2
+
+   mosql.rst
 
 Indices and tables
 ==================

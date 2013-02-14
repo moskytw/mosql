@@ -15,9 +15,36 @@ Empty = ___ = type('Empty', (object,), {
 })()
 
 def escape(s):
+    '''Replace the ``'`` (single quote) by ``''`` (two single quote).
+
+    :param s: a string which you want to escape.
+    :type s: str
+    :rtype: str
+
+    >>> print dumps("'DROP TABLE users; --", val=True)
+    '\''DROP TABLE users; --'
+
+    .. warning::
+        In MySQL, it only ensures the security in ANSI mode by default.
+
+    .. seealso::
+        How :py:mod:`~sql` dumps the Python's object to SQL -- :py:func:`~sql.dumps`.
+    '''
     return s.replace("'", "''")
 
 def splitop(s):
+    '''Split `s` by rightmost space into the right string and a string operator in a 2-tuple.
+
+    :param s: a string which you want to split.
+    :type s: str
+    :rtype: 2-tuple
+
+    >>> print splitop('withoutop')
+    ('withoutop', None)
+
+    >>> print splitop('with op')
+    ('with', 'op')
+    '''
     op = None
     space_pos = s.rfind(' ')
     if space_pos != -1:
@@ -27,11 +54,13 @@ def splitop(s):
 from datetime import date, time, datetime
 
 def dumps(x, **format):
-    '''Dump any object ``x`` into SQL's representation.
+    '''Dump any object `x` into SQL's representation.
 
-    Return a string.
+    :param x: any object.
+    :param format: the formating parameters.
+    :type format: dict
 
-    The basic types:
+    The examples of basic types:
 
     >>> print dumps(None)
     null
@@ -42,7 +71,7 @@ def dumps(x, **format):
     >>> print dumps(True, boolstyle='bit'), dumps(False, boolstyle='bit')
     1 0
 
-    The ``boolstyle`` can be `uppercase` or `bit`.
+    The `boolstyle` can be `uppercase` or `bit`.
 
     >>> print dumps(123)
     123
@@ -56,12 +85,7 @@ def dumps(x, **format):
     >>> print dumps('val', val=True)
     'val'
 
-    In MySQL, it only ensures the security in ANSI mode.
-
-    >>> print dumps("'DROP TABLE users; --", val=True)
-    '\''DROP TABLE users; --'
-
-    The sequences:
+    The examples of `sequences`:
 
     >>> print dumps(('a', 'b', 'c'))
     a, b, c
@@ -75,9 +99,9 @@ def dumps(x, **format):
     >>> print dumps(('a', 'b', 'c'), val=True, parens=True)
     ('a', 'b', 'c')
 
-    Actually, you can use any non-mapping iterable to build the above strings.
+    Actually, you can use any `iterable` to build the above strings, except `mapping`.
 
-    The mappings:
+    The examples of `mapping`:
 
     >>> print dumps({'a': 1, 'b': 'str'}, val=True)
     a = 1, b = 'str'
@@ -85,7 +109,7 @@ def dumps(x, **format):
     >>> print dumps({'a >=': 1, 'b': ('x', 'y')}, val=True, parens=True, condition=True)
     b IN ('x', 'y') AND a >= 1
 
-    The prepared statements with formating parameter, ``param``:
+    The prepared statements made with formating parameter, ``param``:
 
     >>> print dumps(('a', 'b', 'c'), val=True, parens=True, param=True)
     (%(a)s, %(b)s, %(c)s)
@@ -93,12 +117,12 @@ def dumps(x, **format):
     >>> print dumps(('a', 'b', 'c'), val=True, parens=True, param=True, paramstyle='qmark')
     (?, ?, ?)
 
-    The ``paramstyle`` can be `pyformat`, `qmark`, `named` or `format`. The `numberic` isn't supported yet.
+    The `paramstyle` can be `pyformat`, `qmark`, `named` or `format`. The `numberic` isn't supported yet.
 
     >>> print dumps({'a >=': 'a', 'b': 'b'}, val=True, param=True, condition=True)
     b = %(b)s AND a >= %(a)s
 
-    The prepared statement with Empty object, ``___`` (triple-underscore).
+    The prepared statement made with :py:class:`Empty` object, ``___`` (triple-underscore).
 
     >>> print dumps({'a >=': 1, 'b': ___ }, val=True, condition=True)
     b = %(b)s AND a >= 1
@@ -200,9 +224,12 @@ def dumps(x, **format):
 class SQL(object):
     '''It builds a SQL statement by given template.
 
+    :param template_groups: the template groups.
+    :type template_groups: two-level nest tuple
+
     Here is an example of SQL's `select ...` statement:
 
-    >>> sql = SQL(
+    >>> sql_select = SQL(
     ...     # It is a template group, and
     ...     # it only be rendered if every <field> is be filled.
     ...     ('select', '<select>'),
@@ -216,9 +243,22 @@ class SQL(object):
     ...     ('offset', '<offset>'),
     ... )
 
-    If you want to know what fields it have, the attribute, ``field_names``, could help you.
+    It supports using attributes to access fields.
 
-    >>> sql.field_names == set(
+    >>> sql = SQL(('key', '<value>'))
+    >>> sql.value = 'data'
+    >>> print sql
+    KEY data;
+    >>> print sql.value
+    data
+    >>> print sql.x
+    Traceback (most recent call last):
+        ...
+    KeyError: 'x'
+
+    If you want to know what fields it has, the attribute, ``field_names``, could help you.
+
+    >>> sql_select.field_names == set(
     ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'limit', 'offset']
     ... )
     True
@@ -242,14 +282,6 @@ class SQL(object):
         self.filled.update(dict)
 
     def __setattr__(self, key, value):
-        '''It supports using attribute to update field.
-
-        >>> sql = SQL(('key', '<value>'))
-        >>> sql.value = 'data'
-        >>> print sql
-        KEY data;
-        '''
-
         field_names = getattr(self, 'field_names', None)
         if field_names and key in field_names:
             self.filled[key] = value
@@ -258,25 +290,10 @@ class SQL(object):
             object.__setattr__(self, key, value)
 
     def __getattr__(self, key):
-        '''It supports using attribute to get value of field.
-
-        >>> sql = SQL(('key', '<value>'))
-        >>> sql.value = 'data'
-
-        >>> print sql.value
-        data
-
-        >>> print sql.x
-        Traceback (most recent call last):
-            ...
-        KeyError: 'x'
-        '''
-
         field_names = object.__getattribute__(self, 'field_names')
         return self.filled[key]
 
     def __str__(self):
-        '''Render given SQL template by filled field.'''
 
         if self.cached: return self.cached
 
@@ -336,11 +353,17 @@ class SQL(object):
         )
 
 def insert(table, mapping=None, **fields):
-    '''It is a shortcut for the SQL statement, ``insert into ...``.
+    '''It is a shortcut for the SQL statement, ``insert into ...`` .
 
-    Return: a ``SQL`` instance
+    :param table: the name of database's table
+    :type table: str
+    :param mapping: the data prepared to insert into database
+    :type mapping: mapping
+    :param fields: the other fileds
+    :type fields: dict
+    :rtype: :py:class:`~sql.SQL`
 
-    Examples:
+    The examples:
 
     >>> print insert('users', {'id': 'mosky'})
     INSERT INTO users (id) VALUES ('mosky');
@@ -385,11 +408,17 @@ def insert(table, mapping=None, **fields):
     return sql
 
 def select(table, where=None, **fields):
-    '''It is a shortcut for the SQL statement, ``select ...``.
+    '''It is a shortcut for the SQL statement, ``select ...`` .
 
-    Return: a ``SQL`` instance
+    :param table: the name of database's table
+    :type table: str
+    :param where: the conditions represented in a mapping
+    :type where: mapping
+    :param fields: the other fileds
+    :type fields: dict
+    :rtype: :py:class:`~sql.SQL`
 
-    Examples:
+    The examples:
 
     >>> print select('users', {'id': 'mosky'})
     SELECT * FROM users WHERE id = 'mosky';
@@ -449,11 +478,19 @@ def select(table, where=None, **fields):
     return sql
 
 def update(table, where=None, set=None, **fields):
-    '''It is a shortcut for the SQL statement, ``update ...``.
+    '''It is a shortcut for the SQL statement, ``update ...`` .
 
-    Return: a ``SQL`` instance
+    :param table: the name of database's table
+    :type table: str
+    :param where: the conditions represented in a mapping
+    :type where: mapping
+    :param set: the part you want to update
+    :type set: mapping
+    :param fields: the other fileds
+    :type fields: dict
+    :rtype: :py:class:`~sql.SQL`
 
-    Examples:
+    The examples:
 
     >>> print update('users', {'id': 'mosky'}, {'email': 'mosky.tw@gmail.com'})
     UPDATE users SET email = 'mosky.tw@gmail.com' WHERE id = 'mosky';
@@ -479,11 +516,17 @@ def update(table, where=None, set=None, **fields):
     return sql
 
 def delete(table, where=None, **fields):
-    '''It is a shortcut for the SQL statement, ``delete from ...``.
+    '''It is a shortcut for the SQL statement, ``delete from ...`` .
 
-    Return: a ``SQL`` instance
+    :param table: the name of database's table
+    :type table: str
+    :param where: the conditions represented in a mapping
+    :type where: mapping
+    :param fields: the other fileds
+    :type fields: dict
+    :rtype: :py:class:`~sql.SQL`
 
-    Examples:
+    The examples:
 
     >>> print delete('users', {'id': 'mosky'})
     DELETE FROM users WHERE id = 'mosky';
