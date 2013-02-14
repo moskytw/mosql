@@ -297,6 +297,8 @@ class SQL(object):
                                 self.filled['columns'], self.filled['values'] = zip(*value.items())
                         elif key == 'values':
                             rendered = dumps(value, val=True, parens=True, paramkeys=self.filled.get('columns'), **self.format)
+                        elif key == 'multi_values':
+                            rendered = dumps((dumps(i, val=True, parens=True, **self.format) for i in value))
                         elif key == 'columns':
                             rendered = dumps(value, parens=True, **self.format)
                         else:
@@ -338,8 +340,11 @@ def insert(table, **fields):
     >>> print insert('users', columns=('email', 'id', 'name'), values=('mosky.tw@gmail.com', 'mosky', 'Mosky Liu'))
     INSERT INTO users (email, id, name) VALUES ('mosky.tw@gmail.com', 'mosky', 'Mosky Liu');
 
+    >>> print insert('users', multi_values=(('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'), ('moskytw', 'Mosky Liu', 'mosky.liu@pinkoi.com')))
+    INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'), ('moskytw', 'Mosky Liu', 'mosky.liu@pinkoi.com');
+
     >>> insert('users').field_names == set(
-    ...     ['table', 'pairs', 'values', 'columns', 'returning']
+    ...     ['table', 'pairs', 'values', 'multi_values', 'columns', 'returning']
     ... )
     True
     '''
@@ -354,6 +359,7 @@ def insert(table, **fields):
         # It is another template group.
         ('<columns>', ),
         ('values', '<values>'),
+        ('values', '<multi_values>'),
         ('returning', '<returning>'),
     )
     fields['table'] = table
