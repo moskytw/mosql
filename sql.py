@@ -338,6 +338,8 @@ def insert(table, **fields):
     >>> print insert('users', pairs={'id': ___ })
     INSERT INTO users (id) VALUES (%(id)s);
 
+    The ``pair`` is added by this libaray. It is for convenience and not a part of SQL.
+
     >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'))
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky.tw@gmail.com');
 
@@ -383,8 +385,8 @@ def select(table, **fields):
     >>> print select('users', order_by='id')
     SELECT * FROM users ORDER BY id;
 
-    >>> print select('users', select='id', order_by=('id DESC', 'email'))
-    SELECT id FROM users ORDER BY id DESC, email;
+    >>> print select('users', select='email', order_by=('email DESC', 'id'))
+    SELECT email FROM users ORDER BY email DESC, id;
 
     >>> print select('users', limit=1, where={'id': 'mosky'})
     SELECT * FROM users WHERE id = 'mosky' LIMIT 1;
