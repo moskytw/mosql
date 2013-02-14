@@ -156,6 +156,7 @@ def dumps(x, **format):
                     op = 'in'
                 else:
                     op = '='
+
             # let value replace by the param if value is ``___``
             format['paramkey'] = k
 
