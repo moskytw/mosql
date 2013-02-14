@@ -3,6 +3,8 @@
 
 '''It contains some useful funtions to build SQL with common Python's data type.'''
 
+from datetime import date, time, datetime
+
 encoding = 'UTF-8'
 paramstyle = 'pyformat'
 
@@ -20,13 +22,26 @@ def param_marker(k, style=None):
     If ``style`` is not set, it will use the global ``paramstyle``.'''
     return param_markers.get(style or paramstyle)(k)
 
+boolstyle = 'uppercase'
+
+bool_formaters = {
+    'uppercase': lambda b: 'TRUE' if b else 'FALSE',
+    'bit'      : lambda b: 1 if b else 0,
+}
+
+def bool_formater(b, style=None):
+    '''Format bool ``b``.
+
+    If ``style`` is not set, it will use the global ``boolstyle``.'''
+    return bool_formaters.get(style or boolstyle)(b)
+
 # A hyper None, because None represents null in SQL.
 Empty = type('Empty', (object,), {
     '__nonzero__': lambda self: False,
     '__repr__'   : lambda self: 'Empty',
 })()
 
-def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=None):
+def dumps(x, param=False, value=False, tuple=False, operator=False, boolstyle=None, paramstyle=None):
     '''Dump any object ``x`` into SQL's representation.
 
     The basic types:
@@ -36,6 +51,12 @@ def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=N
 
     >>> print dumps(123)
     123
+
+    >>> print dumps(True), dumps(False)
+    TRUE FALSE
+
+    >>> print dumps(True, boolstyle='bit'), dumps(False, boolstyle='bit')
+    1 0
 
     >>> print dumps('It is a string.')
     It is a string.
@@ -60,6 +81,16 @@ def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=N
 
     >>> print dumps('key', param=True, paramstyle='qmark')
     ?
+
+    >>> d = datetime(2013, 2, 14, 11, 02, 57)
+    >>> print dumps(d)
+    '2013-02-14 11:02:57'
+
+    >>> print dumps(d.date())
+    '2013-02-14'
+
+    >>> print dumps(d.time())
+    '11:02:57'
 
     The tuple (represents iterable):
 
@@ -101,6 +132,11 @@ def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=N
     if x is None:
         return 'null'
 
+    # NOTE: the bool block should be placed before the number block,
+    #       because bool is a subtype of int
+    if isinstance(x, bool):
+        return bool_formater(x, boolstyle)
+
     if isinstance(x, (int, float, long)):
         return str(x)
 
@@ -115,6 +151,18 @@ def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=N
             # NOTE: In MySQL, it can't ensure the security if MySQL doesn't run in ANSI mode.
             s = "'%s'" % s.replace("'", "''")
         return s
+
+    # datetime
+
+    if isinstance(x, (datetime, date, time)):
+        return dumps(str(x),
+            param=False,
+            value=True,
+            tuple=False,
+            operator=False,
+            boolstyle=boolstyle,
+            paramstyle=paramstyle
+        )
 
     # dict-like
     if hasattr(x, 'items'):
@@ -145,6 +193,7 @@ def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=N
                     value=True,
                     tuple=True,
                     operator=False,
+                    boolstyle=boolstyle,
                     paramstyle=paramstyle
                 )))
 
@@ -155,6 +204,7 @@ def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=N
                 value=True,
                 tuple=tuple,
                 operator=False,
+                boolstyle=boolstyle,
                 paramstyle=paramstyle
             )) for k, v in x.items())
 
@@ -166,6 +216,7 @@ def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=N
                 value=value,
                 tuple=tuple,
                 operator=True,
+                boolstyle=boolstyle,
                 paramstyle=paramstyle
             )
         else:
@@ -174,6 +225,7 @@ def dumps(x, param=False, value=False, tuple=False, operator=False, paramstyle=N
                 value=value,
                 tuple=tuple,
                 operator=operator,
+                boolstyle=boolstyle,
                 paramstyle=paramstyle
             ) for i in x)
             if tuple:
