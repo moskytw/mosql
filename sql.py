@@ -4,6 +4,7 @@
 '''It contains some useful funtions to build SQL with common Python's data type.'''
 
 # The default styles of ``dumps``
+encoding   = 'UTF-8'
 paramstyle = 'pyformat'
 boolstyle  = 'uppercase'
 
@@ -104,7 +105,7 @@ def dumps(x, **format):
     global paramstyle, boolstyle
 
     if isinstance(x, unicode):
-        x = x.encode(format.get('encoding', 'UTF-8'))
+        x = x.encode(format.get('encoding', encoding))
 
     param = format.get('param')
     paramkey = format.get('paramkey')
