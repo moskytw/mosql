@@ -53,6 +53,11 @@ def dumps(x, **format):
     >>> print dumps('val', val=True)
     'val'
 
+    In MySQL, it only ensures the security in ANSI mode.
+
+    >>> print dumps("'DROP TABLE users; --", val=True)
+    '\''DROP TABLE users; --'
+
     The sequences:
 
     >>> print dumps(('a', 'b', 'c'))
