@@ -299,7 +299,7 @@ class SQL(object):
                             rendered = dumps(value, val=True, parens=True, condition=True, **format)
                         elif key == 'set':
                             rendered = dumps(value, val=True, parens=True, **format)
-                        elif key == 'pairs':
+                        elif key == 'mapping':
                                 self.filled['columns'], self.filled['values'] = zip(*value.items())
                         elif key == 'values':
                             rendered = dumps(value, val=True, parens=True, paramkeys=self.filled.get('columns'), **format)
@@ -327,20 +327,20 @@ class SQL(object):
             ', '.join(repr(t) for t in self.template_groups)
         )
 
-def insert(table, **fields):
+def insert(table, mapping=None, **fields):
     '''It is a shortcut for the SQL statement, ``insert into ...``.
 
     Return: a ``SQL`` instance
 
     Examples:
 
-    >>> print insert('users', pairs={'id': 'mosky'})
+    >>> print insert('users', {'id': 'mosky'})
     INSERT INTO users (id) VALUES ('mosky');
 
-    >>> print insert('users', pairs={'id': ___ })
+    >>> print insert('users', {'id': ___ })
     INSERT INTO users (id) VALUES (%(id)s);
 
-    The ``pair`` is added by this libaray. It is for convenience and not a part of SQL.
+    The ``mapping`` is added by this libaray. It is for convenience and not a part of SQL.
 
     >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'))
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky.tw@gmail.com');
@@ -352,15 +352,15 @@ def insert(table, **fields):
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'), ('moskytw', 'Mosky Liu', 'mosky.liu@pinkoi.com');
 
     >>> insert('users').field_names == set(
-    ...     ['table', 'pairs', 'values', 'multi_values', 'columns', 'returning']
+    ...     ['table', 'mapping', 'values', 'multi_values', 'columns', 'returning']
     ... )
     True
     '''
 
     sql = SQL(
-        # The <pairs> could be a dict or iterable (prepared statement),
+        # The <mapping> could be a dict or iterable (prepared statement),
         # It will be disassembled into <columns> and <values>.
-        ('<pairs>', ),
+        ('<mapping>', ),
         # It is a template group, and
         # it only be rendered if every <field> is be filled.
         ('insert into', '<table>'),
@@ -371,15 +371,20 @@ def insert(table, **fields):
         ('returning', '<returning>'),
     )
     fields['table'] = table
+    if mapping:
+        fields['mapping'] = mapping
     sql.update(fields)
     return sql
 
-def select(table, **fields):
+def select(table, where=None, **fields):
     '''It is a shortcut for the SQL statement, ``select ...``.
 
     Return: a ``SQL`` instance
 
     Examples:
+
+    >>> print select('users', {'id': 'mosky'})
+    SELECT * FROM users WHERE id = 'mosky';
 
     >>> print select('users')
     SELECT * FROM users;
@@ -389,9 +394,6 @@ def select(table, **fields):
 
     >>> print select('users', select='email', order_by=('email DESC', 'id'))
     SELECT email FROM users ORDER BY email DESC, id;
-
-    >>> print select('users', limit=1, where={'id': 'mosky'})
-    SELECT * FROM users WHERE id = 'mosky' LIMIT 1;
 
     >>> print select('users', where={'id': ('mosky', 'moskytw')})
     SELECT * FROM users WHERE id IN ('mosky', 'moskytw');
@@ -433,17 +435,19 @@ def select(table, **fields):
         ('offset', '<offset>'),
     )
     fields['table'] = table
+    if where:
+        fields['where'] = where
     sql.update(fields)
     return sql
 
-def update(table, **fields):
+def update(table, where=None, set=None, **fields):
     '''It is a shortcut for the SQL statement, ``update ...``.
 
     Return: a ``SQL`` instance
 
     Examples:
 
-    >>> print update('users', set={'email': 'mosky.tw@gmail.com'}, where={'id': 'mosky'})
+    >>> print update('users', {'id': 'mosky'}, {'email': 'mosky.tw@gmail.com'})
     UPDATE users SET email = 'mosky.tw@gmail.com' WHERE id = 'mosky';
 
     >>> update('users').field_names == set(
@@ -459,17 +463,21 @@ def update(table, **fields):
         ('returning', '<returning>'),
     )
     fields['table'] = table
+    if where:
+        fields['where'] = where
+    if set:
+        fields['set'] = set
     sql.update(fields)
     return sql
 
-def delete(table, **fields):
+def delete(table, where=None, **fields):
     '''It is a shortcut for the SQL statement, ``delete from ...``.
 
     Return: a ``SQL`` instance
 
     Examples:
 
-    >>> print delete('users', where={'id': 'mosky'})
+    >>> print delete('users', {'id': 'mosky'})
     DELETE FROM users WHERE id = 'mosky';
 
     >>> delete('users').field_names == set(
@@ -484,6 +492,8 @@ def delete(table, **fields):
         ('returning', '<returning>'),
     )
     fields['table'] = table
+    if where:
+        fields['where'] = where
     sql.update(fields)
     return sql
 
