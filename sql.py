@@ -214,6 +214,8 @@ class SQL(object):
     True
     '''
 
+    format = {}
+
     def __init__(self, *template_groups):
         self.template_groups = template_groups
         self.field_names = set()
@@ -268,6 +270,8 @@ class SQL(object):
 
         if self.cached: return self.cached
 
+        format = self.format.copy()
+        format.update(self.__class__.format)
         sql_components = []
 
         for template_group in self.template_groups:
@@ -290,19 +294,19 @@ class SQL(object):
                             rendered = '*'
                     else:
                         if key in ('where', 'having'):
-                            rendered = dumps(value, val=True, parens=True, condition=True, **self.format)
+                            rendered = dumps(value, val=True, parens=True, condition=True, **format)
                         elif key == 'set':
-                            rendered = dumps(value, val=True, parens=True, **self.format)
+                            rendered = dumps(value, val=True, parens=True, **format)
                         elif key == 'pairs':
                                 self.filled['columns'], self.filled['values'] = zip(*value.items())
                         elif key == 'values':
-                            rendered = dumps(value, val=True, parens=True, paramkeys=self.filled.get('columns'), **self.format)
+                            rendered = dumps(value, val=True, parens=True, paramkeys=self.filled.get('columns'), **format)
                         elif key == 'multi_values':
-                            rendered = dumps((dumps(i, val=True, parens=True, **self.format) for i in value))
+                            rendered = dumps((dumps(i, val=True, parens=True, **format) for i in value))
                         elif key == 'columns':
-                            rendered = dumps(value, parens=True, **self.format)
+                            rendered = dumps(value, parens=True, **format)
                         else:
-                            rendered = dumps(value, **self.format)
+                            rendered = dumps(value, **format)
 
                     rendered_templates.append(rendered)
                 else:
@@ -391,13 +395,22 @@ def select(table, **fields):
     >>> print select('users', where={'email like': '%@gmail.com'})
     SELECT * FROM users WHERE email LIKE '%@gmail.com';
 
-    >>> print select('users', where={'name': ___, 'email': ___ })
-    SELECT * FROM users WHERE name = %(name)s AND email = %(email)s;
+    >>> print select('users', where={'name': ___, 'email': 'mosky.tw@gmail.com' })
+    SELECT * FROM users WHERE name = %(name)s AND email = 'mosky.tw@gmail.com';
 
-    >>> sql = select('users', where={'name': ___, 'email': ___ })
+    The ``format`` parameter on class's level:
+
+    >>> SQL.format['paramstyle'] = 'qmark'
+    >>> print select('users', where={'name': ___, 'email': 'mosky.tw@gmail.com' })
+    SELECT * FROM users WHERE name = ? AND email = 'mosky.tw@gmail.com';
+    >>> SQL.format.clear()
+
+    The ``format`` parameter on instance's level:
+
+    >>> sql = select('users', where={'name': ___, 'email': 'mosky.tw@gmail.com' })
     >>> sql.format['paramstyle'] = 'qmark'
     >>> print sql
-    SELECT * FROM users WHERE name = ? AND email = ?;
+    SELECT * FROM users WHERE name = ? AND email = 'mosky.tw@gmail.com';
 
     >>> select('users').field_names == set(
     ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'limit', 'offset']
