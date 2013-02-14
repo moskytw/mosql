@@ -3,54 +3,34 @@
 
 '''It contains some useful funtions to build SQL with common Python's data type.'''
 
-from datetime import date, time, datetime
-
-encoding = 'UTF-8'
+# The default styles of ``dumps``
 paramstyle = 'pyformat'
-
-param_markers = {
-    'pyformat': lambda k: '%%(%s)s' % k,
-    'qmark'   : lambda k: '?',
-    'named'   : lambda k: ':%s' % k,
-    'format'  : lambda k: '%s',
-    # 'numberic': lambda k: ':%d' % d, # TODO
-}
-
-def param_marker(k, style=None):
-    '''Retrun a parameter marker.
-
-    If ``style`` is not set, it will use the global ``paramstyle``.'''
-    return param_markers.get(style or paramstyle)(k)
-
-boolstyle = 'uppercase'
-
-bool_formaters = {
-    'uppercase': lambda b: 'TRUE' if b else 'FALSE',
-    'bit'      : lambda b: 1 if b else 0,
-}
-
-def bool_formater(b, style=None):
-    '''Format bool ``b``.
-
-    If ``style`` is not set, it will use the global ``boolstyle``.'''
-    return bool_formaters.get(style or boolstyle)(b)
+boolstyle  = 'uppercase'
 
 # A hyper None, because None represents null in SQL.
-Empty = type('Empty', (object,), {
+Empty = ___ = type('Empty', (object,), {
     '__nonzero__': lambda self: False,
-    '__repr__'   : lambda self: 'Empty',
+    '__repr__'   : lambda self: '___',
 })()
 
-def dumps(x, param=False, value=False, tuple=False, operator=False, boolstyle=None, paramstyle=None):
+def splitop(s):
+    op = None
+    space_pos = s.rfind(' ')
+    if space_pos != -1:
+        s, op = s[:space_pos], s[space_pos+1:]
+    return s, op
+
+from datetime import date, time, datetime
+
+def dumps(x, **format):
     '''Dump any object ``x`` into SQL's representation.
+
+    Return a string.
 
     The basic types:
 
     >>> print dumps(None)
     null
-
-    >>> print dumps(123)
-    123
 
     >>> print dumps(True), dumps(False)
     TRUE FALSE
@@ -58,180 +38,154 @@ def dumps(x, param=False, value=False, tuple=False, operator=False, boolstyle=No
     >>> print dumps(True, boolstyle='bit'), dumps(False, boolstyle='bit')
     1 0
 
-    >>> print dumps('It is a string.')
-    It is a string.
+    The ``boolstyle`` can be `uppercase` or `bit`.
 
-    >>> print dumps('It is a string.', value=True)
-    'It is a string.'
+    >>> print dumps(123)
+    123
 
-    >>> print dumps("' or 1=1 --", value=True)
-    '\'' or 1=1 --'
+    >>> print dumps(123, val=True)
+    123
 
-    >>> print dumps("' DROP TABLE users; --", value=True)
-    '\'' DROP TABLE users; --'
+    >>> print dumps('var')
+    var
 
-    >>> print dumps('key', param=True)
-    %(key)s
+    >>> print dumps('val', val=True)
+    'val'
 
-    >>> dumps('key', param=True) == dumps('key', param=True, value=True)
-    True
+    The sequences:
 
-    >>> print dumps('key', param=True, paramstyle='named')
-    :key
+    >>> print dumps(('a', 'b', 'c'))
+    a, b, c
 
-    >>> print dumps('key', param=True, paramstyle='qmark')
-    ?
+    >>> print dumps(('a', 'b', 'c'), parens=True)
+    (a, b, c)
 
-    >>> d = datetime(2013, 2, 14, 11, 02, 57)
-    >>> print dumps(d)
-    '2013-02-14 11:02:57'
+    >>> print dumps(('a', 'b', 'c'), val=True)
+    'a', 'b', 'c'
 
-    >>> print dumps(d.date())
-    '2013-02-14'
+    >>> print dumps(('a', 'b', 'c'), val=True, parens=True)
+    ('a', 'b', 'c')
 
-    >>> print dumps(d.time())
-    '11:02:57'
+    Actually, you can use any non-mapping iterable to build the above strings.
 
-    The tuple (represents iterable):
+    The mappings:
 
-    >>> print dumps(('string', 123, 123.456))
-    string, 123, 123.456
+    >>> print dumps({'a': 1, 'b': 'str'}, val=True)
+    a = 1, b = 'str'
 
-    >>> print dumps(('string', 123, 123.456), tuple=True)
-    (string, 123, 123.456)
+    >>> print dumps({'a >=': 1, 'b': ('x', 'y')}, val=True, parens=True, condition=True)
+    b IN ('x', 'y') AND a >= 1
 
-    >>> print dumps(('string', 123, 123.456), value=True, tuple=True)
-    ('string', 123, 123.456)
+    The prepared statements with formating parameter, ``param``:
 
-    >>> print dumps(('key1', 'key2'), param=True, tuple=True)
-    (%(key1)s, %(key2)s)
+    >>> print dumps(('a', 'b', 'c'), val=True, parens=True, param=True)
+    (%(a)s, %(b)s, %(c)s)
 
-    >>> print dumps(('key1', 'key2'), param=True, tuple=True, operator=True)
-    key2 = %(key2)s AND key1 = %(key1)s
+    >>> print dumps(('a', 'b', 'c'), val=True, parens=True, param=True, paramstyle='qmark')
+    (?, ?, ?)
 
-    The dict-like (has `items` method):
+    The ``paramstyle`` can be `pyformat`, `qmark`, `named` or `format`. The `numberic` isn't supported yet.
 
-    >>> print dumps({'key': 'value'})
-    key='value'
+    >>> print dumps({'a >=': 'a', 'b': 'b'}, val=True, param=True, condition=True)
+    b = %(b)s AND a >= %(a)s
 
-    >>> print dumps({'key': 'value'}, operator=True)
-    key = 'value'
+    The prepared statement with Empty object, ``___`` (triple-underscore).
 
-    >>> print dumps({'key': ('value1', 'value2')}, operator=True)
-    key IN ('value1', 'value2')
+    >>> print dumps({'a >=': 1, 'b': ___ }, val=True, condition=True)
+    b = %(b)s AND a >= 1
 
-    >>> print dumps({'key like': '%alu%'}, operator=True)
-    key LIKE '%alu%'
+    >>> print dumps({'a >=': ___ , 'b': ___ }, val=True, condition=True)
+    b = %(b)s AND a >= %(a)s
 
-    >>> print dumps({'key': 'key'}, param=True, operator=True)
-    key = %(key)s
+    >>> print dumps((___, 'b', 'c'), val=True, parens=True, paramkeys=('x', 'y', 'z'))
+    (%(x)s, 'b', 'c')
     '''
 
-    # basic types
+    global paramstyle, boolstyle
+
+    if isinstance(x, unicode):
+        x = x.encode(format.get('encoding', 'UTF-8'))
+
+    param = format.get('param')
+    paramkey = format.get('paramkey')
+    if (
+        (param and isinstance(x, (str, int))) or
+        (x is Empty and paramkey)
+    ):
+        if x is Empty:
+            x = paramkey
+
+        _paramstyle = format.get('paramstyle', paramstyle)
+        if _paramstyle == 'pyformat':
+            return '%%(%s)s' % x
+        elif _paramstyle == 'qmark':
+            return '?'
+        elif _paramstyle == 'named':
+            return ':%s' % x
+        elif _paramstyle == 'format':
+            return '%s'
+        elif _paramstyle == 'numberic':
+            return ':%d' % x
+
+    if isinstance(x, str):
+        if format.get('val'):
+            return "'%s'" % x.replace("'", "''")
+        else:
+            return x
+
+    if isinstance(x, bool):
+        _boolstyle = format.get('boolstyle', boolstyle)
+        if _boolstyle == 'uppercase':
+            return 'TRUE' if x else 'FALSE'
+        elif _boolstyle == 'bit':
+            return 1 if x else 0
+
+    if isinstance(x, (int, float, long, datetime, date, time)):
+        return str(x)
+
+    if hasattr(x, 'items'):
+
+        operations = []
+        format = format.copy()
+        for k, v in x.items():
+
+            # find the operator in key
+            k, op = splitop(k)
+            if op is None:
+                if not isinstance(v, basestring) and hasattr(v, '__iter__'):
+                    op = 'in'
+                else:
+                    op = '='
+            # let value replace by the param if value is ``___``
+            format['paramkey'] = k
+
+            operations.append('%s %s %s' % (
+                dumps(k),
+                op.upper(),
+                dumps(v, **format),
+            ))
+
+        if format.get('condition'):
+            return ' AND '.join(operations)
+        else:
+            return ', '.join(operations)
+
+    if hasattr(x, '__iter__'):
+
+        paramkeys = format.get('paramkeys')
+        if paramkeys:
+            s = ', '.join(dumps(v, paramkey=k, **format) for v, k in zip(x, paramkeys))
+        else:
+            s = ', '.join(dumps(v, **format) for v in x)
+
+        if format.get('parens'):
+            s = '(%s)' % s
+        return s
 
     if x is None:
         return 'null'
 
-    # NOTE: the bool block should be placed before the number block,
-    #       because bool is a subtype of int
-    if isinstance(x, bool):
-        return bool_formater(x, boolstyle)
-
-    if isinstance(x, (int, float, long)):
-        return str(x)
-
-    if isinstance(x, unicode):
-        x = x.encode(encoding)
-
-    if isinstance(x, str):
-        s = x
-        if param:
-            s = param_marker(s, paramstyle)
-        elif value:
-            # NOTE: In MySQL, it can't ensure the security if MySQL doesn't run in ANSI mode.
-            s = "'%s'" % s.replace("'", "''")
-        return s
-
-    # datetime
-
-    if isinstance(x, (datetime, date, time)):
-        return dumps(str(x),
-            param=False,
-            value=True,
-            tuple=False,
-            operator=False,
-            boolstyle=boolstyle,
-            paramstyle=paramstyle
-        )
-
-    # dict-like
-    if hasattr(x, 'items'):
-        if operator:
-            expressions = []
-            for k, v in x.items():
-
-                # k must be a basestring
-                assert isinstance(k, basestring), 'left operand must be a string: %r' % k
-
-                # try to find operator out
-                op = None
-                str_k = dumps(k)
-                space_pos = str_k.rfind(' ')
-                if space_pos != -1:
-                    str_k, op = str_k[:space_pos], str_k[space_pos+1:]
-
-                # if user doesn't give operator, generate an operator automatically
-                if not op:
-                    if hasattr(v, '__iter__'):
-                        op = 'in'
-                    else:
-                        op = '='
-
-                # render expression
-                expressions.append('%s %s %s' % (str_k, op.upper(), dumps(v,
-                    param=param,
-                    value=True,
-                    tuple=True,
-                    operator=False,
-                    boolstyle=boolstyle,
-                    paramstyle=paramstyle
-                )))
-
-            return ' AND '.join(expressions)
-        else:
-            return  ', '.join('%s=%s' % (dumps(k), dumps(v,
-                param=param,
-                value=True,
-                tuple=tuple,
-                operator=False,
-                boolstyle=boolstyle,
-                paramstyle=paramstyle
-            )) for k, v in x.items())
-
-    # iterable
-    if hasattr(x, '__iter__'):
-        if operator:
-            return dumps(dict((k, k) for k in x),
-                param=param,
-                value=value,
-                tuple=tuple,
-                operator=True,
-                boolstyle=boolstyle,
-                paramstyle=paramstyle
-            )
-        else:
-            s = ', '.join(dumps(i,
-                param=param,
-                value=value,
-                tuple=tuple,
-                operator=operator,
-                boolstyle=boolstyle,
-                paramstyle=paramstyle
-            ) for i in x)
-            if tuple:
-                return '(%s)' % s
-            else:
-                return s
+    return str(x)
 
 class SQL(object):
     '''It builds a SQL statement by given template.
@@ -269,7 +223,7 @@ class SQL(object):
                     self.field_names.add(template[1:-1])
         self.filled = {}
         self.cached = None
-        self.paramstyle = None
+        self.format = {}
 
     def update(self, dict):
         '''Use a dict to update the fields' values.'''
@@ -314,7 +268,6 @@ class SQL(object):
 
         if self.cached: return self.cached
 
-        values_param = False
         sql_components = []
 
         for template_group in self.template_groups:
@@ -337,20 +290,17 @@ class SQL(object):
                             rendered = '*'
                     else:
                         if key in ('where', 'having'):
-                            rendered = dumps(value, param=(not hasattr(value, 'items')), operator=True, paramstyle=self.paramstyle)
+                            rendered = dumps(value, val=True, parens=True, condition=True, **self.format)
+                        elif key == 'set':
+                            rendered = dumps(value, val=True, parens=True, **self.format)
                         elif key == 'pairs':
-                            if hasattr(value, 'items'):
                                 self.filled['columns'], self.filled['values'] = zip(*value.items())
-                            elif hasattr(value, '__iter__'):
-                                self.filled['columns'] = value
-                                self.filled['values'] = value
-                                values_param = True
                         elif key == 'values':
-                            rendered = dumps(value, param=values_param, value=True, tuple=True)
+                            rendered = dumps(value, val=True, parens=True, paramkeys=self.filled.get('columns'), **self.format)
                         elif key == 'columns':
-                            rendered = dumps(value, tuple=True)
+                            rendered = dumps(value, parens=True, **self.format)
                         else:
-                            rendered = dumps(value)
+                            rendered = dumps(value, **self.format)
 
                     rendered_templates.append(rendered)
                 else:
@@ -379,7 +329,7 @@ def insert(table, **fields):
     >>> print insert('users', pairs={'id': 'mosky'})
     INSERT INTO users (id) VALUES ('mosky');
 
-    >>> print insert('users', pairs=('id', ))
+    >>> print insert('users', pairs={'id': ___ })
     INSERT INTO users (id) VALUES (%(id)s);
 
     >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'))
@@ -435,11 +385,11 @@ def select(table, **fields):
     >>> print select('users', where={'email like': '%@gmail.com'})
     SELECT * FROM users WHERE email LIKE '%@gmail.com';
 
-    >>> print select('users', where=('name', 'email'))
+    >>> print select('users', where={'name': ___, 'email': ___ })
     SELECT * FROM users WHERE name = %(name)s AND email = %(email)s;
 
-    >>> sql = select('users', where=('name', 'email'))
-    >>> sql.paramstyle = 'qmark'
+    >>> sql = select('users', where={'name': ___, 'email': ___ })
+    >>> sql.format['paramstyle'] = 'qmark'
     >>> print sql
     SELECT * FROM users WHERE name = ? AND email = ?;
 
@@ -471,7 +421,7 @@ def update(table, **fields):
     Examples:
 
     >>> print update('users', set={'email': 'mosky.tw@gmail.com'}, where={'id': 'mosky'})
-    UPDATE users SET email='mosky.tw@gmail.com' WHERE id = 'mosky';
+    UPDATE users SET email = 'mosky.tw@gmail.com' WHERE id = 'mosky';
 
     >>> update('users').field_names == set(
     ...     ['table', 'set', 'where', 'returning']
