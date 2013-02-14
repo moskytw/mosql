@@ -14,6 +14,9 @@ Empty = ___ = type('Empty', (object,), {
     '__repr__'   : lambda self: '___',
 })()
 
+def escape(s):
+    return s.replace("'", "''")
+
 def splitop(s):
     op = None
     space_pos = s.rfind(' ')
@@ -135,7 +138,7 @@ def dumps(x, **format):
 
     if isinstance(x, str):
         if format.get('val'):
-            return "'%s'" % x.replace("'", "''")
+            return "'%s'" % format.get('escape', escape)(x)
         else:
             return x
 
