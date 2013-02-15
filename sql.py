@@ -373,14 +373,14 @@ def insert(table, mapping=None, **fields):
 
     The ``mapping`` is added by this libaray. It is for convenience and not a part of SQL.
 
-    >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'))
-    INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky.tw@gmail.com');
+    >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'))
+    INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com');
 
-    >>> print insert('users', columns=('email', 'id', 'name'), values=('mosky.tw@gmail.com', 'mosky', 'Mosky Liu'))
-    INSERT INTO users (email, id, name) VALUES ('mosky.tw@gmail.com', 'mosky', 'Mosky Liu');
+    >>> print insert('users', columns=('email', 'id', 'name'), values=('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu'))
+    INSERT INTO users (email, id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu');
 
-    >>> print insert('users', multi_values=(('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'), ('moskytw', 'Mosky Liu', 'mosky.liu@pinkoi.com')))
-    INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky.tw@gmail.com'), ('moskytw', 'Mosky Liu', 'mosky.liu@pinkoi.com');
+    >>> print insert('users', multi_values=(('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')))
+    INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com');
 
     >>> insert('users').field_names == set(
     ...     ['table', 'mapping', 'values', 'multi_values', 'columns', 'returning']
@@ -438,22 +438,22 @@ def select(table, where=None, **fields):
     >>> print select('users', where={'email like': '%@gmail.com'})
     SELECT * FROM users WHERE email LIKE '%@gmail.com';
 
-    >>> print select('users', where={'name': ___, 'email': 'mosky.tw@gmail.com' })
-    SELECT * FROM users WHERE name = %(name)s AND email = 'mosky.tw@gmail.com';
+    >>> print select('users', where={'name': ___, 'email': 'mosky DOT tw AT gmail.com' })
+    SELECT * FROM users WHERE name = %(name)s AND email = 'mosky DOT tw AT gmail.com';
 
     The ``format`` parameter on class's level:
 
     >>> SQL.format['paramstyle'] = 'qmark'
-    >>> print select('users', where={'name': ___, 'email': 'mosky.tw@gmail.com' })
-    SELECT * FROM users WHERE name = ? AND email = 'mosky.tw@gmail.com';
+    >>> print select('users', where={'name': ___, 'email': 'mosky DOT tw AT gmail.com' })
+    SELECT * FROM users WHERE name = ? AND email = 'mosky DOT tw AT gmail.com';
     >>> SQL.format.clear()
 
     The ``format`` parameter on instance's level:
 
-    >>> sql = select('users', where={'name': ___, 'email': 'mosky.tw@gmail.com' })
+    >>> sql = select('users', where={'name': ___, 'email': 'mosky DOT tw AT gmail.com' })
     >>> sql.format['paramstyle'] = 'qmark'
     >>> print sql
-    SELECT * FROM users WHERE name = ? AND email = 'mosky.tw@gmail.com';
+    SELECT * FROM users WHERE name = ? AND email = 'mosky DOT tw AT gmail.com';
 
     >>> select('users').field_names == set(
     ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'limit', 'offset']
@@ -492,8 +492,8 @@ def update(table, where=None, set=None, **fields):
 
     The examples:
 
-    >>> print update('users', {'id': 'mosky'}, {'email': 'mosky.tw@gmail.com'})
-    UPDATE users SET email = 'mosky.tw@gmail.com' WHERE id = 'mosky';
+    >>> print update('users', {'id': 'mosky'}, {'email': 'mosky DOT tw AT gmail.com'})
+    UPDATE users SET email = 'mosky DOT tw AT gmail.com' WHERE id = 'mosky';
 
     >>> update('users').field_names == set(
     ...     ['table', 'set', 'where', 'returning']
