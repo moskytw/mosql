@@ -424,8 +424,6 @@ def insert(table, columns=None, values=None, **fields):
 
     >>> print insert_tmpl
     SQLTemplate(('insert into', '<table>'), ('<columns>',), ('values', '<values>'), ('returning', '<returning>'))
-
-    The ``mapping`` is added by this libaray. It is for convenience and not a part of SQL.
     '''
 
     fields['table'] = table
