@@ -6,7 +6,11 @@
 MoSQL - More than SQL
 =====================
 
-Here is the basic four functions for 'create', 'read', 'update' and 'delete':
+(still under development)
+
+MoSQL is a lightweight Python library helps you to build SQL with common Python's data types.
+
+Here are functions for basically create, read, update and delete. It still has hyper interface to access database, but it is still under early development.
 
 `INSERT INTO ...`
 -----------------
