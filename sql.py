@@ -222,9 +222,9 @@ def dumps(x, **format_spec):
     return str(x)
 
 class SQLTemplate(object):
-    '''It is convenient to build SQL with this class
+    '''A SQL template.
 
-    :param template_groups: the template groups.
+    :param template_groups: the template groups
     :type template_groups: two-level nest iterable
 
     Here is an example of SQL's `select ...` statement:
@@ -286,9 +286,19 @@ class SQLTemplate(object):
         return object.__getattribute__(self, 'format_spec')[key]
 
     def format(self, **fields):
+        '''Use keyword-arguments to format this template.
+
+        :param fields: the fields you want to fill
+        :type fields: dict
+        '''
         return self.format_from_dict(fields)
 
     def format_from_dict(self, fields):
+        '''Use dict to format this template.
+
+        :param fields: the fields you want to fill
+        :type fields: dict
+        '''
 
         sql_components = []
 
