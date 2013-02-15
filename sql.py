@@ -450,13 +450,15 @@ select_tmpl = SQLTemplate(
     ('offset', '<offset>'),
 )
 
-def select(table, where=None, **fields):
+def select(table, where=None, select=None, **fields):
     '''It is a shortcut for the SQL statement, ``select ...`` .
 
     :param table: the name of database's table
     :type table: str
     :param where: the conditions represented in a mapping
     :type where: mapping
+    :param select: the columns represented in a iterable
+    :type select: iterable
     :param fields: the other fileds
     :type fields: mapping
     :rtype: :py:class:`str`
@@ -493,6 +495,8 @@ def select(table, where=None, **fields):
     fields['table'] = table
     if where:
         fields['where'] = where
+    if select:
+        fields['select'] = select
     return select_tmpl.format_from_dict(fields)
 
 update_tmpl = SQLTemplate(
