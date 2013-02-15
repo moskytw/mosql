@@ -27,8 +27,8 @@ def escape(s):
     .. warning::
         In MySQL, it only ensures the security in ANSI mode by default.
 
-    .. seealso::
-        How :py:mod:`~sql` dumps the Python's object to SQL -- :py:func:`~sql.dumps`.
+    .. note::
+        When using :py:class:`~sql.SQLTemplate`, you can replace this function by assigning a function to the formating specification, ``escape``.
     '''
     return s.replace("'", "''")
 
@@ -99,7 +99,7 @@ def dumps(x, **format_spec):
     >>> print dumps(('a', 'b', 'c'), val=True, parens=True)
     ('a', 'b', 'c')
 
-    Actually, you can use any `iterable` to build the above strings, except `mapping`.
+    Actually, you can use any `iterable` to build the above strings, except mapping.
 
     The examples of `mapping`:
 
@@ -109,7 +109,7 @@ def dumps(x, **format_spec):
     >>> print dumps({'a >=': 1, 'b': ('x', 'y')}, val=True, parens=True, condition=True)
     b IN ('x', 'y') AND a >= 1
 
-    The prepared statements made with format_specing parameter, ``param``:
+    The example of using ``param`` to build `prepared statement`:
 
     >>> print dumps(('a', 'b', 'c'), val=True, parens=True, param=True)
     (%(a)s, %(b)s, %(c)s)
@@ -117,12 +117,12 @@ def dumps(x, **format_spec):
     >>> print dumps(('a', 'b', 'c'), val=True, parens=True, param=True, paramstyle='qmark')
     (?, ?, ?)
 
-    The `paramstyle` can be `pyformat_spec`, `qmark`, `named` or `format_spec`. The `numberic` isn't supported yet.
+    The `paramstyle` can be `pyformat`, `qmark`, `named` or `format_spec`. The `numberic` isn't supported yet.
 
     >>> print dumps({'a >=': 'a', 'b': 'b'}, val=True, param=True, condition=True)
     b = %(b)s AND a >= %(a)s
 
-    The prepared statement made with :py:class:`Empty` object, ``___`` (triple-underscore).
+    The example of using :py:class:`Empty` object, ``___`` (triple-underscore) to build `prepared statement`.
 
     >>> print dumps({'a >=': 1, 'b': ___ }, val=True, condition=True)
     b = %(b)s AND a >= 1
@@ -254,6 +254,9 @@ class SQLTemplate(object):
     >>> print tmpl.format(value='data')
     KEY %(data)s;
 
+    .. seealso::
+        The all of the formating specification: :py:func:`~sql.dumps`.
+
     If the formating specification isn't set, it raise a KeyError exception rather than an AttributeError:
 
     >>> print tmpl.x
@@ -266,7 +269,7 @@ class SQLTemplate(object):
     >>> print tmpl.format_spec
     {'param': True}
 
-    If you want to know what fields it has, the attribute, just print it.
+    If you want to know what fields it has, just print it.
 
     >>> print select_tmpl
     SQLTemplate(('select', '<select>'), ('from', '<table>'), ('where', '<where>'), ('group by', '<group_by>'), ('having', '<having>'), ('order by', '<order_by>'), ('limit', '<limit>'), ('offset', '<offset>'))
