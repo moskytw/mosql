@@ -335,6 +335,8 @@ class SQLTemplate(object):
                             rendered = dumps(field_value, condition=True, **self.format_spec)
                         elif field_name == 'set':
                             rendered = dumps(field_value, val=True, parens=True, **self.format_spec)
+                        elif field_name == 'value_params':
+                            rendered = dumps(field_value, val=True, parens=True, param=True, **self.format_spec)
                         elif field_name == 'multi_values':
                             rendered = dumps((dumps(i, val=True, parens=True, **self.format_spec) for i in field_value))
                         elif field_name == 'mapping':
@@ -372,6 +374,7 @@ insert_tmpl = SQLTemplate(
     # It is another template group.
     ('<columns>', ),
     ('values', '<values>'),
+    ('values', '<value_params>'),
     ('values', '<multi_values>'),
     ('returning', '<returning>'),
 )
@@ -395,6 +398,9 @@ def insert(table, mapping=None, **fields):
     >>> print insert('users', {'id': ___ })
     INSERT INTO users (id) VALUES (%(id)s);
 
+    >>> print insert('users', value_params=('id', 'name', 'email'))
+    INSERT INTO users VALUES (%(id)s, %(name)s, %(email)s);
+
     >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'))
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com');
 
@@ -407,7 +413,7 @@ def insert(table, mapping=None, **fields):
     The fields it has:
 
     >>> print insert_tmpl
-    SQLTemplate(('<mapping>',), ('insert into', '<table>'), ('<columns>',), ('values', '<values>'), ('values', '<multi_values>'), ('returning', '<returning>'))
+    SQLTemplate(('<mapping>',), ('insert into', '<table>'), ('<columns>',), ('values', '<values>'), ('values', '<value_params>'), ('values', '<multi_values>'), ('returning', '<returning>'))
 
     The ``mapping`` is added by this libaray. It is for convenience and not a part of SQL.
     '''
