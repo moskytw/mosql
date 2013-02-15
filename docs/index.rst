@@ -34,7 +34,7 @@ The documentions
 .. toctree::
    :maxdepth: 2
 
-   mosql.rst
+   api.rst
 
 Indices and tables
 ==================
