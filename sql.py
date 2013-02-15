@@ -76,9 +76,6 @@ def dumps(x, **format_spec):
     >>> print dumps(123)
     123
 
-    >>> print dumps(123, val=True)
-    123
-
     >>> print dumps('var')
     var
 
@@ -94,9 +91,6 @@ def dumps(x, **format_spec):
     (a, b, c)
 
     >>> print dumps(('a', 'b', 'c'), val=True)
-    'a', 'b', 'c'
-
-    >>> print dumps(('a', 'b', 'c'), val=True, parens=True)
     ('a', 'b', 'c')
 
     Actually, you can use any `iterable` to build the above strings, except mapping.
@@ -111,10 +105,10 @@ def dumps(x, **format_spec):
 
     The example of using ``param`` to build `prepared statement`:
 
-    >>> print dumps(('a', 'b', 'c'), val=True, parens=True, param=True)
+    >>> print dumps(('a', 'b', 'c'), val=True, param=True)
     (%(a)s, %(b)s, %(c)s)
 
-    >>> print dumps(('a', 'b', 'c'), val=True, parens=True, param=True, paramstyle='qmark')
+    >>> print dumps(('a', 'b', 'c'), val=True, param=True, paramstyle='qmark')
     (?, ?, ?)
 
     The `paramstyle` can be `pyformat`, `qmark`, `named` or `format_spec`. The `numberic` isn't supported yet.
@@ -130,7 +124,7 @@ def dumps(x, **format_spec):
     >>> print dumps({'a >=': ___ , 'b': ___ }, condition=True)
     b = %(b)s AND a >= %(a)s
 
-    >>> print dumps((___, 'b', 'c'), val=True, parens=True, paramkeys=('x', 'y', 'z'))
+    >>> print dumps((___, 'b', 'c'), val=True, paramkeys=('x', 'y', 'z'))
     (%(x)s, 'b', 'c')
     '''
 
@@ -217,7 +211,7 @@ def dumps(x, **format_spec):
         else:
             s = ', '.join(dumps(v, **format_spec) for v in x)
 
-        if format_spec.get('parens'):
+        if format_spec.get('val') or format_spec.get('parens'):
             s = '(%s)' % s
         return s
 
@@ -334,15 +328,15 @@ class SQLTemplate(object):
                         if field_name in ('where', 'having'):
                             rendered = dumps(field_value, condition=True, **self.format_spec)
                         elif field_name == 'set':
-                            rendered = dumps(field_value, val=True, parens=True, **self.format_spec)
+                            rendered = dumps(field_value, val=True, **self.format_spec)
                         elif field_name == 'value_params':
-                            rendered = dumps(field_value, val=True, parens=True, param=True, **self.format_spec)
+                            rendered = dumps(field_value, val=True, param=True, **self.format_spec)
                         elif field_name == 'multi_values':
-                            rendered = dumps((dumps(i, val=True, parens=True, **self.format_spec) for i in field_value))
+                            rendered = dumps((dumps(i, val=True, **self.format_spec) for i in field_value))
                         elif field_name == 'mapping':
                             fields['columns'], fields['values'] = zip(*field_value.items())
                         elif field_name == 'values':
-                            rendered = dumps(field_value, val=True, parens=True, paramkeys=fields.get('columns'), **self.format_spec)
+                            rendered = dumps(field_value, val=True, paramkeys=fields.get('columns'), **self.format_spec)
                         elif field_name == 'columns':
                             rendered = dumps(field_value, parens=True, **self.format_spec)
                         else:
