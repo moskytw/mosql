@@ -103,7 +103,7 @@ def dumps(x, **format_spec):
     >>> print dumps({'a >=': 1, 'b': ('x', 'y')}, condition=True)
     b IN ('x', 'y') AND a >= 1
 
-    The example of using ``param`` to build `prepared statement`:
+    The examples of using ``param`` to build `prepared statement`:
 
     >>> print dumps(('a', 'b', 'c'), val=True, param=True)
     (%(a)s, %(b)s, %(c)s)
@@ -116,7 +116,12 @@ def dumps(x, **format_spec):
     >>> print dumps({'a >=': 'a', 'b': 'b'}, param=True, condition=True)
     b = %(b)s AND a >= %(a)s
 
-    The example of using :py:class:`Empty` object, ``___`` (triple-underscore) to build `prepared statement`.
+    The exmaples of using ``condition`` and iterable (not mapping) to build `prepared statement`:
+
+    >>> print dumps(('x', 'y >', 'z <'), condition=True)
+    x = %(x)s AND y > %(y)s AND z < %(z)s
+
+    The examples of using :py:class:`Empty` object, ``___`` (triple-underscore) to build `prepared statement`:
 
     >>> print dumps({'a >=': 1, 'b': ___ }, condition=True)
     b = %(b)s AND a >= 1
@@ -170,11 +175,17 @@ def dumps(x, **format_spec):
     if isinstance(x, (int, float, long, datetime, date, time)):
         return str(x)
 
+    items = None
     if hasattr(x, 'items'):
+        items = x.items()
+    elif hasattr(x, '__iter__') and format_spec.get('condition'):
+        format_spec['param'] = True
+        items = ((v, splitop(v)[0]) for v in x)
 
+    if items:
         operations = []
         format_spec = format_spec.copy()
-        for k, v in x.items():
+        for k, v in items:
 
             # find the operator in key
             k, op = splitop(k)
@@ -187,10 +198,11 @@ def dumps(x, **format_spec):
             # let value replace by the param if value is ``___``
             format_spec['paramkey'] = k
 
-            # set val and parens for value
+            # update the format_spec for value
             value_format_spec = format_spec.copy()
             value_format_spec['val'] = True
             value_format_spec['parens'] = True
+            value_format_spec['condition'] = False
 
             operations.append('%s %s %s' % (
                 dumps(k),
@@ -329,16 +341,29 @@ class SQLTemplate(object):
                             rendered = dumps(field_value, condition=True, **self.format_spec)
                         elif field_name == 'set':
                             rendered = dumps(field_value, val=True, **self.format_spec)
-                        elif field_name == 'value_params':
-                            rendered = dumps(field_value, val=True, param=True, **self.format_spec)
-                        elif field_name == 'multi_values':
-                            rendered = dumps((dumps(i, val=True, **self.format_spec) for i in field_value))
-                        elif field_name == 'mapping':
-                            fields['columns'], fields['values'] = zip(*field_value.items())
-                        elif field_name == 'values':
-                            rendered = dumps(field_value, val=True, paramkeys=fields.get('columns'), **self.format_spec)
                         elif field_name == 'columns':
-                            rendered = dumps(field_value, parens=True, **self.format_spec)
+
+                            if isinstance(field_value, basestring):
+                                field_value = (field_value, )
+
+                            if hasattr(field_value, 'items'):
+                                fields['columns'], fields['values'] = zip(*field_value.items())
+                                rendered = dumps(fields['columns'], parens=True, **self.format_spec)
+
+                            elif hasattr(field_value, '__iter__'):
+                                if fields.get('values'):
+                                    rendered = dumps(field_value, parens=True, **self.format_spec)
+                                else:
+                                    rendered = '%s VALUES %s' % (
+                                        dumps(field_value, parens=True, **self.format_spec),
+                                        dumps(field_value, val=True, param=True, **self.format_spec)
+                                    )
+
+                        elif field_name == 'values':
+                            if all(hasattr(i, '__iter__') and not isinstance(i, basestring) for i in field_value):
+                                rendered = dumps((dumps(i, val=True, **self.format_spec) for i in field_value))
+                            else:
+                                rendered = dumps(field_value, val=True, paramkeys=fields.get('columns'), **self.format_spec)
                         else:
                             rendered = dumps(field_value, **self.format_spec)
 
@@ -359,27 +384,22 @@ class SQLTemplate(object):
         )
 
 insert_tmpl = SQLTemplate(
-    # The <mapping> could be a dict or iterable (prepared statement),
-    # It will be disassembled into <columns> and <values>.
-    ('<mapping>', ),
     # It is a template group, and
     # it only be rendered if every <field> is be filled.
     ('insert into', '<table>'),
     # It is another template group.
     ('<columns>', ),
     ('values', '<values>'),
-    ('values', '<value_params>'),
-    ('values', '<multi_values>'),
     ('returning', '<returning>'),
 )
 
-def insert(table, mapping=None, **fields):
+def insert(table, columns=None, values=None, **fields):
     '''It is a shortcut for the SQL statement, ``insert into ...`` .
 
     :param table: the name of database's table
     :type table: str
-    :param mapping: the data represented in a mapping
-    :type mapping: mapping
+    :param columns: (see the exmaples below)
+    :param values: (see the exmaples below)
     :param fields: the other fileds
     :type fields: mapping
     :rtype: :py:class:`str`
@@ -389,32 +409,34 @@ def insert(table, mapping=None, **fields):
     >>> print insert('users', {'id': 'mosky'})
     INSERT INTO users (id) VALUES ('mosky');
 
-    >>> print insert('users', {'id': ___ })
-    INSERT INTO users (id) VALUES (%(id)s);
+    >>> print insert('users', {'id': 'mosky', 'name': ___})
+    INSERT INTO users (id, name) VALUES ('mosky', %(name)s);
 
-    >>> print insert('users', value_params=('id', 'name', 'email'))
-    INSERT INTO users VALUES (%(id)s, %(name)s, %(email)s);
+    >>> print insert('users', ('id', 'name', 'email'))
+    INSERT INTO users (id, name, email) VALUES (%(id)s, %(name)s, %(email)s);
+
+    >>> print insert('users', ('email', 'id', 'name'), ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu'))
+    INSERT INTO users (email, id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu');
 
     >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'))
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com');
 
-    >>> print insert('users', columns=('email', 'id', 'name'), values=('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu'))
-    INSERT INTO users (email, id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu');
-
-    >>> print insert('users', multi_values=(('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')))
+    >>> print insert('users', values=(('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')))
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com');
 
     The fields it has:
 
     >>> print insert_tmpl
-    SQLTemplate(('<mapping>',), ('insert into', '<table>'), ('<columns>',), ('values', '<values>'), ('values', '<value_params>'), ('values', '<multi_values>'), ('returning', '<returning>'))
+    SQLTemplate(('insert into', '<table>'), ('<columns>',), ('values', '<values>'), ('returning', '<returning>'))
 
     The ``mapping`` is added by this libaray. It is for convenience and not a part of SQL.
     '''
 
     fields['table'] = table
-    if mapping:
-        fields['mapping'] = mapping
+    if columns:
+        fields['columns'] = columns
+    if values:
+        fields['values'] = values
     return insert_tmpl.format_from_dict(fields)
 
 select_tmpl = SQLTemplate(
