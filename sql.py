@@ -394,24 +394,12 @@ insert_tmpl = SQLTemplate(
 def insert(table, columns=None, values=None, **fields):
     '''It is a shortcut for the SQL statement, ``insert into ...`` .
 
-    :param table: the name of database's table
-    :type table: str
-    :param columns: (see the exmaples below)
-    :param values: (see the exmaples below)
-    :param fields: the other fileds
-    :type fields: mapping
     :rtype: :py:class:`str`
 
-    The examples:
+    The simple examples:
 
     >>> print insert('users', {'id': 'mosky'})
     INSERT INTO users (id) VALUES ('mosky');
-
-    >>> print insert('users', {'id': 'mosky', 'name': ___})
-    INSERT INTO users (id, name) VALUES ('mosky', %(name)s);
-
-    >>> print insert('users', ('id', 'name', 'email'))
-    INSERT INTO users (id, name, email) VALUES (%(id)s, %(name)s, %(email)s);
 
     >>> print insert('users', ('email', 'id', 'name'), ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu'))
     INSERT INTO users (email, id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu');
@@ -419,10 +407,20 @@ def insert(table, columns=None, values=None, **fields):
     >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'))
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com');
 
+    The exmaples of building `prepared statement`:
+
+    >>> print insert('users', ('id', 'name', 'email'))
+    INSERT INTO users (id, name, email) VALUES (%(id)s, %(name)s, %(email)s);
+
+    >>> print insert('users', {'id': 'mosky', 'name': ___})
+    INSERT INTO users (id, name) VALUES ('mosky', %(name)s);
+
+    An examples of multi-value:
+
     >>> print insert('users', values=(('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')))
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com');
 
-    The fields it has:
+    All of the fields:
 
     >>> print insert_tmpl
     SQLTemplate(('insert into', '<table>'), ('<columns>',), ('values', '<values>'), ('returning', '<returning>'))
@@ -451,29 +449,20 @@ select_tmpl = SQLTemplate(
 def select(table, where=None, select=None, **fields):
     '''It is a shortcut for the SQL statement, ``select ...`` .
 
-    :param table: the name of database's table
-    :type table: str
-    :param where: the conditions represented in a mapping
-    :type where: mapping
-    :param select: the columns represented in a iterable
-    :type select: iterable
-    :param fields: the other fileds
-    :type fields: mapping
     :rtype: :py:class:`str`
 
-    The examples:
-
-    >>> print select('users', {'id': 'mosky'})
-    SELECT * FROM users WHERE id = 'mosky';
+    The simple examples:
 
     >>> print select('users')
     SELECT * FROM users;
 
-    >>> print select('users', order_by='id')
-    SELECT * FROM users ORDER BY id;
+    >>> print select('users', {'name': 'Mosky Liu'}, ('id', 'name'), limit=10, order_by=('id', 'created DESC'))
+    SELECT id, name FROM users WHERE name = 'Mosky Liu' ORDER BY id, created DESC LIMIT 10;
 
-    >>> print select('users', select='email', order_by=('email DESC', 'id'))
-    SELECT email FROM users ORDER BY email DESC, id;
+    >>> print select('users', {'name': 'Mosky Liu'}, 'id, name', limit=10, order_by='id, created DESC')
+    SELECT id, name FROM users WHERE name = 'Mosky Liu' ORDER BY id, created DESC LIMIT 10;
+
+    The exmaples which use the condition(s):
 
     >>> print select('users', {'id': ('mosky', 'moskytw')})
     SELECT * FROM users WHERE id IN ('mosky', 'moskytw');
@@ -481,10 +470,15 @@ def select(table, where=None, select=None, **fields):
     >>> print select('users', {'email like': '%@gmail.com'})
     SELECT * FROM users WHERE email LIKE '%@gmail.com';
 
+    The examples of using `prepared statement`:
+
+    >>> print select('users', ('name', 'email'))
+    SELECT * FROM users WHERE name = %(name)s AND email = %(email)s;
+
     >>> print select('users', {'name': ___, 'email': 'mosky DOT tw AT gmail.com' })
     SELECT * FROM users WHERE name = %(name)s AND email = 'mosky DOT tw AT gmail.com';
 
-    The fields it has:
+    All of the fields:
 
     >>> print select_tmpl
     SQLTemplate(('select', '<select>'), ('from', '<table>'), ('where', '<where>'), ('group by', '<group_by>'), ('having', '<having>'), ('order by', '<order_by>'), ('limit', '<limit>'), ('offset', '<offset>'))
@@ -507,20 +501,12 @@ update_tmpl = SQLTemplate(
 def update(table, where=None, set=None, **fields):
     '''It is a shortcut for the SQL statement, ``update ...`` .
 
-    :param table: the name of database's table
-    :type table: str
-    :param where: the conditions represented in a mapping
-    :type where: mapping
-    :param set: the part you want to update
-    :type set: mapping
-    :param fields: the other fileds
-    :type fields: mapping
     :rtype: :py:class:`str`
-
-    The examples:
 
     >>> print update('users', {'id': 'mosky'}, {'email': 'mosky DOT tw AT gmail.com'})
     UPDATE users SET email = 'mosky DOT tw AT gmail.com' WHERE id = 'mosky';
+
+    All of the fields:
 
     >>> print update_tmpl
     SQLTemplate(('update', '<table>'), ('set', '<set>'), ('where', '<where>'), ('returning', '<returning>'))
@@ -542,20 +528,12 @@ delete_tmpl = SQLTemplate(
 def delete(table, where=None, **fields):
     '''It is a shortcut for the SQL statement, ``delete from ...`` .
 
-    :param table: the name of database's table
-    :type table: str
-    :param where: the conditions represented in a mapping
-    :type where: mapping
-    :param fields: the other fileds
-    :type fields: mapping
     :rtype: :py:class:`str`
-
-    The examples:
 
     >>> print delete('users', {'id': 'mosky'})
     DELETE FROM users WHERE id = 'mosky';
 
-    The fields it has:
+    All of the fields:
 
     >>> print delete_tmpl
     SQLTemplate(('delete from', '<table>'), ('where', '<where>'), ('returning', '<returning>'))
@@ -568,6 +546,8 @@ def delete(table, where=None, **fields):
 
 def or_(*x, **format_spec):
     '''Concat expressions by operator, `OR`.
+
+    :rtype: :py:class:`str`
 
     The exmaples:
 
