@@ -103,10 +103,10 @@ def dumps(x, **format_spec):
 
     The examples of `mapping`:
 
-    >>> print dumps({'a': 1, 'b': 'str'}, val=True)
+    >>> print dumps({'a': 1, 'b': 'str'})
     a = 1, b = 'str'
 
-    >>> print dumps({'a >=': 1, 'b': ('x', 'y')}, val=True, parens=True, condition=True)
+    >>> print dumps({'a >=': 1, 'b': ('x', 'y')}, condition=True)
     b IN ('x', 'y') AND a >= 1
 
     The example of using ``param`` to build `prepared statement`:
@@ -119,15 +119,15 @@ def dumps(x, **format_spec):
 
     The `paramstyle` can be `pyformat`, `qmark`, `named` or `format_spec`. The `numberic` isn't supported yet.
 
-    >>> print dumps({'a >=': 'a', 'b': 'b'}, val=True, param=True, condition=True)
+    >>> print dumps({'a >=': 'a', 'b': 'b'}, param=True, condition=True)
     b = %(b)s AND a >= %(a)s
 
     The example of using :py:class:`Empty` object, ``___`` (triple-underscore) to build `prepared statement`.
 
-    >>> print dumps({'a >=': 1, 'b': ___ }, val=True, condition=True)
+    >>> print dumps({'a >=': 1, 'b': ___ }, condition=True)
     b = %(b)s AND a >= 1
 
-    >>> print dumps({'a >=': ___ , 'b': ___ }, val=True, condition=True)
+    >>> print dumps({'a >=': ___ , 'b': ___ }, condition=True)
     b = %(b)s AND a >= %(a)s
 
     >>> print dumps((___, 'b', 'c'), val=True, parens=True, paramkeys=('x', 'y', 'z'))
@@ -193,10 +193,15 @@ def dumps(x, **format_spec):
             # let value replace by the param if value is ``___``
             format_spec['paramkey'] = k
 
+            # set val and parens for value
+            value_format_spec = format_spec.copy()
+            value_format_spec['val'] = True
+            value_format_spec['parens'] = True
+
             operations.append('%s %s %s' % (
                 dumps(k),
                 op.upper(),
-                dumps(v, **format_spec),
+                dumps(v, **value_format_spec),
             ))
 
         if format_spec.get('condition'):
@@ -327,7 +332,7 @@ class SQLTemplate(object):
                             rendered = '*'
                     else:
                         if field_name in ('where', 'having'):
-                            rendered = dumps(field_value, val=True, parens=True, condition=True, **self.format_spec)
+                            rendered = dumps(field_value, condition=True, **self.format_spec)
                         elif field_name == 'set':
                             rendered = dumps(field_value, val=True, parens=True, **self.format_spec)
                         elif field_name == 'multi_values':
