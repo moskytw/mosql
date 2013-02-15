@@ -542,6 +542,24 @@ def delete(table, where=None, **fields):
         fields['where'] = where
     return delete_tmpl.format_from_dict(fields)
 
+def or_(*x, **format_spec):
+    '''Concat expressions by operator, `OR`.
+
+    The exmaples:
+
+    >>> print or_("x = 'a'", 'y > 1')
+    (x = 'a') OR (y > 1)
+
+    >>> print or_({'x': 'a'}, {'y >': 1})
+    (x = 'a') OR (y > 1)
+
+    >>> str_exp = dumps({'x': 'a', 'y': 'b'}, condition=True)
+    >>> print or_(str_exp, {'z': 'c', 't >': 0})
+    (y = 'b' AND x = 'a') OR (t > 0 AND z = 'c')
+    '''
+
+    return ' OR '.join('(%s)' % dumps(i, condition=True, **format_spec) for i in x)
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
