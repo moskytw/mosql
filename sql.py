@@ -129,7 +129,7 @@ def dumps(x, **format_spec):
     >>> print dumps({'a >=': ___ , 'b': ___ }, condition=True)
     b = %(b)s AND a >= %(a)s
 
-    >>> print dumps((___, 'b', 'c'), val=True, paramkeys=('x', 'y', 'z'))
+    >>> print dumps((___, 'b', 'c'), val=True, autopatam=('x', 'y', 'z'))
     (%(x)s, 'b', 'c')
     '''
 
@@ -139,14 +139,13 @@ def dumps(x, **format_spec):
         x = x.encode(format_spec.get('encoding', encoding))
 
     param = format_spec.get('param')
-    paramkey = format_spec.get('paramkey')
-    if (
-        (param and isinstance(x, (str, int))) or
-        (x is Empty and paramkey)
-    ):
-        if x is Empty:
-            x = paramkey
+    autoparam = format_spec.get('autoparam')
 
+    if x is Empty and autoparam:
+        param = True
+        x = dumps(autoparam)
+
+    if param and isinstance(x, (str, int)):
         _paramstyle = format_spec.get('paramstyle', paramstyle)
         if _paramstyle == 'pyformat':
             return '%%(%s)s' % x
@@ -184,7 +183,6 @@ def dumps(x, **format_spec):
 
     if items:
         operations = []
-        format_spec = format_spec.copy()
         for k, v in items:
 
             # find the operator in key
@@ -195,11 +193,11 @@ def dumps(x, **format_spec):
                 else:
                     op = '='
 
-            # let value replace by the param if value is ``___``
-            format_spec['paramkey'] = k
 
             # update the format_spec for value
             value_format_spec = format_spec.copy()
+            # let value replace by the param if value is ``___``
+            value_format_spec['autoparam'] = k
             value_format_spec['val'] = True
             value_format_spec['parens'] = True
             value_format_spec['condition'] = False
@@ -217,9 +215,9 @@ def dumps(x, **format_spec):
 
     if hasattr(x, '__iter__'):
 
-        paramkeys = format_spec.get('paramkeys')
-        if paramkeys:
-            s = ', '.join(dumps(v, paramkey=k, **format_spec) for v, k in zip(x, paramkeys))
+        autopatam = format_spec.get('autopatam')
+        if autopatam:
+            s = ', '.join(dumps(v, autoparam=k, **format_spec) for v, k in zip(x, autopatam))
         else:
             s = ', '.join(dumps(v, **format_spec) for v in x)
 
@@ -363,7 +361,7 @@ class SQLTemplate(object):
                             if all(hasattr(i, '__iter__') and not isinstance(i, basestring) for i in field_value):
                                 rendered = dumps((dumps(i, val=True, **self.format_spec) for i in field_value))
                             else:
-                                rendered = dumps(field_value, val=True, paramkeys=fields.get('columns'), **self.format_spec)
+                                rendered = dumps(field_value, val=True, autopatam=fields.get('columns'), **self.format_spec)
                         else:
                             rendered = dumps(field_value, **self.format_spec)
 
