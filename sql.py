@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It contains some useful funtions to build SQL with common Python's data type.'''
+'''It contains useful functions to build SQL with common Python's data types.'''
 
 # The default styles of ``dumps``
 encoding   = 'UTF-8'
@@ -17,7 +17,7 @@ Empty = ___ = type('Empty', (object,), {
 def escape(s):
     '''Replace the ``'`` (single quote) by ``''`` (two single quotes).
 
-    :param s: a string which you want to escape.
+    :param s: a string which you want to escape
     :type s: str
     :rtype: str
 
@@ -53,12 +53,12 @@ def splitop(s):
 
 from datetime import date, time, datetime
 
-def dumps(x, **format):
+def dumps(x, **format_spec):
     '''Dump any object `x` into SQL's representation.
 
-    :param x: any object.
-    :param format: the formating parameters.
-    :type format: dict
+    :param x: any object
+    :param format_spec: the formating specification
+    :type format_spec: mapping
 
     The examples of basic types:
 
@@ -109,7 +109,7 @@ def dumps(x, **format):
     >>> print dumps({'a >=': 1, 'b': ('x', 'y')}, val=True, parens=True, condition=True)
     b IN ('x', 'y') AND a >= 1
 
-    The prepared statements made with formating parameter, ``param``:
+    The prepared statements made with format_specing parameter, ``param``:
 
     >>> print dumps(('a', 'b', 'c'), val=True, parens=True, param=True)
     (%(a)s, %(b)s, %(c)s)
@@ -117,7 +117,7 @@ def dumps(x, **format):
     >>> print dumps(('a', 'b', 'c'), val=True, parens=True, param=True, paramstyle='qmark')
     (?, ?, ?)
 
-    The `paramstyle` can be `pyformat`, `qmark`, `named` or `format`. The `numberic` isn't supported yet.
+    The `paramstyle` can be `pyformat_spec`, `qmark`, `named` or `format_spec`. The `numberic` isn't supported yet.
 
     >>> print dumps({'a >=': 'a', 'b': 'b'}, val=True, param=True, condition=True)
     b = %(b)s AND a >= %(a)s
@@ -137,10 +137,10 @@ def dumps(x, **format):
     global paramstyle, boolstyle
 
     if isinstance(x, unicode):
-        x = x.encode(format.get('encoding', encoding))
+        x = x.encode(format_spec.get('encoding', encoding))
 
-    param = format.get('param')
-    paramkey = format.get('paramkey')
+    param = format_spec.get('param')
+    paramkey = format_spec.get('paramkey')
     if (
         (param and isinstance(x, (str, int))) or
         (x is Empty and paramkey)
@@ -148,26 +148,26 @@ def dumps(x, **format):
         if x is Empty:
             x = paramkey
 
-        _paramstyle = format.get('paramstyle', paramstyle)
+        _paramstyle = format_spec.get('paramstyle', paramstyle)
         if _paramstyle == 'pyformat':
             return '%%(%s)s' % x
         elif _paramstyle == 'qmark':
             return '?'
         elif _paramstyle == 'named':
             return ':%s' % x
-        elif _paramstyle == 'format':
+        elif _paramstyle == 'format_spec':
             return '%s'
         elif _paramstyle == 'numberic':
             return ':%d' % x
 
     if isinstance(x, str):
-        if format.get('val'):
-            return "'%s'" % format.get('escape', escape)(x)
+        if format_spec.get('val'):
+            return "'%s'" % format_spec.get('escape', escape)(x)
         else:
             return x
 
     if isinstance(x, bool):
-        _boolstyle = format.get('boolstyle', boolstyle)
+        _boolstyle = format_spec.get('boolstyle', boolstyle)
         if _boolstyle == 'uppercase':
             return 'TRUE' if x else 'FALSE'
         elif _boolstyle == 'bit':
@@ -179,7 +179,7 @@ def dumps(x, **format):
     if hasattr(x, 'items'):
 
         operations = []
-        format = format.copy()
+        format_spec = format_spec.copy()
         for k, v in x.items():
 
             # find the operator in key
@@ -191,28 +191,28 @@ def dumps(x, **format):
                     op = '='
 
             # let value replace by the param if value is ``___``
-            format['paramkey'] = k
+            format_spec['paramkey'] = k
 
             operations.append('%s %s %s' % (
                 dumps(k),
                 op.upper(),
-                dumps(v, **format),
+                dumps(v, **format_spec),
             ))
 
-        if format.get('condition'):
+        if format_spec.get('condition'):
             return ' AND '.join(operations)
         else:
             return ', '.join(operations)
 
     if hasattr(x, '__iter__'):
 
-        paramkeys = format.get('paramkeys')
+        paramkeys = format_spec.get('paramkeys')
         if paramkeys:
-            s = ', '.join(dumps(v, paramkey=k, **format) for v, k in zip(x, paramkeys))
+            s = ', '.join(dumps(v, paramkey=k, **format_spec) for v, k in zip(x, paramkeys))
         else:
-            s = ', '.join(dumps(v, **format) for v in x)
+            s = ', '.join(dumps(v, **format_spec) for v in x)
 
-        if format.get('parens'):
+        if format_spec.get('parens'):
             s = '(%s)' % s
         return s
 
@@ -221,15 +221,15 @@ def dumps(x, **format):
 
     return str(x)
 
-class SQL(object):
-    '''It builds a SQL statement by given template.
+class SQLTemplate(object):
+    '''It is convenient to build SQL with this class
 
     :param template_groups: the template groups.
-    :type template_groups: two-level nest tuple
+    :type template_groups: two-level nest iterable
 
     Here is an example of SQL's `select ...` statement:
 
-    >>> sql_select = SQL(
+    >>> select_tmpl = SQLTemplate(
     ...     # It is a template group, and
     ...     # it only be rendered if every <field> is be filled.
     ...     ('select', '<select>'),
@@ -243,63 +243,56 @@ class SQL(object):
     ...     ('offset', '<offset>'),
     ... )
 
-    It supports using attributes to access fields.
+    The example of changing the formating specification by its attribute:
 
-    >>> sql = SQL(('key', '<value>'))
-    >>> sql.value = 'data'
-    >>> print sql
+    >>> tmpl = SQLTemplate(('key', '<value>'))
+    >>> print tmpl.format(value='data')
     KEY data;
-    >>> print sql.value
-    data
-    >>> print sql.x
+    >>> tmpl.param = True
+    >>> print tmpl.param
+    True
+    >>> print tmpl.format(value='data')
+    KEY %(data)s;
+
+    If the formating specification isn't set, it raise a KeyError exception rather than an AttributeError:
+
+    >>> print tmpl.x
     Traceback (most recent call last):
         ...
     KeyError: 'x'
 
-    If you want to know what fields it has, the attribute, ``field_names``, could help you.
+    The formating specification is stored in the attribute, ``format_spec``:
 
-    >>> sql_select.field_names == set(
-    ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'limit', 'offset']
-    ... )
-    True
+    >>> print tmpl.format_spec
+    {'param': True}
+
+    If you want to know what fields it has, the attribute, just print it.
+
+    >>> print select_tmpl
+    SQLTemplate(('select', '<select>'), ('from', '<table>'), ('where', '<where>'), ('group by', '<group_by>'), ('having', '<having>'), ('order by', '<order_by>'), ('limit', '<limit>'), ('offset', '<offset>'))
     '''
-
-    format = {}
 
     def __init__(self, *template_groups):
         self.template_groups = template_groups
-        self.field_names = set()
-        for template_group in template_groups:
-            for template in template_group:
-                if template.startswith('<'):
-                    self.field_names.add(template[1:-1])
-        self.filled = {}
-        self.cached = None
-        self.format = {}
-
-    def update(self, dict):
-        '''Use a dict to update the fields' values.'''
-        self.filled.update(dict)
+        self.format_spec = {}
 
     def __setattr__(self, key, value):
-        field_names = getattr(self, 'field_names', None)
-        if field_names and key in field_names:
-            self.filled[key] = value
-            self.cached = None
+        if hasattr(self, 'format_spec'):
+            self.format_spec[key] = value
         else:
             object.__setattr__(self, key, value)
 
     def __getattr__(self, key):
-        field_names = object.__getattribute__(self, 'field_names')
-        return self.filled[key]
+        return object.__getattribute__(self, 'format_spec')[key]
 
-    def __str__(self):
+    def format(self, **fields):
+        return self.format_from_dict(fields)
 
-        if self.cached: return self.cached
+    def format_from_dict(self, fields):
 
-        format = self.format.copy()
-        format.update(self.__class__.format)
         sql_components = []
+
+        fields = fields.copy()
 
         for template_group in self.template_groups:
 
@@ -310,30 +303,30 @@ class SQL(object):
                 # if it need to be substitute
                 if template.startswith('<'):
 
-                    key = template[1:-1]
-                    value = self.filled.get(key, Empty)
+                    field_name = template[1:-1]
+                    field_value = fields.get(field_name, Empty)
                     rendered = None
 
                     # handles special cases
                     # TODO: it could be abstracted as a parameter of initialization
-                    if value is Empty:
-                        if key == 'select':
+                    if field_value is Empty:
+                        if field_name == 'select':
                             rendered = '*'
                     else:
-                        if key in ('where', 'having'):
-                            rendered = dumps(value, val=True, parens=True, condition=True, **format)
-                        elif key == 'set':
-                            rendered = dumps(value, val=True, parens=True, **format)
-                        elif key == 'mapping':
-                                self.filled['columns'], self.filled['values'] = zip(*value.items())
-                        elif key == 'values':
-                            rendered = dumps(value, val=True, parens=True, paramkeys=self.filled.get('columns'), **format)
-                        elif key == 'multi_values':
-                            rendered = dumps((dumps(i, val=True, parens=True, **format) for i in value))
-                        elif key == 'columns':
-                            rendered = dumps(value, parens=True, **format)
+                        if field_name in ('where', 'having'):
+                            rendered = dumps(field_value, val=True, parens=True, condition=True, **self.format_spec)
+                        elif field_name == 'set':
+                            rendered = dumps(field_value, val=True, parens=True, **self.format_spec)
+                        elif field_name == 'multi_values':
+                            rendered = dumps((dumps(i, val=True, parens=True, **self.format_spec) for i in field_value))
+                        elif field_name == 'mapping':
+                            fields['columns'], fields['values'] = zip(*field_value.items())
+                        elif field_name == 'values':
+                            rendered = dumps(field_value, val=True, parens=True, paramkeys=fields.get('columns'), **self.format_spec)
+                        elif field_name == 'columns':
+                            rendered = dumps(field_value, parens=True, **self.format_spec)
                         else:
-                            rendered = dumps(value, **format)
+                            rendered = dumps(field_value, **self.format_spec)
 
                     rendered_templates.append(rendered)
                 else:
@@ -343,8 +336,7 @@ class SQL(object):
             if all(rendered_templates):
                 sql_components.append(' '.join(rendered_templates))
 
-        self.cached = ' '.join(sql_components)+';'
-        return self.cached
+        return ' '.join(sql_components)+';'
 
     def __repr__(self):
         return '%s(%s)' % (
@@ -352,16 +344,30 @@ class SQL(object):
             ', '.join(repr(t) for t in self.template_groups)
         )
 
+insert_tmpl = SQLTemplate(
+    # The <mapping> could be a dict or iterable (prepared statement),
+    # It will be disassembled into <columns> and <values>.
+    ('<mapping>', ),
+    # It is a template group, and
+    # it only be rendered if every <field> is be filled.
+    ('insert into', '<table>'),
+    # It is another template group.
+    ('<columns>', ),
+    ('values', '<values>'),
+    ('values', '<multi_values>'),
+    ('returning', '<returning>'),
+)
+
 def insert(table, mapping=None, **fields):
     '''It is a shortcut for the SQL statement, ``insert into ...`` .
 
     :param table: the name of database's table
     :type table: str
-    :param mapping: the data prepared to insert into database
+    :param mapping: the data represented in a mapping
     :type mapping: mapping
     :param fields: the other fileds
-    :type fields: dict
-    :rtype: :py:class:`~sql.SQL`
+    :type fields: mapping
+    :rtype: :py:class:`str`
 
     The examples:
 
@@ -370,8 +376,6 @@ def insert(table, mapping=None, **fields):
 
     >>> print insert('users', {'id': ___ })
     INSERT INTO users (id) VALUES (%(id)s);
-
-    The ``mapping`` is added by this libaray. It is for convenience and not a part of SQL.
 
     >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'))
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com');
@@ -382,30 +386,29 @@ def insert(table, mapping=None, **fields):
     >>> print insert('users', multi_values=(('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')))
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com');
 
-    >>> insert('users').field_names == set(
-    ...     ['table', 'mapping', 'values', 'multi_values', 'columns', 'returning']
-    ... )
-    True
+    The fields it has:
+
+    >>> print insert_tmpl
+    SQLTemplate(('<mapping>',), ('insert into', '<table>'), ('<columns>',), ('values', '<values>'), ('values', '<multi_values>'), ('returning', '<returning>'))
+
+    The ``mapping`` is added by this libaray. It is for convenience and not a part of SQL.
     '''
 
-    sql = SQL(
-        # The <mapping> could be a dict or iterable (prepared statement),
-        # It will be disassembled into <columns> and <values>.
-        ('<mapping>', ),
-        # It is a template group, and
-        # it only be rendered if every <field> is be filled.
-        ('insert into', '<table>'),
-        # It is another template group.
-        ('<columns>', ),
-        ('values', '<values>'),
-        ('values', '<multi_values>'),
-        ('returning', '<returning>'),
-    )
     fields['table'] = table
     if mapping:
         fields['mapping'] = mapping
-    sql.update(fields)
-    return sql
+    return insert_tmpl.format_from_dict(fields)
+
+select_tmpl = SQLTemplate(
+    ('select', '<select>'),
+    ('from', '<table>'),
+    ('where', '<where>'),
+    ('group by', '<group_by>'),
+    ('having', '<having>'),
+    ('order by', '<order_by>'),
+    ('limit', '<limit>'),
+    ('offset', '<offset>'),
+)
 
 def select(table, where=None, **fields):
     '''It is a shortcut for the SQL statement, ``select ...`` .
@@ -415,8 +418,8 @@ def select(table, where=None, **fields):
     :param where: the conditions represented in a mapping
     :type where: mapping
     :param fields: the other fileds
-    :type fields: dict
-    :rtype: :py:class:`~sql.SQL`
+    :type fields: mapping
+    :rtype: :py:class:`str`
 
     The examples:
 
@@ -432,50 +435,32 @@ def select(table, where=None, **fields):
     >>> print select('users', select='email', order_by=('email DESC', 'id'))
     SELECT email FROM users ORDER BY email DESC, id;
 
-    >>> print select('users', where={'id': ('mosky', 'moskytw')})
+    >>> print select('users', {'id': ('mosky', 'moskytw')})
     SELECT * FROM users WHERE id IN ('mosky', 'moskytw');
 
-    >>> print select('users', where={'email like': '%@gmail.com'})
+    >>> print select('users', {'email like': '%@gmail.com'})
     SELECT * FROM users WHERE email LIKE '%@gmail.com';
 
-    >>> print select('users', where={'name': ___, 'email': 'mosky DOT tw AT gmail.com' })
+    >>> print select('users', {'name': ___, 'email': 'mosky DOT tw AT gmail.com' })
     SELECT * FROM users WHERE name = %(name)s AND email = 'mosky DOT tw AT gmail.com';
 
-    The ``format`` parameter on class's level:
+    The fields it has:
 
-    >>> SQL.format['paramstyle'] = 'qmark'
-    >>> print select('users', where={'name': ___, 'email': 'mosky DOT tw AT gmail.com' })
-    SELECT * FROM users WHERE name = ? AND email = 'mosky DOT tw AT gmail.com';
-    >>> SQL.format.clear()
-
-    The ``format`` parameter on instance's level:
-
-    >>> sql = select('users', where={'name': ___, 'email': 'mosky DOT tw AT gmail.com' })
-    >>> sql.format['paramstyle'] = 'qmark'
-    >>> print sql
-    SELECT * FROM users WHERE name = ? AND email = 'mosky DOT tw AT gmail.com';
-
-    >>> select('users').field_names == set(
-    ...     ['select', 'table', 'where', 'group_by', 'having', 'order_by', 'limit', 'offset']
-    ... )
-    True
+    >>> print select_tmpl
+    SQLTemplate(('select', '<select>'), ('from', '<table>'), ('where', '<where>'), ('group by', '<group_by>'), ('having', '<having>'), ('order by', '<order_by>'), ('limit', '<limit>'), ('offset', '<offset>'))
     '''
 
-    sql = SQL(
-        ('select', '<select>'),
-        ('from', '<table>'),
-        ('where', '<where>'),
-        ('group by', '<group_by>'),
-        ('having', '<having>'),
-        ('order by', '<order_by>'),
-        ('limit', '<limit>'),
-        ('offset', '<offset>'),
-    )
     fields['table'] = table
     if where:
         fields['where'] = where
-    sql.update(fields)
-    return sql
+    return select_tmpl.format_from_dict(fields)
+
+update_tmpl = SQLTemplate(
+    ('update', '<table>'),
+    ('set', '<set>'),
+    ('where', '<where>'),
+    ('returning', '<returning>'),
+)
 
 def update(table, where=None, set=None, **fields):
     '''It is a shortcut for the SQL statement, ``update ...`` .
@@ -487,33 +472,30 @@ def update(table, where=None, set=None, **fields):
     :param set: the part you want to update
     :type set: mapping
     :param fields: the other fileds
-    :type fields: dict
-    :rtype: :py:class:`~sql.SQL`
+    :type fields: mapping
+    :rtype: :py:class:`str`
 
     The examples:
 
     >>> print update('users', {'id': 'mosky'}, {'email': 'mosky DOT tw AT gmail.com'})
     UPDATE users SET email = 'mosky DOT tw AT gmail.com' WHERE id = 'mosky';
 
-    >>> update('users').field_names == set(
-    ...     ['table', 'set', 'where', 'returning']
-    ... )
-    True
+    >>> print update_tmpl
+    SQLTemplate(('update', '<table>'), ('set', '<set>'), ('where', '<where>'), ('returning', '<returning>'))
     '''
 
-    sql = SQL(
-        ('update', '<table>'),
-        ('set', '<set>'),
-        ('where', '<where>'),
-        ('returning', '<returning>'),
-    )
     fields['table'] = table
     if where:
         fields['where'] = where
     if set:
         fields['set'] = set
-    sql.update(fields)
-    return sql
+    return update_tmpl.format_from_dict(fields)
+
+delete_tmpl = SQLTemplate(
+    ('delete from', '<table>'),
+    ('where', '<where>'),
+    ('returning', '<returning>'),#
+)
 
 def delete(table, where=None, **fields):
     '''It is a shortcut for the SQL statement, ``delete from ...`` .
@@ -523,30 +505,24 @@ def delete(table, where=None, **fields):
     :param where: the conditions represented in a mapping
     :type where: mapping
     :param fields: the other fileds
-    :type fields: dict
-    :rtype: :py:class:`~sql.SQL`
+    :type fields: mapping
+    :rtype: :py:class:`str`
 
     The examples:
 
     >>> print delete('users', {'id': 'mosky'})
     DELETE FROM users WHERE id = 'mosky';
 
-    >>> delete('users').field_names == set(
-    ...     ['table', 'where', 'returning']
-    ... )
-    True
+    The fields it has:
+
+    >>> print delete_tmpl
+    SQLTemplate(('delete from', '<table>'), ('where', '<where>'), ('returning', '<returning>'))
     '''
 
-    sql = SQL(
-        ('delete from', '<table>'),
-        ('where', '<where>'),
-        ('returning', '<returning>'),
-    )
     fields['table'] = table
     if where:
         fields['where'] = where
-    sql.update(fields)
-    return sql
+    return delete_tmpl.format_from_dict(fields)
 
 if __name__ == '__main__':
     import doctest
