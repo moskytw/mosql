@@ -93,7 +93,7 @@ def dumps(x, **format_spec):
     >>> print dumps(('a', 'b', 'c'), val=True)
     ('a', 'b', 'c')
 
-    Actually, you can use any `iterable` to build the above strings, except mapping.
+    Actually, you can use any `iterable` (except mapping) to build the above strings.
 
     The examples of `mapping`:
 
@@ -193,19 +193,17 @@ def dumps(x, **format_spec):
                 else:
                     op = '='
 
-
             # update the format_spec for value
-            value_format_spec = format_spec.copy()
-            # let value replace by the param if value is ``___``
-            value_format_spec['autoparam'] = k
-            value_format_spec['val'] = True
-            value_format_spec['parens'] = True
-            value_format_spec['condition'] = False
+            v_format_spec = format_spec.copy()
+            v_format_spec['autoparam'] = k
+            v_format_spec['val'] = True
+            v_format_spec['parens'] = True
+            v_format_spec['condition'] = False
 
             operations.append('%s %s %s' % (
                 dumps(k),
                 op.upper(),
-                dumps(v, **value_format_spec),
+                dumps(v, **v_format_spec),
             ))
 
         if format_spec.get('condition'):
@@ -358,6 +356,7 @@ class SQLTemplate(object):
                                     )
 
                         elif field_name == 'values':
+                            # iterable but not strings
                             if all(hasattr(i, '__iter__') and not isinstance(i, basestring) for i in field_value):
                                 rendered = dumps((dumps(i, val=True, **self.format_spec) for i in field_value))
                             else:
