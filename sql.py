@@ -15,7 +15,7 @@ Empty = ___ = type('Empty', (object,), {
 })()
 
 def escape(s):
-    '''Replace the ``'`` (single quote) by ``''`` (two single quote).
+    '''Replace the ``'`` (single quote) by ``''`` (two single quotes).
 
     :param s: a string which you want to escape.
     :type s: str
@@ -33,7 +33,7 @@ def escape(s):
     return s.replace("'", "''")
 
 def splitop(s):
-    '''Split `s` by rightmost space into the right string and a string operator in a 2-tuple.
+    '''Split `s` by rightmost space into the left string and a string operator in a 2-tuple.
 
     :param s: a string which you want to split.
     :type s: str
