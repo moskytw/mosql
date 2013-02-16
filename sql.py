@@ -255,12 +255,12 @@ class SQLTemplate(object):
 
     >>> tmpl = SQLTemplate(('key', '<value>'))
     >>> print tmpl.format(value='data')
-    KEY data;
+    KEY data
     >>> tmpl.param = True
     >>> print tmpl.param
     True
     >>> print tmpl.format(value='data')
-    KEY %(data)s;
+    KEY %(data)s
 
     .. seealso::
         The all of the formating specification: :py:func:`~sql.dumps`.
@@ -374,7 +374,7 @@ class SQLTemplate(object):
             if all(rendered_templates):
                 sql_components.append(' '.join(rendered_templates))
 
-        return ' '.join(sql_components)+';'
+        return ' '.join(sql_components)
 
     def __repr__(self):
         return '%s(%s)' % (
@@ -400,26 +400,26 @@ def insert(table, columns=None, values=None, **fields):
     The simple examples:
 
     >>> print insert('users', {'id': 'mosky'})
-    INSERT INTO users (id) VALUES ('mosky');
+    INSERT INTO users (id) VALUES ('mosky')
 
     >>> print insert('users', ('email', 'id', 'name'), ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu'))
-    INSERT INTO users (email, id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu');
+    INSERT INTO users (email, id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu')
 
     >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'))
-    INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com');
+    INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com')
 
     The exmaples of building `prepared statement`:
 
     >>> print insert('users', ('id', 'name', 'email'))
-    INSERT INTO users (id, name, email) VALUES (%(id)s, %(name)s, %(email)s);
+    INSERT INTO users (id, name, email) VALUES (%(id)s, %(name)s, %(email)s)
 
     >>> print insert('users', {'id': 'mosky', 'name': ___})
-    INSERT INTO users (id, name) VALUES ('mosky', %(name)s);
+    INSERT INTO users (id, name) VALUES ('mosky', %(name)s)
 
     An example of multi-value:
 
     >>> print insert('users', values=(('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')))
-    INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com');
+    INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')
 
     All of the fields:
 
@@ -453,29 +453,29 @@ def select(table, where=None, select=None, **fields):
     The simple examples:
 
     >>> print select('users')
-    SELECT * FROM users;
+    SELECT * FROM users
 
     >>> print select('users', {'name': 'Mosky Liu'}, ('id', 'name'), limit=10, order_by=('id', 'created DESC'))
-    SELECT id, name FROM users WHERE name = 'Mosky Liu' ORDER BY id, created DESC LIMIT 10;
+    SELECT id, name FROM users WHERE name = 'Mosky Liu' ORDER BY id, created DESC LIMIT 10
 
     >>> print select('users', {'name': 'Mosky Liu'}, 'id, name', limit=10, order_by='id, created DESC')
-    SELECT id, name FROM users WHERE name = 'Mosky Liu' ORDER BY id, created DESC LIMIT 10;
+    SELECT id, name FROM users WHERE name = 'Mosky Liu' ORDER BY id, created DESC LIMIT 10
 
     The exmaples which use the condition(s):
 
     >>> print select('users', {'id': ('mosky', 'moskytw')})
-    SELECT * FROM users WHERE id IN ('mosky', 'moskytw');
+    SELECT * FROM users WHERE id IN ('mosky', 'moskytw')
 
     >>> print select('users', {'email like': '%@gmail.com'})
-    SELECT * FROM users WHERE email LIKE '%@gmail.com';
+    SELECT * FROM users WHERE email LIKE '%@gmail.com'
 
     The examples of using `prepared statement`:
 
     >>> print select('users', ('name', 'email'))
-    SELECT * FROM users WHERE name = %(name)s AND email = %(email)s;
+    SELECT * FROM users WHERE name = %(name)s AND email = %(email)s
 
     >>> print select('users', {'name': ___, 'email': 'mosky DOT tw AT gmail.com' })
-    SELECT * FROM users WHERE name = %(name)s AND email = 'mosky DOT tw AT gmail.com';
+    SELECT * FROM users WHERE name = %(name)s AND email = 'mosky DOT tw AT gmail.com'
 
     All of the fields:
 
@@ -503,7 +503,7 @@ def update(table, where=None, set=None, **fields):
     :rtype: :py:class:`str`
 
     >>> print update('users', {'id': 'mosky'}, {'email': 'mosky DOT tw AT gmail.com'})
-    UPDATE users SET email = 'mosky DOT tw AT gmail.com' WHERE id = 'mosky';
+    UPDATE users SET email = 'mosky DOT tw AT gmail.com' WHERE id = 'mosky'
 
     All of the fields:
 
@@ -530,7 +530,7 @@ def delete(table, where=None, **fields):
     :rtype: :py:class:`str`
 
     >>> print delete('users', {'id': 'mosky'})
-    DELETE FROM users WHERE id = 'mosky';
+    DELETE FROM users WHERE id = 'mosky'
 
     All of the fields:
 
