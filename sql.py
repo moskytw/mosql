@@ -180,8 +180,8 @@ def dumps(x, **format_spec):
     items = None
     if hasattr(x, 'items'):
         items = x.items()
-    # convert iterable to items if ``condition`` is set
-    elif hasattr(x, '__iter__') and format_spec.get('condition'):
+    # convert iterable to items if ``condition`` or ``set`` is set
+    elif hasattr(x, '__iter__') and (format_spec.get('condition') or format_spec.get('set')):
         format_spec['param'] = True
         items = ((v, splitop(v)[0]) for v in x)
 
@@ -351,7 +351,7 @@ class SQLTemplate(object):
                         elif field_name == 'type':
                                 rendered = dumps(field_value).upper()
                         elif field_name == 'set':
-                            rendered = dumps(field_value, val=True, **self.format_spec)
+                            rendered = dumps(field_value, set=True, **self.format_spec)
                         elif field_name == 'columns':
 
                             if isinstance(field_value, basestring):
@@ -640,6 +640,9 @@ def update(table, where=None, set=None, **fields):
 
     >>> print update('users', {'id': 'mosky'}, {'email': 'mosky DOT tw AT gmail.com'})
     UPDATE users SET email = 'mosky DOT tw AT gmail.com' WHERE id = 'mosky'
+
+    >>> print update('users', ('id', ), ('email', 'name'))
+    UPDATE users SET email = %(email)s, name = %(name)s WHERE id = %(id)s
 
     All of the fields:
 
