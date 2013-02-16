@@ -354,9 +354,6 @@ class SQLTemplate(object):
                             rendered = dumps(field_value, set=True, **self.format_spec)
                         elif field_name == 'columns':
 
-                            if isinstance(field_value, basestring):
-                                field_value = (field_value, )
-
                             if hasattr(field_value, 'items'):
                                 fields['columns'], fields['values'] = zip(*field_value.items())
                                 rendered = dumps(fields['columns'], parens=True, **self.format_spec)
