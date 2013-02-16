@@ -129,7 +129,7 @@ def dumps(x, **format_spec):
     >>> print dumps({'a >=': ___ , 'b': ___ }, condition=True)
     b = %(b)s AND a >= %(a)s
 
-    >>> print dumps((___, 'b', 'c'), val=True, autopatam=('x', 'y', 'z'))
+    >>> print dumps((___, 'b', 'c'), val=True, autoparams=('x', 'y', 'z'))
     (%(x)s, 'b', 'c')
     '''
 
@@ -217,9 +217,9 @@ def dumps(x, **format_spec):
 
     if hasattr(x, '__iter__'):
 
-        autopatam = format_spec.get('autopatam')
-        if autopatam:
-            s = ', '.join(dumps(v, autoparam=k, **format_spec) for v, k in zip(x, autopatam))
+        autoparams = format_spec.get('autoparams')
+        if autoparams:
+            s = ', '.join(dumps(v, autoparam=k, **format_spec) for v, k in zip(x, autoparams))
         else:
             s = ', '.join(dumps(v, **format_spec) for v in x)
 
@@ -361,7 +361,7 @@ class SQLTemplate(object):
                             if all(hasattr(i, '__iter__') and not isinstance(i, basestring) for i in field_value):
                                 rendered = dumps((dumps(i, val=True, **self.format_spec) for i in field_value))
                             else:
-                                rendered = dumps(field_value, val=True, autopatam=fields.get('columns'), **self.format_spec)
+                                rendered = dumps(field_value, val=True, autoparams=fields.get('columns'), **self.format_spec)
                         else:
                             # normal case
                             rendered = dumps(field_value, **self.format_spec)
