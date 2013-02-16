@@ -153,7 +153,7 @@ def dumps(x, **format_spec):
             return '?'
         elif _paramstyle == 'named':
             return ':%s' % x
-        elif _paramstyle == 'format_spec':
+        elif _paramstyle == 'format':
             return '%s'
         elif _paramstyle == 'numberic':
             return ':%d' % x
