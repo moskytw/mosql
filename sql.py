@@ -133,7 +133,7 @@ def dumps(x, **format_spec):
     (%(x)s, 'b', 'c')
     '''
 
-    global paramstyle, boolstyle
+    global encoding, paramstyle, boolstyle, escape
 
     if isinstance(x, unicode):
         x = x.encode(format_spec.get('encoding', encoding))
@@ -174,14 +174,19 @@ def dumps(x, **format_spec):
     if isinstance(x, (int, float, long, datetime, date, time)):
         return str(x)
 
+    if x is None:
+        return 'null'
+
     items = None
     if hasattr(x, 'items'):
         items = x.items()
+    # convert iterable to items if ``condition`` is set
     elif hasattr(x, '__iter__') and format_spec.get('condition'):
         format_spec['param'] = True
         items = ((v, splitop(v)[0]) for v in x)
 
     if items:
+
         operations = []
         for k, v in items:
 
@@ -197,7 +202,6 @@ def dumps(x, **format_spec):
             v_format_spec = format_spec.copy()
             v_format_spec['autoparam'] = k
             v_format_spec['val'] = True
-            v_format_spec['parens'] = True
             v_format_spec['condition'] = False
 
             operations.append('%s %s %s' % (
@@ -222,9 +226,6 @@ def dumps(x, **format_spec):
         if format_spec.get('val') or format_spec.get('parens'):
             s = '(%s)' % s
         return s
-
-    if x is None:
-        return 'null'
 
     return str(x)
 
@@ -320,14 +321,14 @@ class SQLTemplate(object):
             rendered_templates = []
             for template in template_group:
 
-                # if it need to be substitute
+                # if it need to be substituted
                 if template.startswith('<'):
 
                     field_name = template[1:-1]
                     field_value = fields.get(field_name, Empty)
                     rendered = None
 
-                    # handles special cases
+                    # handles the special cases
                     # TODO: it could be abstracted as a parameter of initialization
                     if field_value is Empty:
                         if field_name == 'select':
@@ -362,6 +363,7 @@ class SQLTemplate(object):
                             else:
                                 rendered = dumps(field_value, val=True, autopatam=fields.get('columns'), **self.format_spec)
                         else:
+                            # normal case
                             rendered = dumps(field_value, **self.format_spec)
 
                     rendered_templates.append(rendered)
@@ -386,7 +388,7 @@ insert_tmpl = SQLTemplate(
     ('insert into', '<table>'),
     # It is another template group.
     ('<columns>', ),
-    ('values', '<values>'),
+    ('values'   , '<values>'),
     ('returning', '<returning>'),
 )
 
@@ -434,12 +436,12 @@ def insert(table, columns=None, values=None, **fields):
 
 select_tmpl = SQLTemplate(
     ('select', '<select>'),
-    ('from', '<table>'),
-    ('where', '<where>'),
+    ('from'  , '<table>'),
+    ('where' , '<where>'),
     ('group by', '<group_by>'),
-    ('having', '<having>'),
+    ('having'  , '<having>'),
     ('order by', '<order_by>'),
-    ('limit', '<limit>'),
+    ('limit' , '<limit>'),
     ('offset', '<offset>'),
 )
 
@@ -490,8 +492,8 @@ def select(table, where=None, select=None, **fields):
 
 update_tmpl = SQLTemplate(
     ('update', '<table>'),
-    ('set', '<set>'),
-    ('where', '<where>'),
+    ('set'   , '<set>'),
+    ('where' , '<where>'),
     ('returning', '<returning>'),
 )
 
@@ -518,8 +520,8 @@ def update(table, where=None, set=None, **fields):
 
 delete_tmpl = SQLTemplate(
     ('delete from', '<table>'),
-    ('where', '<where>'),
-    ('returning', '<returning>'),#
+    ('where'    , '<where>'),
+    ('returning', '<returning>'),
 )
 
 def delete(table, where=None, **fields):
