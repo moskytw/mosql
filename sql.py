@@ -58,7 +58,7 @@ def dumps(x, **format_spec):
 
     :param x: any object
     :param format_spec: the formating specification
-    :type format_spec: mapping
+    :type format_spec: dict
 
     The examples of basic types:
 
@@ -416,7 +416,7 @@ def insert(table, columns=None, values=None, **fields):
     >>> print insert('users', {'id': 'mosky', 'name': ___})
     INSERT INTO users (id, name) VALUES ('mosky', %(name)s);
 
-    An examples of multi-value:
+    An example of multi-value:
 
     >>> print insert('users', values=(('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')))
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com');
