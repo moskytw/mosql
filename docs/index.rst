@@ -16,21 +16,24 @@ Here are functions for basically create, read, update and delete. It still has h
 -----------------
 
 .. autofunction:: sql.insert
+    :noindex:
 
 `SELECT ...`
 -----------------
 
 .. autofunction:: sql.select
+    :noindex:
 
 `UPDATE ...`
 -----------------
 
 .. autofunction:: sql.update
+    :noindex:
 
 `DELETE FROM ...`
 -----------------
 .. autofunction:: sql.delete
-
+    :noindex:
 
 The documentions
 ================
