@@ -354,22 +354,25 @@ class SQLTemplate(object):
                             rendered = dumps(field_value, set=True, **self.format_spec)
                         elif field_name == 'columns':
 
-                            if hasattr(field_value, 'items'):
+                            if isinstance(field_value, basestring):
+                                rendered = dumps((field_value, ), parens=True, **self.format_spec)
+                            elif hasattr(field_value, 'items'):
                                 fields['columns'], fields['values'] = zip(*field_value.items())
                                 rendered = dumps(fields['columns'], parens=True, **self.format_spec)
-
-                            elif hasattr(field_value, '__iter__'):
-                                if fields.get('values'):
-                                    rendered = dumps(field_value, parens=True, **self.format_spec)
-                                else:
-                                    rendered = '%s VALUES %s' % (
-                                        dumps(field_value, parens=True, **self.format_spec),
-                                        dumps(field_value, val=True, param=True, **self.format_spec)
-                                    )
+                            elif not fields.get('values') and hasattr(field_value, '__iter__'):
+                                rendered = '%s VALUES %s' % (
+                                    dumps(field_value, parens=True, **self.format_spec),
+                                    dumps(field_value, val=True, param=True, **self.format_spec)
+                                )
+                            else:
+                                rendered = dumps(field_value, parens=True, **self.format_spec)
 
                         elif field_name == 'values':
+
+                            if isinstance(field_value, basestring):
+                                rendered = dumps((field_value, ), parens=True, **self.format_spec)
                             # iterable but not strings
-                            if all(hasattr(i, '__iter__') and not isinstance(i, basestring) for i in field_value):
+                            elif all(hasattr(i, '__iter__') and not isinstance(i, basestring) for i in field_value):
                                 rendered = dumps((dumps(i, val=True, **self.format_spec) for i in field_value))
                             else:
                                 rendered = dumps(field_value, val=True, autoparams=fields.get('columns'), **self.format_spec)
@@ -414,6 +417,9 @@ def insert(table, columns=None, values=None, **fields):
     INSERT INTO users (id) VALUES ('mosky')
 
     >>> print insert('users', ('email', 'id', 'name'), ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu'))
+    INSERT INTO users (email, id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu')
+
+    >>> print insert('users', "email, id, name", "'mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu'")
     INSERT INTO users (email, id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu')
 
     >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'))
@@ -470,7 +476,7 @@ def select(table, where=None, select=None, **fields):
     >>> print select('users', {'name': 'Mosky Liu'}, ('id', 'name'), limit=10, order_by=('id', 'created DESC'))
     SELECT id, name FROM users WHERE name = 'Mosky Liu' ORDER BY id, created DESC LIMIT 10
 
-    >>> print select('users', {'name': 'Mosky Liu'}, 'id, name', limit=10, order_by='id, created DESC')
+    >>> print select('users', "name = 'Mosky Liu'", 'id, name', limit=10, order_by='id, created DESC')
     SELECT id, name FROM users WHERE name = 'Mosky Liu' ORDER BY id, created DESC LIMIT 10
 
     The exmaples which use the condition(s):
@@ -638,6 +644,9 @@ def update(table, where=None, set=None, **fields):
     >>> print update('users', {'id': 'mosky'}, {'email': 'mosky DOT tw AT gmail.com'})
     UPDATE users SET email = 'mosky DOT tw AT gmail.com' WHERE id = 'mosky'
 
+    >>> print update('users', "id = 'mosky'", "email = 'mosky DOT tw AT gmail.com'")
+    UPDATE users SET email = 'mosky DOT tw AT gmail.com' WHERE id = 'mosky'
+
     >>> print update('users', ('id', ), ('email', 'name'))
     UPDATE users SET email = %(email)s, name = %(name)s WHERE id = %(id)s
 
@@ -666,6 +675,9 @@ def delete(table, where=None, **fields):
     :rtype: str
 
     >>> print delete('users', {'id': 'mosky'})
+    DELETE FROM users WHERE id = 'mosky'
+
+    >>> print delete('users', "id = 'mosky'")
     DELETE FROM users WHERE id = 'mosky'
 
     All of the fields:
