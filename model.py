@@ -94,6 +94,8 @@ class Model(MutableSequence):
 
     def _to_slice(self, nidx):
 
+        # TODO: merge the slices
+
         ridx, cidx = nidx
         if ridx is None:
             return slice(cidx, None, self.col_len)
