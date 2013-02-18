@@ -26,10 +26,16 @@ class Proxy(MutableSequence):
             yield self[i]
 
     def __getitem__(self, idx):
-        return self.model.__getitem__((self.fixed_idx, idx))
+        if isinstance(idx, slice):
+            return list(self.model[self.fixed_idx])[idx]
+        else:
+            return self.model.__getitem__((self.fixed_idx, idx))
 
     def __setitem__(self, idx, val):
-        self.model.__setitem__((self.fixed_idx, idx), val)
+        if isinstance(idx, slice):
+            raise TypeError('seting item by slice is not supported yet: %r' % idx)
+        else:
+            self.model.__setitem__((self.fixed_idx, idx), val)
 
     def __delitem__(self, idx):
         raise TypeError('use model.remove() instead')
