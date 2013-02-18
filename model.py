@@ -82,9 +82,9 @@ class Model(MutableSequence):
 
         raise TypeError("type of 'idx' is not supported: %r" % idx)
 
-    def _to_slice(self, idx):
+    def _to_slice(self, nidx):
 
-        row, col = idx
+        row, col = nidx
 
         if row is None:
             return slice(col, None, self.col_len)
