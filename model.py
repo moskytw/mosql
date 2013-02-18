@@ -12,14 +12,16 @@ class Proxy(MutableSequence):
         self.model = model
         self.fixed_idx = fixed_idx
 
+        ridx, cidx = self.model._normalize_idx(self.fixed_idx)
+        if ridx is None:
+            self._len = lambda: len(self.model)
+        elif cidx is None:
+            self._len = lambda: self.model.col_len
+
     # --- implement standard mutable sequence ---
 
     def __len__(self):
-        ridx, cidx = self.model._normalize_idx(self.fixed_idx)
-        if ridx is None:
-            return len(self.model)
-        elif cidx is None:
-            return self.model.col_len
+        return self._len()
 
     def __iter__(self):
         for i in xrange(len(self)):
