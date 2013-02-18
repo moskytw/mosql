@@ -192,6 +192,11 @@ class Model(MutableSequence):
         nidx = self._normalize_idx(idx)
 
         if self._is_to_squash_col(nidx):
+            vals = self.changed_row_vals.setdefault(self.col_names[nidx[1]], {})
+            vals.update({self.col_names[nidx[1]]: val})
+            conds = self.changed_row_conds.setdefault(self.col_names[nidx[1]], {})
+            if not conds:
+                conds.update({self.col_names[nidx[1]]: self[self.col_names[nidx[1]]]})
             val = (val, ) * len(self)
         else:
             vals = self.changed_row_vals.setdefault(nidx[0], {})
