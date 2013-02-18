@@ -15,10 +15,10 @@ class Proxy(MutableSequence):
     # --- implement standard mutable sequence ---
 
     def __len__(self):
-        row, col = self.model._normalize_idx(self.fixed_idx)
-        if row is None:
+        ridx, cidx = self.model._normalize_idx(self.fixed_idx)
+        if ridx is None:
             return len(self.model)
-        elif col is None:
+        elif cidx is None:
             return self.model.col_len
 
     def __iter__(self):
@@ -78,36 +78,36 @@ class Model(MutableSequence):
             return (idx, None)
 
         if hasattr(idx, '__iter__') and len(idx) == 2:
-            row, col = idx
-            if isinstance(row, basestring):
-                col, row = row, col
-            if isinstance(col, basestring):
-                col = self.col_offsets[col]
-            return (row, col)
+            ridx, cidx = idx
+            if isinstance(ridx, basestring):
+                cidx, ridx = ridx, cidx
+            if isinstance(cidx, basestring):
+                cidx = self.col_offsets[cidx]
+            return (ridx, cidx)
 
         raise TypeError("type of 'idx' is not supported: %r" % idx)
 
     def _to_slice(self, nidx):
 
-        row, col = nidx
-        if row is None:
-            return slice(col, None, self.col_len)
-        elif col is None:
-            s = row*self.col_len
+        ridx, cidx = nidx
+        if ridx is None:
+            return slice(cidx, None, self.col_len)
+        elif cidx is None:
+            s = ridx*self.col_len
             return slice(s, s+self.col_len, None)
         else:
-            return row*self.col_len+col
+            return ridx*self.col_len+cidx
 
     def _is_to_squash_col(self, nidx):
 
-        row, col = nidx
+        ridx, cidx = nidx
 
-        # if the target of normalized index is a column
-        if row is None and col is not None:
+        # if the target of normalized index is a cidxumn
+        if ridx is None and cidx is not None:
             # if user specified the squash_col_names
             if hasattr(self, 'squash_col_names'):
-                return self.col_names[col] in self.squash_col_names
-            # , or treats all of the column's index is unique column
+                return self.col_names[cidx] in self.squash_col_names
+            # , or treats all of the cidxumn's index is unique cidxumn
             else:
                 return True
         else:
