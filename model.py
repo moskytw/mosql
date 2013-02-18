@@ -85,7 +85,6 @@ class Model(MutableSequence):
     def _to_slice(self, nidx):
 
         row, col = nidx
-
         if row is None:
             return slice(col, None, self.col_len)
         elif col is None:
@@ -93,6 +92,21 @@ class Model(MutableSequence):
             return slice(s, s+self.col_len, None)
         else:
             return row*self.col_len+col
+
+    def _is_to_squash_col(self, nidx):
+
+        row, col = nidx
+
+        # if the target of normalized index is a column
+        if row is None and col is not None:
+            # if user specified the squash_col_names
+            if hasattr(self, 'squash_col_names'):
+                return self.col_names[col] in self.squash_col_names
+            # , or treats all of the column's index is unique column
+            else:
+                return True
+        else:
+            return False
 
     # --- implement standard mutable sequence ---
 
@@ -104,7 +118,10 @@ class Model(MutableSequence):
             yield self[i]
 
     def __getitem__(self, idx):
-        if idx in self.uni_col_names:
+
+        nidx = self._normalize_idx(idx)
+
+        if self._is_to_squash_col(nidx):
             return self.elems[self._to_slice(self._normalize_idx((0, idx)))]
         else:
             s = self._to_slice(self._normalize_idx(idx))
@@ -135,12 +152,13 @@ class Model(MutableSequence):
         if nidx not in self.changed:
             self.changed[nidx] = self[idx]
 
-        if idx in self.uni_col_names:
+        if self._is_to_squash_col(nidx):
             val = (val, ) * len(self)
 
         self.elems[self._to_slice(nidx)] = val
 
     def remove(self, row_idx):
+
         if isinstance(row_idx, (int, long)):
             s = self._to_slice(self._normalize_idx(row_idx))
             self.removed.append(self.elems[s])
@@ -153,7 +171,7 @@ if __name__ == '__main__':
     import sql
 
     Model.col_names = ('serial', 'user_id', 'email')
-    Model.uni_col_names = set(['user_id'])
+    Model.squash_col_names = set(['user_id'])
 
     m = Model(
         [
@@ -219,3 +237,19 @@ if __name__ == '__main__':
     for i, row in enumerate(m):
         print '%d:' % i, row
     print
+
+    Model.col_names = ('user_id', 'name')
+    del Model.squash_col_names
+    del Model.col_offsets
+
+    m = Model(
+        [
+            ('mosky', 'Mosky Liu'),
+        ]
+    )
+
+    for row in m:
+        print row
+
+    print m['user_id']
+    print m['name']
