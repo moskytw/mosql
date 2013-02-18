@@ -263,8 +263,6 @@ if __name__ == '__main__':
 
     m.commit()
 
-    from sys import exit; exit()
-
     print '--- another model ---'
     print
 
