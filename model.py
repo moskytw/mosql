@@ -1,89 +1,104 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from collections import Sequence
+from collections import MutableSequence
 
 #from psycopg2 import pool
 #pool = pool.SimpleConnectionPool(1, 5, database='mosky')
 
-class Proxy(Sequence):
+class Proxy(MutableSequence):
 
-    def __init__(self, model, const, is_row):
-
+    def __init__(self, model, fixed_idx):
         self.model = model
-        self.const = const
+        self.fixed_idx = fixed_idx
 
-        if is_row:
-            self._transform = lambda i: self.const*self.model.col_len+i
-            self._len = lambda: self.model.col_len
-        else:
-            self._transform = lambda i: i*self.model.col_len+self.const
-            self._len = lambda: len(self.model)
-
-    # --- implement standard sequence ---
+    # --- implement standard mutable sequence ---
 
     def __len__(self):
-        return self._len()
+        row, col = self.model._normalize_idx(self.fixed_idx)
+        if row is None:
+            return len(self.model)
+        elif col is None:
+            return self.model.col_len
 
     def __iter__(self):
         for i in xrange(len(self)):
             yield self[i]
 
-    def __getitem__(self, i):
+    def __getitem__(self, idx):
+        return self.model.__getitem__((self.fixed_idx, idx))
 
-        if isinstance(i, slice):
-            return [self[i] for i in xrange(*i.indices(len(self)))]
+    def __setitem__(self, idx, val):
+        self.model.__setitem__((self.fixed_idx, idx), val)
 
-        return self.model.elems[self._transform(i)]
+    def __delitem__(self, idx):
+        raise TypeError('use model.remove() instead')
 
-    # --- end ---
+    def insert(self, idx, val):
+        raise TypeError('use model.add() instead')
 
-    def __setitem__(self, i, v):
-
-        # XXX: it is confusing
-
-        #if isinstance(i, slice):
-        #    # TODO: check the two lengths are match
-        #    from itertools import izip_longest
-        #    for i, v in izip_longest(xrange(*i.indices(len(self))), v):
-        #        self[i] = v
-        #    return
-
-        assert not isinstance(i, slice), 'using slice to assign values is not supported'
-
-        self.model._update_elem(self._transform(i), v)
+    # --- implement standard mutable sequence ---
 
     def __str__(self):
-        return '<Proxy for: %r>' % list(self)
+        return '%r' % list(self)
 
-class Model(Sequence):
+    def __repr__(self):
+        return '<proxy at 0x%x for model %r. fixed_idx=%r>' % (id(self), self.model, self.fixed_idx)
+
+class Model(MutableSequence):
 
     col_names = ('serial', 'user_id', 'email')
     uni_col_names = set(['user_id'])
 
     def __init__(self, rows, col_names=None):
 
-        self.col_names = col_names = col_names or self.col_names
+        if col_names:
+            self.col_names = col_names
+            self.col_offsets = dict((k, i) for i, k in enumerate(col_names))
+        elif not hasattr(self.__class__, 'col_offsets'):
+            self.__class__.col_offsets = dict((k, i) for i, k in enumerate(self.col_names))
 
-        self.col_len = len(col_names)
-        self.col_offsets = dict((k, i) for i, k in enumerate(col_names))
+        self.col_len = len(self.col_names)
 
-        self.row_proxies = []
-        self.col_proxies = {}
         self.elems = []
-
         for i, row in enumerate(rows):
             self.elems.extend(row)
-            self.row_proxies.append(Proxy(self, i, is_row=True))
 
-        for i, col_name in enumerate(col_names):
-            self.col_proxies[col_name] = Proxy(self, i, is_row=False)
+        self.changed = {}
+        self.removed = []
+        self.added = []
 
-        self.updated = {}
-        self.deleted = []
-        self.inserted = []
+    def _normalize_idx(self, idx):
 
-    # --- implement standard sequence ---
+        if isinstance(idx, basestring):
+            return (None, self.col_offsets[idx])
+
+        elif isinstance(idx, int):
+            return (idx, None)
+
+        if hasattr(idx, '__iter__') and len(idx) == 2:
+            row, col = idx
+            if isinstance(row, basestring):
+                col, row = row, col
+            if isinstance(col, basestring):
+                col = self.col_offsets[col]
+            return (row, col)
+
+        raise TypeError("type of 'idx' is not supported: %r" % idx)
+
+    def _to_slice(self, idx):
+
+        row, col = idx
+
+        if row is None:
+            return slice(col, None, self.col_len)
+        elif col is None:
+            s = row*self.col_len
+            return slice(s, s+self.col_len, None)
+        else:
+            return row*self.col_len+col
+
+    # --- implement standard mutable sequence ---
 
     def __len__(self):
         return len(self.elems) / self.col_len
@@ -92,49 +107,50 @@ class Model(Sequence):
         for i in xrange(len(self)):
             yield self[i]
 
-    def __getitem__(self, k):
-        if k in self.uni_col_names:
-            return self.elems[self.col_offsets[k]]
+    def __getitem__(self, idx):
+        if idx in self.uni_col_names:
+            return self.elems[self._to_slice(self._normalize_idx((0, idx)))]
         else:
-            if isinstance(k, basestring):
-                return self.col_proxies[k]
-            elif isinstance(k, (int, long)):
-                return self.row_proxies[k]
+            s = self._to_slice(self._normalize_idx(idx))
+            if isinstance(s, slice):
+                return Proxy(self, idx)
+            else:
+                return self.elems[s]
+
+    def __setitem__(self, idx, val):
+        self.change(idx, val)
+
+    def __delitem__(self, row_idx):
+        self.remove(row_idx)
+
+    def insert(self, idx, val):
+        raise TypeError('use model.add() instead')
 
     # --- end ---
 
-    def _update_elem(self, i, v):
-        if i not in self.updated:
-            self.updated[i] = self.elems[i]
-        self.elems[i] = v
+    def add(self, row):
+        self.elems.extend(row)
+        self.added.append(row)
 
-    def __setitem__(self, k, v):
-        assert k in self.uni_col_names, "k must be an unique column: %r" % k
-        #self.elems[self.col_offsets[k]::self.col_len] = (v, ) * len(self)
-        for i in xrange(*slice(self.col_offsets[k], None, self.col_len).indices(len(self.elems))):
-            self._update_elem(i, v)
+    def change(self, idx, val):
 
-    def __delitem__(self, r):
+        nidx = self._normalize_idx(idx)
 
-        # remove the elems
-        o = r * self.col_len
-        s = slice(o, o+self.col_len)
-        self.deleted.append(self.elems[s])
-        del self.elems[s]
+        if nidx not in self.changed:
+            self.changed[nidx] = self[idx]
 
-        # modified the proxies
-        del self.row_proxies[r]
-        for i in xrange(r, len(self)):
-            self.row_proxies[i].const -= 1
+        if idx in self.uni_col_names:
+            val = (val, ) * len(self)
 
-    def add_row(self, r):
-        self.row_proxies.append(Proxy(self, len(self), is_row=True))
-        self.elems.extend(r)
-        self.inserted.append(r)
+        self.elems[self._to_slice(nidx)] = val
 
-    def as_dict(self, r):
-        # TODO: add a dict proxy
-        return dict((k, v) for k, v in zip(self.col_names, self[r]))
+    def remove(self, row_idx):
+        if isinstance(row_idx, (int, long)):
+            s = self._to_slice(self._normalize_idx(row_idx))
+            self.removed.append(self.elems[s])
+            del self.elems[s]
+        else:
+            raise TypeError("'row_idx' must be int: %r" % row_idx)
 
 if __name__ == '__main__':
 
@@ -151,26 +167,30 @@ if __name__ == '__main__':
 
     print '* print the rows in the model:'
     for i, row in enumerate(m):
-        print '%d:' % i, row, m.as_dict(i)
+        print '%d:' % i, row
     print
 
     print '* print the 2nd row and the values in this row:'
     print m[1]
+    print 'repr:', repr(m[1])
+    print
     for i, val in enumerate(m[1]):
         print '%d:' % i, val
     print
 
     print "* print the 'email' col and the values in this row:"
     print m['email']
+    print 'repr :', repr(m['email'])
+    print
     for i, email in enumerate(m['email']):
         print '%d:' % i, email
     print
 
     print '* fix the typo'
-    m['email'][0] = 'mosky.tw@gmmail.com'
+    m['email', 0] = 'mosky.tw@gmmail.com'
     m['email'][0] = 'mosky.tw@gmail.com'
     print m['email']
-    print 'updated:', m.updated
+    print 'changed:', m.changed
     print
 
     print "* print a unique col, 'user_id':"
@@ -180,17 +200,22 @@ if __name__ == '__main__':
     print "* change 'user_id':"
     m['user_id'] = 'mosky'
     print m['user_id']
-    print 'updated:', m.updated
+    print 'changed:', m.changed
     print
 
-    print '* delete the last row'
-    del m[2]
-    print 'deleted:', m.deleted
+    print '* remove the last row'
+    m.remove(2)
+    print 'deleted:', m.removed
+    try:
+        del m[2]
+    except TypeError, e:
+        print 'catch: %r' % e
     print
 
     print '* add a row'
-    m.add_row((None, 'mosky', 'mosky@ubuntu-tw.org'))
-    print 'inserted:', m.inserted
+    m.add((None, 'mosky', 'mosky@ubuntu-tw.org'))
+    print 'added:', m.added
+    print
 
     print '* print the rows in the model again:'
     for i, row in enumerate(m):
