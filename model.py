@@ -67,9 +67,7 @@ class Model(MutableSequence):
         for i, row in enumerate(rows):
             self.elems.extend(row)
 
-        self.changed = []
-        self.removed = []
-        self.added = []
+        self.snapshot = rows
 
     def _normalize_idx(self, idx):
 
@@ -169,19 +167,15 @@ class Model(MutableSequence):
 
     def add(self, row):
         self.elems.extend(row)
-        self.added.append(row)
 
     def change(self, idx, val):
 
         nidx = self._normalize_idx(idx)
 
-        origin = list(self[nidx[0] or 0])
-
         if self._is_to_squash_col(nidx):
             val = (val, ) * len(self)
 
         self.elems[self._to_slice(nidx)] = val
-        self.changed.append((origin, list(self[nidx[0] or 0])))
 
     def remove(self, row_idx=None):
 
@@ -191,23 +185,12 @@ class Model(MutableSequence):
         elif isinstance(row_idx, (int, long)):
             if row_idx >= len(self):
                 raise ValueError('out of range')
-            s = self._to_slice(self._normalize_idx(row_idx))
-            self.removed.append(self.elems[s])
-            del self.elems[s]
+            del self.elems[self._to_slice(self._normalize_idx(row_idx))]
         else:
             raise TypeError("'row_idx' must be int: %r" % row_idx)
 
-    def _condition(self, row):
-        return dict((k, v) for k, v in zip(self.col_names, row) if not hasattr(self, 'key_col_names') or k in self.key_col_names)
-
     def commit(self):
-        import sql
-        for row_vals in self.added:
-            print sql.insert(self.table, self.col_names, row_vals)
-        for cond in self.removed:
-            print sql.delete(self.table, self._condition(cond))
-        for cond, row_vals in self.changed:
-            print sql.update(self.table, dict(zip(self.col_names, cond)), dict(zip(self.col_names, row_vals)))
+        pass
 
 if __name__ == '__main__':
 
@@ -215,7 +198,6 @@ if __name__ == '__main__':
 
     Model.table = 'user_detail'
     Model.col_names = ('serial', 'user_id', 'email')
-    Model.key_col_names = ('user_id', )
     Model.squash_col_names = set(['user_id'])
 
     m = Model(
@@ -251,7 +233,7 @@ if __name__ == '__main__':
     m['email', 0] = 'mosky.tw@gmmail.com'
     m['email'][0] = 'mosky.tw@gmail.com'
     print m['email']
-    print 'changed:', m.changed
+    #print 'changed:', m.changed
     print
 
     print "* print a unique col, 'user_id':"
@@ -261,17 +243,17 @@ if __name__ == '__main__':
     print "* change 'user_id':"
     m['user_id'] = 'mosky'
     print m['user_id']
-    print 'changed:', m.changed
+    #print 'changed:', m.changed
     print
 
     print '* remove the last row'
     m.remove(2)
-    print 'deleted:', m.removed
+    #print 'deleted:', m.removed
     print
 
     print '* add a row'
     m.add((None, 'mosky', 'mosky@ubuntu-tw.org'))
-    print 'added:', m.added
+    #print 'added:', m.added
     print
 
     print '* print the rows in the model again:'
