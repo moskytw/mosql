@@ -47,16 +47,12 @@ class Proxy(MutableSequence):
 
 class Model(MutableSequence):
 
-    col_names = ('serial', 'user_id', 'email')
-    uni_col_names = set(['user_id'])
+    col_names = tuple()
 
-    def __init__(self, rows, col_names=None):
+    def __init__(self, rows):
 
-        if col_names:
-            self.col_names = col_names
-            self.col_offsets = dict((k, i) for i, k in enumerate(col_names))
-        elif not hasattr(self.__class__, 'col_offsets'):
-            self.__class__.col_offsets = dict((k, i) for i, k in enumerate(self.col_names))
+        if not hasattr(self, 'col_offsets'):
+            self.__class__.col_offsets = dict((col_name, i) for i, col_name in enumerate(self.col_names))
 
         self.col_len = len(self.col_names)
 
@@ -156,13 +152,15 @@ if __name__ == '__main__':
 
     import sql
 
+    Model.col_names = ('serial', 'user_id', 'email')
+    Model.uni_col_names = set(['user_id'])
+
     m = Model(
         [
             (0, 'moskytw', 'mosky.tw@typo.com'),
             (1, 'moskytw', 'mosky.liu@gmail.com'),
             (2, 'moskytw', '<It is not used anymore.>'),
-        ],
-        ('serial', 'user_id', 'email')
+        ]
     )
 
     print '* print the rows in the model:'
