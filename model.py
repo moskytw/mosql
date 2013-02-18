@@ -141,6 +141,25 @@ class Model(MutableSequence):
 
     # --- end ---
 
+    # --- simulate mapping's methods ---
+
+    def keys(self):
+        return list(self.col_names)
+
+    def values(self):
+        return [self[col_name] for col_name in self.col_names]
+
+    def items(self):
+        return [(col_name, self[col_name]) for col_name in self.col_names]
+
+    def get(self, key, default=None):
+        if key in self:
+            return self[key]
+        else:
+            return default
+
+    # --- end ---
+
     def add(self, row):
         self.elems.extend(row)
         self.added.append(row)
@@ -238,6 +257,9 @@ if __name__ == '__main__':
         print '%d:' % i, row
     print
 
+    print '--- another model ---'
+    print
+
     Model.col_names = ('user_id', 'name')
     del Model.squash_col_names
     del Model.col_offsets
@@ -248,8 +270,18 @@ if __name__ == '__main__':
         ]
     )
 
-    for row in m:
-        print row
+    print '* print the rows in the model:'
+    for i, row in enumerate(m):
+        print '%d:' % i, row
+    print
 
-    print m['user_id']
-    print m['name']
+    print '* print the cols in the model:'
+    for col_name in m.col_names:
+        print '%-7s:' % col_name, m[col_name]
+    print
+
+    print "* test the mapping's methods"
+    print 'keys  :', m.keys()
+    print 'values:', m.values()
+    print 'items :', m.items()
+    print 'get   :', m.get('no exists', 'default value')
