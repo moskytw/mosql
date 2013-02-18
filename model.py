@@ -165,6 +165,17 @@ class Model(MutableSequence):
 
     # --- end ---
 
+    def _pick(self, row_idx, col_names=None, only_keys=False):
+
+        if only_keys:
+            picked_col_names = getattr(self, 'key_col_names', None) or self.col_names
+        elif col_names is None:
+            picked_col_names = self.col_names
+
+        row = self[row_idx]
+
+        return dict((k, row[k]) for k in picked_col_names)
+
     def add(self, row):
         self.elems.extend(row)
 
@@ -198,6 +209,7 @@ if __name__ == '__main__':
 
     Model.table = 'user_detail'
     Model.col_names = ('serial', 'user_id', 'email')
+    Model.key_col_names = set(['serial'])
     Model.squash_col_names = set(['user_id'])
 
     m = Model(
