@@ -18,8 +18,8 @@ class RowProxy(MutableMapping):
         return self.model.col_len
 
     def __iter__(self):
-        for column in self.model.columns:
-            yield column
+        for col_name in self.model.col_names:
+            yield col_name
 
     def __getitem__(self, col_idx_or_key):
         return self.model.elem(self.row_idx, col_idx_or_key)
@@ -65,24 +65,26 @@ class ColProxy(MutableSequence):
     # --- implement standard mutable sequence ---
 
     def __repr__(self):
-        return '<ColProxy for col %r (%s): %r>' % (self.col_idx, self.model.columns[self.col_idx], list(self))
+        return '<ColProxy for col %r (%s): %r>' % (self.col_idx, self.model.col_names[self.col_idx], list(self))
 
 class Model(MutableMapping):
 
     table = None
-    columns = tuple()
+    col_names = tuple()
+    uni_col_names = tuple()
+    grp_col_names = tuple()
 
     def __init__(self, rows):
 
         if not hasattr(self, 'col_offsets'):
-            self.__class__.col_offsets = dict((col_name, i) for i, col_name in enumerate(self.columns))
+            self.__class__.col_offsets = dict((col_name, i) for i, col_name in enumerate(self.col_names))
 
         self.row_len = len(rows)
-        self.col_len = len(self.columns)
+        self.col_len = len(self.col_names)
 
-        self.elems = []
+        self._elems = []
         for i, row in enumerate(rows):
-            self.elems.extend(row)
+            self._elems.extend(row)
 
         self.added_rows = []
         self.removed_row_conds = []
@@ -104,17 +106,21 @@ class Model(MutableMapping):
         return self.col_len
 
     def __iter__(self):
-        for column in self.columns:
-            yield column
+        for col_name in self.col_names:
+            yield col_name
 
     def __getitem__(self, x):
         if isinstance(x, basestring):
-            return self.col(x)
+            if x in self.grp_col_names:
+                return self.elem(0, x)
+            else:
+                return self.col(x)
         elif isinstance(x, (int, long)):
             return self.row(x)
 
-    def __setitem__(self, x, val):
-        pass
+    def __setitem__(self, grp_col_name, val):
+        if grp_col_name in self.grp_col_names:
+            self.set_elem(0, grp_col_name, val)
 
     def __delitem__(self, x, val):
         pass
@@ -128,27 +134,27 @@ class Model(MutableMapping):
         return ColProxy(self, col_idx_or_key)
 
     def elem(self, row_idx, col_idx_or_key):
-        return self.elems[self.to_elem_idx(row_idx, col_idx_or_key)]
+        return self._elems[self.to_elem_idx(row_idx, col_idx_or_key)]
 
     def rows(self):
         for i in xrange(self.row_len):
             yield self.row(i)
 
     def cols(self):
-        for column in self.columns:
-            yield self.col(column)
+        for col_name in self.col_names:
+            yield self.col(col_name)
 
     def set_elem(self, row_idx, col_idx_or_key, val):
-        self.elems[self.to_elem_idx(row_idx, col_idx_or_key)] = val
+        self._elems[self.to_elem_idx(row_idx, col_idx_or_key)] = val
 
     def add_row(self, row):
         self.row_len += 1
-        self.elems.extend(row)
+        self._elems.extend(row)
 
     def remove_row(self, row_idx):
         self.row_len -= 1
         start = row_idx * self.col_len
-        del self.elems[start:start+self.col_len]
+        del self._elems[start:start+self.col_len]
 
     def commit(self):
         pass
@@ -159,9 +165,9 @@ if __name__ == '__main__':
     import sql
 
     Model.table = 'user_details'
-    Model.columns = ('serial', 'user_id', 'email')
-    Model.key_columns = set(['serial'])
-    Model.grp_columns = set(['user_id'])
+    Model.col_names = ('serial', 'user_id', 'email')
+    Model.uni_col_names = set(['serial'])
+    Model.grp_col_names = set(['user_id'])
 
     m = Model(
         [
@@ -227,9 +233,10 @@ if __name__ == '__main__':
     print '--- another model ---'
     print
 
-    Model.columns = ('user_id', 'name')
-    del Model.grp_columns
     del Model.col_offsets
+    Model.col_names = ('user_id', 'name')
+    Model.uni_col_names = ('user_id')
+    Model.grp_col_names = Model.col_names
 
     m = Model(
         [
@@ -243,7 +250,7 @@ if __name__ == '__main__':
     print
 
     print '* print the cols in the model:'
-    for col_name in m.columns:
+    for col_name in m.col_names:
         print '%-7s:' % col_name, m[col_name]
     print
 
