@@ -1,59 +1,73 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from collections import MutableSequence
+from collections import MutableSequence, MutableMapping
 
 #from psycopg2 import pool
 #pool = pool.SimpleConnectionPool(1, 5, database='mosky')
 
-class Proxy(MutableSequence):
+class RowProxy(MutableMapping):
 
-    def __init__(self, model, fixed_idx):
+    def __init__(self, model, row_idx):
         self.model = model
-        self.fixed_idx = fixed_idx
-
-        ridx, cidx = self.model._normalize_idx(self.fixed_idx)
-        if ridx is None:
-            self._len = lambda: len(self.model)
-        elif cidx is None:
-            self._len = lambda: self.model.col_len
+        self.row_idx = row_idx
 
     # --- implement standard mutable sequence ---
 
     def __len__(self):
-        return self._len()
+        return self.model.col_len
+
+    def __iter__(self):
+        for column in self.model.columns:
+            yield column
+
+    def __getitem__(self, col_idx_or_key):
+        return self.model.elems[self.model.to_elem_idx(self.row_idx, col_idx_or_key)]
+
+    def __setitem__(self, col_idx_or_key, val):
+        self.model.elems[self.model.to_elem_idx(self.row_idx, col_idx_or_key)] = val
+
+    def __delitem__(self, col_key):
+        raise TypeError('use model.remove() instead')
+
+    # --- implement standard mutable sequence ---
+
+    def __repr__(self):
+        return '<RowProxy for row %r: %r>' % (self.row_idx, dict(self))
+
+class ColProxy(MutableSequence):
+
+    def __init__(self, model, col_idx_or_key):
+        self.model = model
+        self.col_idx = self.model.to_col_idx(col_idx_or_key)
+
+    # --- implement standard mutable sequence ---
+
+    def __len__(self):
+        return self.model.row_len
 
     def __iter__(self):
         for i in xrange(len(self)):
             yield self[i]
 
-    def __getitem__(self, idx):
-        if isinstance(idx, slice):
-            return list(self.model[self.fixed_idx])[idx]
-        else:
-            return self.model.__getitem__((self.fixed_idx, idx))
+    def __getitem__(self, row_idx):
+        return self.model.elems[self.model.to_elem_idx(row_idx, self.col_idx)]
 
-    def __setitem__(self, idx, val):
-        if isinstance(idx, slice):
-            raise TypeError('seting item by slice is not supported yet: %r' % idx)
-        else:
-            self.model.__setitem__((self.fixed_idx, idx), val)
+    def __setitem__(self, row_idx, val):
+        self.model.elems[self.model.to_elem_idx(row_idx, self.col_idx)] = val
 
-    def __delitem__(self, idx):
+    def __delitem__(self, row_idx):
         raise TypeError('use model.remove() instead')
 
-    def insert(self, idx, val):
+    def insert(self, row_idx, val):
         raise TypeError('use model.add() instead')
 
     # --- implement standard mutable sequence ---
 
-    def __str__(self):
-        return '%r' % list(self)
-
     def __repr__(self):
-        return '<proxy at 0x%x for model %r. fixed_idx=%r>' % (id(self), self.model, self.fixed_idx)
+        return '<ColProxy for col %r (%s): %r>' % (self.col_idx, self.model.columns[self.col_idx], list(self))
 
-class Model(MutableSequence):
+class Model(MutableMapping):
 
     table = None
     columns = tuple()
@@ -63,6 +77,7 @@ class Model(MutableSequence):
         if not hasattr(self, 'col_offsets'):
             self.__class__.col_offsets = dict((col_name, i) for i, col_name in enumerate(self.columns))
 
+        self.row_len = len(rows)
         self.col_len = len(self.columns)
 
         self.elems = []
@@ -74,161 +89,52 @@ class Model(MutableSequence):
         self.changed_row_conds = {}
         self.changed_row_vals = {}
 
-    def _normalize_idx(self, idx):
-
-        if isinstance(idx, basestring):
-            return (None, self.col_offsets[idx])
-
-        elif isinstance(idx, int):
-            return (idx, None)
-
-        if hasattr(idx, '__iter__') and len(idx) == 2:
-            ridx, cidx = idx
-            if isinstance(ridx, basestring):
-                cidx, ridx = ridx, cidx
-            if isinstance(cidx, basestring):
-                cidx = self.col_offsets[cidx]
-            return (ridx, cidx)
-
-        raise TypeError("type of 'idx' is not supported: %r" % idx)
-
-    def _to_slice(self, nidx):
-
-        # TODO: merge the slices
-
-        ridx, cidx = nidx
-        if ridx is None:
-            return slice(cidx, None, self.col_len)
-        elif cidx is None:
-            s = ridx*self.col_len
-            return slice(s, s+self.col_len, None)
+    def to_col_idx(self, col_idx_or_key):
+        if isinstance(col_idx_or_key, basestring):
+            return self.col_offsets[col_idx_or_key]
         else:
-            return ridx*self.col_len+cidx
+            return col_idx_or_key
 
-    def _is_to_grp_col(self, nidx):
-
-        ridx, cidx = nidx
-
-        # if the target of normalized index is a cidxumn
-        if ridx is None and cidx is not None:
-            # if user specified the grp_columns
-            if hasattr(self, 'grp_columns'):
-                return self.columns[cidx] in self.grp_columns
-            # , or treats all of the cidxumn's index is unique cidxumn
-            else:
-                return True
-        else:
-            return False
+    def to_elem_idx(self, row_idx, col_idx_or_key):
+        return row_idx * self.col_len + self.to_col_idx(col_idx_or_key)
 
     # --- implement standard mutable sequence ---
 
     def __len__(self):
-        return len(self.elems) / self.col_len
+        return self.row_len + self.col_len
 
     def __iter__(self):
-        for i in xrange(len(self)):
-            yield self[i]
+        for i in xrange(self.row_len):
+            yield i
+        for column in self.columns:
+            yield column
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx_or_key):
+        if isinstance(idx_or_key, (int, long)):
+            return RowProxy(self, idx_or_key)
+        if isinstance(idx_or_key, basestring):
+            return ColProxy(self, idx_or_key)
 
-        nidx = self._normalize_idx(idx)
+    def __setitem__(self, x, val):
+        pass
 
-        if self._is_to_grp_col(nidx):
-            return self.elems[self._to_slice(self._normalize_idx((0, idx)))]
-        else:
-            s = self._to_slice(self._normalize_idx(idx))
-            if isinstance(s, slice):
-                return Proxy(self, idx)
-            else:
-                return self.elems[s]
-
-    def __setitem__(self, idx, val):
-        self.change(idx, val)
-
-    def __delitem__(self, row_idx):
-        self.remove(row_idx)
-
-    def insert(self, idx, val):
-        raise TypeError('use model.add() instead')
+    def __delitem__(self, x, val):
+        pass
 
     # --- end ---
 
-    # --- simulate mapping's methods ---
-
-    def keys(self):
-        return list(self.columns)
-
-    def values(self):
-        return [self[col_name] for col_name in self.columns]
-
-    def items(self):
-        return [(col_name, self[col_name]) for col_name in self.columns]
-
-    def get(self, key, default=None):
-        if key in self:
-            return self[key]
-        else:
-            return default
-
-    # --- end ---
-
-    def _pick(self, row_idx, columns=None, only_keys=False):
-
-        if only_keys:
-            picked_columns = getattr(self, 'key_columns', None) or self.columns
-        elif columns is None:
-            picked_columns = self.columns
-
-        row = self[row_idx]
-
-        return dict((k, row[k]) for k in picked_columns)
-
-    def add(self, row):
+    def add_row(self, row):
+        self.row_len += 1
         self.elems.extend(row)
-        self.added_rows.append(row)
 
-    def change(self, idx, val):
-
-        nidx = self._normalize_idx(idx)
-
-        if self._is_to_grp_col(nidx):
-            vals = self.changed_row_vals.setdefault(self.columns[nidx[1]], {})
-            vals.update({self.columns[nidx[1]]: val})
-            conds = self.changed_row_conds.setdefault(self.columns[nidx[1]], {})
-            if not conds:
-                conds.update({self.columns[nidx[1]]: self[self.columns[nidx[1]]]})
-            val = (val, ) * len(self)
-        else:
-            vals = self.changed_row_vals.setdefault(nidx[0], {})
-            vals.update({self.columns[nidx[1]]: val})
-            conds = self.changed_row_conds.setdefault(nidx[0], {})
-            if not conds:
-                conds.update(self._pick(nidx[0], only_keys=True))
-
-        self.elems[self._to_slice(nidx)] = val
-
-    def remove(self, row_idx=None):
-
-        if row_idx is None:
-            for i in enumerate(self):
-                self.remove(i)
-        elif isinstance(row_idx, (int, long)):
-            if row_idx >= len(self):
-                raise ValueError('out of range')
-            else:
-                self.removed_row_conds.append(self._pick(row_idx, only_keys=True))
-                del self.elems[self._to_slice(self._normalize_idx(row_idx))]
-        else:
-            raise TypeError("'row_idx' must be int: %r" % row_idx)
+    def remove_row(self, row_idx):
+        self.row_len -= 1
+        start = row_idx * self.col_len
+        del self.elems[start:start+self.col_len]
 
     def commit(self):
-        for row in self.added_rows:
-            print sql.insert(self.table, self.columns, row)
-        print self.removed_row_conds
-        for cond in self.removed_row_conds:
-            print sql.delete(self.table, cond)
-        for row_idx in self.changed_row_conds:
-            print sql.update(self.table, self.changed_row_conds[row_idx], self.changed_row_vals[row_idx])
+        pass
+
 
 if __name__ == '__main__':
 
@@ -247,36 +153,34 @@ if __name__ == '__main__':
         ]
     )
 
-    print '* print the rows in the model:'
-    for i, row in enumerate(m):
-        print '%d:' % i, row
+    print '* dump the model:'
+    for k in m:
+        print '%-7s: %s' % (k, m[k])
     print
 
     print '* print the 2nd row and the values in this row:'
     print m[1]
-    print 'repr:', repr(m[1])
-    print
     for i, val in enumerate(m[1]):
         print '%d:' % i, val
     print
 
     print "* print the 'email' col and the values in this row:"
     print m['email']
-    print 'repr :', repr(m['email'])
     print
     for i, email in enumerate(m['email']):
         print '%d:' % i, email
     print
 
     print '* fix the typo'
-    m['email', 0] = 'mosky.tw@gmmail.com'
+    m['email'][0] = 'mosky.tw@gmmail.com'
     m['email'][0] = 'mosky.tw@gmail.com'
-    print m['email']
+    print m['email'][0]
     print
 
     print '* modified key'
-    m[0, 'serial'] = 10
+    m[0]['serial'] = 10
     print m[0]['serial']
+    print
 
     print "* print a unique col, 'user_id':"
     print m['user_id']
@@ -288,16 +192,21 @@ if __name__ == '__main__':
     print
 
     print '* remove the last row'
-    m.remove(2)
+    m.remove_row(2)
     print
 
     print '* add a row'
-    m.add((None, 'mosky', 'mosky@ubuntu-tw.org'))
+    m.add_row((None, 'mosky', 'mosky@ubuntu-tw.org'))
     print
 
     print '* print the rows in the model again:'
     for i, row in enumerate(m):
         print '%d:' % i, row
+    print
+
+    print '* dump the model:'
+    for k in m:
+        print '%-7s: %s' % (k, m[k])
     print
 
     m.commit()
