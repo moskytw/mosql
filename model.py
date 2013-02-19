@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import MutableSequence, MutableMapping
+import sql
 
 #from psycopg2 import pool
 #pool = pool.SimpleConnectionPool(1, 5, database='mosky')
@@ -34,6 +35,9 @@ class RowProxy(MutableMapping):
 
     def __repr__(self):
         return '<RowProxy for row %r: %r>' % (self.row_idx, dict(self))
+
+    def conds(self):
+        return dict((k, self[k]) for k in self.model.uni_col_names)
 
 class ColProxy(MutableSequence):
 
@@ -97,6 +101,13 @@ class Model(MutableMapping):
         else:
             return col_idx_or_key
 
+    def to_col_name(self, col_idx_or_key):
+        if isinstance(col_idx_or_key, (int, long)):
+            return self.col_names[col_idx_or_key]
+        else:
+            return col_idx_or_key
+
+
     def to_elem_idx(self, row_idx, col_idx_or_key):
         return row_idx * self.col_len + self.to_col_idx(col_idx_or_key)
 
@@ -145,24 +156,42 @@ class Model(MutableMapping):
             yield self.col(col_name)
 
     def set_elem(self, row_idx, col_idx_or_key, val):
-        self._elems[self.to_elem_idx(row_idx, col_idx_or_key)] = val
+
+        elem_idx = self.to_elem_idx(row_idx, col_idx_or_key)
+        uni_col_vals = tuple(self.elem(row_idx, uni_col_name) for uni_col_name in self.uni_col_names)
+        if uni_col_vals not in self.changed_row_conds:
+            if col_idx_or_key in self.grp_col_names:
+                self.changed_row_conds[uni_col_vals] = {col_idx_or_key: self._elems[elem_idx]}
+            else:
+                self.changed_row_conds[uni_col_vals] = self[row_idx].conds()
+
+        self._elems[elem_idx] = val
+
+        if uni_col_vals in self.changed_row_vals:
+            self.changed_row_vals[uni_col_vals][self.to_col_name(col_idx_or_key)] = self._elems[elem_idx]
+        else:
+            self.changed_row_vals[uni_col_vals] = {self.to_col_name(col_idx_or_key): self._elems[elem_idx]}
 
     def add_row(self, row):
-        self.row_len += 1
+        self.added_rows.append(row)
         self._elems.extend(row)
+        self.row_len += 1
 
     def remove_row(self, row_idx):
+        self.removed_row_conds.append(self[row_idx].conds())
         self.row_len -= 1
         start = row_idx * self.col_len
         del self._elems[start:start+self.col_len]
 
     def commit(self):
-        pass
-
+        for row in self.added_rows:
+            print sql.insert(self.table, self.col_names, row)
+        for row_cond in self.removed_row_conds:
+            print sql.delete(self.table, row_cond)
+        for k in self.changed_row_conds:
+            print sql.update(self.table, self.changed_row_conds[k], self.changed_row_vals[k])
 
 if __name__ == '__main__':
-
-    import sql
 
     Model.table = 'user_details'
     Model.col_names = ('serial', 'user_id', 'email')
@@ -177,18 +206,18 @@ if __name__ == '__main__':
         ]
     )
 
-    print '* dump the model:'
-    for k in m:
-        print '%-7s: %s' % (k, m[k])
+    print '* the model:'
+    for col_name in m:
+        print '%-7s:' % col_name, m[col_name]
     print
 
-    print '* print the 2nd row and the values in this row:'
+    print '* the 2nd row, and the values:'
     print m[1]
-    for i, val in enumerate(m[1]):
-        print '%d:' % i, val
+    for col_name, val in m[1].items():
+        print '%-7s:' % col_name, val
     print
 
-    print "* print the 'email' col and the values in this row:"
+    print "* the 'email' column, and the values:"
     print m['email']
     print
     for i, email in enumerate(m['email']):
@@ -201,61 +230,36 @@ if __name__ == '__main__':
     print m['email'][0]
     print
 
-    print '* modified key'
-    m[0]['serial'] = 10
-    print m[0]['serial']
-    print
+    ## NOTE: It is not recommended.
+    #print '* modified unique column'
+    #m[0]['serial'] = 10
+    #print m[0]['serial']
+    #print
 
-    print "* print a unique col, 'user_id':"
+    print "* a group column, 'user_id':"
     print m['user_id']
     print
 
-    print "* change 'user_id':"
+    print "* modifiy the group column, 'user_id':"
     m['user_id'] = 'mosky'
-    print m['user_id']
+    print 'modified:', m['user_id']
     print
 
     print '* remove the last row'
     m.remove_row(2)
+    print 'row_len: ', m.row_len
     print
 
     print '* add a row'
-    m.add_row((None, 'mosky', 'mosky@ubuntu-tw.org'))
+    m.add_row((3, 'mosky', 'mosky@ubuntu-tw.org'))
+    print 'row_len: ', m.row_len
     print
 
-    print '* dump the model again:'
-    for k in m:
-        print '%-7s: %s' % (k, m[k])
-    print
-
-    m.commit()
-
-    print '--- another model ---'
-    print
-
-    del Model.col_offsets
-    Model.col_names = ('user_id', 'name')
-    Model.uni_col_names = ('user_id')
-    Model.grp_col_names = Model.col_names
-
-    m = Model(
-        [
-            ('mosky', 'Mosky Liu'),
-        ]
-    )
-
-    print '* print the rows in the model:'
-    for i, row in enumerate(m):
-        print '%d:' % i, row
-    print
-
-    print '* print the cols in the model:'
-    for col_name in m.col_names:
+    print '* the model after above changes:'
+    for col_name in m:
         print '%-7s:' % col_name, m[col_name]
     print
 
-    print "* test the mapping's methods"
-    print 'keys  :', m.keys()
-    print 'values:', m.values()
-    print 'items :', m.items()
-    print 'get   :', m.get('no exists', 'default value')
+    print '* commit'
+    m.commit()
+    print
