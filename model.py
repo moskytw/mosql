@@ -217,12 +217,7 @@ if __name__ == '__main__':
     m.add_row((None, 'mosky', 'mosky@ubuntu-tw.org'))
     print
 
-    print '* print the rows in the model again:'
-    for i, row in enumerate(m):
-        print '%d:' % i, row
-    print
-
-    print '* dump the model:'
+    print '* dump the model again:'
     for k in m:
         print '%-7s: %s' % (k, m[k])
     print
