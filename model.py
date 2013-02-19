@@ -22,10 +22,10 @@ class RowProxy(MutableMapping):
             yield column
 
     def __getitem__(self, col_idx_or_key):
-        return self.model.elems[self.model.to_elem_idx(self.row_idx, col_idx_or_key)]
+        return self.model.elem(self.row_idx, col_idx_or_key)
 
     def __setitem__(self, col_idx_or_key, val):
-        self.model.elems[self.model.to_elem_idx(self.row_idx, col_idx_or_key)] = val
+        self.model.set_elem(self.row_idx, col_idx_or_key, val)
 
     def __delitem__(self, col_key):
         raise TypeError('use model.remove() instead')
@@ -51,10 +51,10 @@ class ColProxy(MutableSequence):
             yield self[i]
 
     def __getitem__(self, row_idx):
-        return self.model.elems[self.model.to_elem_idx(row_idx, self.col_idx)]
+        return self.model.elem(row_idx, self.col_idx)
 
     def __setitem__(self, row_idx, val):
-        self.model.elems[self.model.to_elem_idx(row_idx, self.col_idx)] = val
+        self.model.set_elem(row_idx, self.col_idx, val)
 
     def __delitem__(self, row_idx):
         raise TypeError('use model.remove() instead')
@@ -127,6 +127,9 @@ class Model(MutableMapping):
     def col(self, col_idx_or_key):
         return ColProxy(self, col_idx_or_key)
 
+    def elem(self, row_idx, col_idx_or_key):
+        return self.elems[self.to_elem_idx(row_idx, col_idx_or_key)]
+
     def rows(self):
         for i in xrange(self.row_len):
             yield self.row(i)
@@ -134,6 +137,9 @@ class Model(MutableMapping):
     def cols(self):
         for column in self.columns:
             yield self.col(column)
+
+    def set_elem(self, row_idx, col_idx_or_key, val):
+        self.elems[self.to_elem_idx(row_idx, col_idx_or_key)] = val
 
     def add_row(self, row):
         self.row_len += 1
