@@ -56,14 +56,14 @@ class Proxy(MutableSequence):
 class Model(MutableSequence):
 
     table = None
-    col_names = tuple()
+    columns = tuple()
 
     def __init__(self, rows):
 
         if not hasattr(self, 'col_offsets'):
-            self.__class__.col_offsets = dict((col_name, i) for i, col_name in enumerate(self.col_names))
+            self.__class__.col_offsets = dict((col_name, i) for i, col_name in enumerate(self.columns))
 
-        self.col_len = len(self.col_names)
+        self.col_len = len(self.columns)
 
         self.elems = []
         for i, row in enumerate(rows):
@@ -105,15 +105,15 @@ class Model(MutableSequence):
         else:
             return ridx*self.col_len+cidx
 
-    def _is_to_squash_col(self, nidx):
+    def _is_to_grp_col(self, nidx):
 
         ridx, cidx = nidx
 
         # if the target of normalized index is a cidxumn
         if ridx is None and cidx is not None:
-            # if user specified the squash_col_names
-            if hasattr(self, 'squash_col_names'):
-                return self.col_names[cidx] in self.squash_col_names
+            # if user specified the grp_columns
+            if hasattr(self, 'grp_columns'):
+                return self.columns[cidx] in self.grp_columns
             # , or treats all of the cidxumn's index is unique cidxumn
             else:
                 return True
@@ -133,7 +133,7 @@ class Model(MutableSequence):
 
         nidx = self._normalize_idx(idx)
 
-        if self._is_to_squash_col(nidx):
+        if self._is_to_grp_col(nidx):
             return self.elems[self._to_slice(self._normalize_idx((0, idx)))]
         else:
             s = self._to_slice(self._normalize_idx(idx))
@@ -156,13 +156,13 @@ class Model(MutableSequence):
     # --- simulate mapping's methods ---
 
     def keys(self):
-        return list(self.col_names)
+        return list(self.columns)
 
     def values(self):
-        return [self[col_name] for col_name in self.col_names]
+        return [self[col_name] for col_name in self.columns]
 
     def items(self):
-        return [(col_name, self[col_name]) for col_name in self.col_names]
+        return [(col_name, self[col_name]) for col_name in self.columns]
 
     def get(self, key, default=None):
         if key in self:
@@ -172,16 +172,16 @@ class Model(MutableSequence):
 
     # --- end ---
 
-    def _pick(self, row_idx, col_names=None, only_keys=False):
+    def _pick(self, row_idx, columns=None, only_keys=False):
 
         if only_keys:
-            picked_col_names = getattr(self, 'key_col_names', None) or self.col_names
-        elif col_names is None:
-            picked_col_names = self.col_names
+            picked_columns = getattr(self, 'key_columns', None) or self.columns
+        elif columns is None:
+            picked_columns = self.columns
 
         row = self[row_idx]
 
-        return dict((k, row[k]) for k in picked_col_names)
+        return dict((k, row[k]) for k in picked_columns)
 
     def add(self, row):
         self.elems.extend(row)
@@ -191,16 +191,16 @@ class Model(MutableSequence):
 
         nidx = self._normalize_idx(idx)
 
-        if self._is_to_squash_col(nidx):
-            vals = self.changed_row_vals.setdefault(self.col_names[nidx[1]], {})
-            vals.update({self.col_names[nidx[1]]: val})
-            conds = self.changed_row_conds.setdefault(self.col_names[nidx[1]], {})
+        if self._is_to_grp_col(nidx):
+            vals = self.changed_row_vals.setdefault(self.columns[nidx[1]], {})
+            vals.update({self.columns[nidx[1]]: val})
+            conds = self.changed_row_conds.setdefault(self.columns[nidx[1]], {})
             if not conds:
-                conds.update({self.col_names[nidx[1]]: self[self.col_names[nidx[1]]]})
+                conds.update({self.columns[nidx[1]]: self[self.columns[nidx[1]]]})
             val = (val, ) * len(self)
         else:
             vals = self.changed_row_vals.setdefault(nidx[0], {})
-            vals.update({self.col_names[nidx[1]]: val})
+            vals.update({self.columns[nidx[1]]: val})
             conds = self.changed_row_conds.setdefault(nidx[0], {})
             if not conds:
                 conds.update(self._pick(nidx[0], only_keys=True))
@@ -223,7 +223,7 @@ class Model(MutableSequence):
 
     def commit(self):
         for row in self.added_rows:
-            print sql.insert(self.table, self.col_names, row)
+            print sql.insert(self.table, self.columns, row)
         print self.removed_row_conds
         for cond in self.removed_row_conds:
             print sql.delete(self.table, cond)
@@ -235,9 +235,9 @@ if __name__ == '__main__':
     import sql
 
     Model.table = 'user_details'
-    Model.col_names = ('serial', 'user_id', 'email')
-    Model.key_col_names = set(['serial'])
-    Model.squash_col_names = set(['user_id'])
+    Model.columns = ('serial', 'user_id', 'email')
+    Model.key_columns = set(['serial'])
+    Model.grp_columns = set(['user_id'])
 
     m = Model(
         [
@@ -305,8 +305,8 @@ if __name__ == '__main__':
     print '--- another model ---'
     print
 
-    Model.col_names = ('user_id', 'name')
-    del Model.squash_col_names
+    Model.columns = ('user_id', 'name')
+    del Model.grp_columns
     del Model.col_offsets
 
     m = Model(
@@ -321,7 +321,7 @@ if __name__ == '__main__':
     print
 
     print '* print the cols in the model:'
-    for col_name in m.col_names:
+    for col_name in m.columns:
         print '%-7s:' % col_name, m[col_name]
     print
 
