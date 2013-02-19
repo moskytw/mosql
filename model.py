@@ -101,19 +101,17 @@ class Model(MutableMapping):
     # --- implement standard mutable sequence ---
 
     def __len__(self):
-        return self.row_len + self.col_len
+        return self.col_len
 
     def __iter__(self):
-        for i in xrange(self.row_len):
-            yield i
         for column in self.columns:
             yield column
 
-    def __getitem__(self, idx_or_key):
-        if isinstance(idx_or_key, (int, long)):
-            return RowProxy(self, idx_or_key)
-        if isinstance(idx_or_key, basestring):
-            return ColProxy(self, idx_or_key)
+    def __getitem__(self, x):
+        if isinstance(x, basestring):
+            return self.col(x)
+        elif isinstance(x, (int, long)):
+            return self.row(x)
 
     def __setitem__(self, x, val):
         pass
@@ -122,6 +120,20 @@ class Model(MutableMapping):
         pass
 
     # --- end ---
+
+    def row(self, i):
+        return RowProxy(self, i)
+
+    def col(self, col_idx_or_key):
+        return ColProxy(self, col_idx_or_key)
+
+    def rows(self):
+        for i in xrange(self.row_len):
+            yield self.row(i)
+
+    def cols(self):
+        for column in self.columns:
+            yield self.col(column)
 
     def add_row(self, row):
         self.row_len += 1
