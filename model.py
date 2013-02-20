@@ -166,12 +166,13 @@ class Model(MutableMapping):
         row_ident = self[row_idx].ident()
 
         col_name = self.to_col_name(col_idx_or_name)
-        if col_name in self.grp_col_names:
-            cond = {col_name: orig_elem}
-        else:
-            cond = self[row_idx].cond()
-
-        self.changed_row_conds.setdefault(row_ident, cond)
+        if col_name not in self.changed_row_conds:
+            if col_name in self.grp_col_names:
+                row_ident = col_name
+                cond = {col_name: orig_elem}
+            else:
+                cond = self[row_idx].cond()
+            self.changed_row_conds[row_ident] = cond
         self.changed_row_vals[row_ident][col_name] = val
 
     def add_row(self, row):
