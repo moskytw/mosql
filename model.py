@@ -36,7 +36,7 @@ class RowProxy(MutableMapping):
     def __repr__(self):
         return '<RowProxy for row %r: %r>' % (self.row_idx, dict(self))
 
-    def conds(self):
+    def cond(self):
         return dict((k, self[k]) for k in self.model.uni_col_names)
 
     def ident(self):
@@ -197,7 +197,7 @@ class Model(MutableMapping):
             if col_idx_or_key in self.grp_col_names:
                 self.changed_row_conds[uni_col_vals] = {col_idx_or_key: self._elems[elem_idx]}
             else:
-                self.changed_row_conds[uni_col_vals] = self[row_idx].conds()
+                self.changed_row_conds[uni_col_vals] = self[row_idx].cond()
 
         self._elems[elem_idx] = val
 
@@ -212,7 +212,7 @@ class Model(MutableMapping):
         self.row_len += 1
 
     def remove_row(self, row_idx):
-        self.removed_row_conds.append(self[row_idx].conds())
+        self.removed_row_conds.append(self[row_idx].cond())
         self.row_len -= 1
         start = row_idx * self.col_len
         del self._elems[start:start+self.col_len]
