@@ -160,25 +160,23 @@ class Model(MutableMapping):
 
     def set_elem(self, row_idx, col_idx_or_name, val):
 
-        elem_idx = self.to_elem_idx(row_idx, col_idx_or_name)
-        orig_elem = self._elems[elem_idx]
-        self._elems[elem_idx] = val
-
-        row_ident = self[row_idx].ident()
-
-        col_name = self.to_col_name(col_idx_or_name)
+        row = self[row_idx]
+        elem_idx  = self.to_elem_idx(row_idx, col_idx_or_name)
+        row_ident = row.ident()
+        col_name  = self.to_col_name(col_idx_or_name)
+        col_idx   = self.to_col_idx(col_idx_or_name)
 
         if row_ident not in self.changed_row_conds:
             if col_name in self.grp_col_names:
                 row_ident = col_name
-                cond = {col_name: orig_elem}
+                cond = {col_name: self._elems[elem_idx]}
             else:
-                cond = self[row_idx].cond()
-                cond[col_name] = orig_elem
+                cond = row.cond()
             self.changed_row_conds[row_ident] = cond
             self.changed_order.append(row_ident)
 
         self.changed_row_vals[row_ident][col_name] = val
+        self._elems[elem_idx] = val
 
     def add_row(self, row):
         self.added_rows.append(row)
@@ -234,14 +232,17 @@ if __name__ == '__main__':
 
     print '* fix the typo'
     m['email'][0] = 'mosky.tw@gmmail.com'
-    m['email'][0] = 'mosky.tw@gmail.com'
     print m['email'][0]
     print
 
-    # NOTE: It is not recommended.
     print '* modified unique column'
     m[0]['serial'] = 10
     print m[0]['serial']
+    print
+
+    print '* fix the typo, again'
+    m['email'][0] = 'mosky.tw@gmail.com'
+    print m['email'][0]
     print
 
     print "* a group column, 'user_id':"
