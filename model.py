@@ -177,7 +177,6 @@ class Model(MutableMapping):
                 cond[col_name] = orig_elem
             self.changed_row_conds[row_ident] = cond
             self.changed_order.append(row_ident)
-            print '>>>', row_ident
 
         self.changed_row_vals[row_ident][col_name] = val
 
