@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from collections import MutableSequence, MutableMapping
+from collections import defaultdict, MutableSequence, MutableMapping
 import sql
 
 #from psycopg2 import pool
@@ -96,7 +96,7 @@ class Model(MutableMapping):
         self.added_rows = []
         self.removed_row_conds = []
         self.changed_row_conds = {}
-        self.changed_row_vals = {}
+        self.changed_row_vals = defaultdict(dict)
 
     def to_col_idx(self, col_idx_or_key):
         if isinstance(col_idx_or_key, basestring):
@@ -160,19 +160,19 @@ class Model(MutableMapping):
     def set_elem(self, row_idx, col_idx_or_key, val):
 
         elem_idx = self.to_elem_idx(row_idx, col_idx_or_key)
-        uni_col_vals = self[row_idx].ident()
-        if uni_col_vals not in self.changed_row_conds:
-            if col_idx_or_key in self.grp_col_names:
-                self.changed_row_conds[uni_col_vals] = {col_idx_or_key: self._elems[elem_idx]}
-            else:
-                self.changed_row_conds[uni_col_vals] = self[row_idx].cond()
-
+        orig_elem = self._elems[elem_idx]
         self._elems[elem_idx] = val
 
-        if uni_col_vals in self.changed_row_vals:
-            self.changed_row_vals[uni_col_vals][self.to_col_name(col_idx_or_key)] = self._elems[elem_idx]
+        row_ident = self[row_idx].ident()
+
+        col_name = self.to_col_name(col_idx_or_key)
+        if col_name in self.grp_col_names:
+            cond = {col_name: orig_elem}
         else:
-            self.changed_row_vals[uni_col_vals] = {self.to_col_name(col_idx_or_key): self._elems[elem_idx]}
+            cond = self[row_idx].cond()
+
+        self.changed_row_conds.setdefault(row_ident, cond)
+        self.changed_row_vals[row_ident][col_name] = val
 
     def add_row(self, row):
         self.added_rows.append(row)
