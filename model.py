@@ -39,6 +39,9 @@ class RowProxy(MutableMapping):
     def conds(self):
         return dict((k, self[k]) for k in self.model.uni_col_names)
 
+    def ident(self):
+        return tuple(self[k] for k in self.model.uni_col_names)
+
 class ColProxy(MutableSequence):
 
     def __init__(self, model, col_idx_or_key):
@@ -139,7 +142,6 @@ class Model(MutableMapping):
         else:
             return col_idx_or_key
 
-
     def to_elem_idx(self, row_idx, col_idx_or_key):
         return row_idx * self.col_len + self.to_col_idx(col_idx_or_key)
 
@@ -190,7 +192,7 @@ class Model(MutableMapping):
     def set_elem(self, row_idx, col_idx_or_key, val):
 
         elem_idx = self.to_elem_idx(row_idx, col_idx_or_key)
-        uni_col_vals = tuple(self.elem(row_idx, uni_col_name) for uni_col_name in self.uni_col_names)
+        uni_col_vals = self[row_idx].ident()
         if uni_col_vals not in self.changed_row_conds:
             if col_idx_or_key in self.grp_col_names:
                 self.changed_row_conds[uni_col_vals] = {col_idx_or_key: self._elems[elem_idx]}
