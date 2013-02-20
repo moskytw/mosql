@@ -74,38 +74,6 @@ class ColProxy(MutableSequence):
     def __repr__(self):
         return '<ColProxy for col %r (%s): %r>' % (self.col_idx, self.model.col_names[self.col_idx], list(self))
 
-class Changes(MutableMapping):
-
-    def __init__(self, data=None):
-        self.order = []
-        self.d = {}
-        if data: self.update(data)
-
-    def __len__(self):
-        return len(self.order)
-
-    def __iter__(self):
-        for key in self.order:
-            yield key
-
-    def __getitem__(self, key):
-        if key in self.d:
-            return self.d[key]
-        else:
-            default = self.d[key] = {}
-            return default
-
-    def __setitem__(self, key, val):
-        if key not in self.d:
-            self.order.append(key)
-        self.d[key] = val
-
-    def __delitem__(self, key):
-        del self.d[key]
-
-    def __repr__(self):
-        return 'Changes(%r)' % self.d
-
 class Model(MutableMapping):
 
     table = None
@@ -297,13 +265,3 @@ if __name__ == '__main__':
     print '* commit'
     m.commit()
     print
-
-    changes = Changes()
-    changes['a'] = 'hello'
-    changes['b'] = 'world'
-    changes['c'] = '!'
-    changes.update((('d', 1), ('e', 2)))
-    print changes.update
-    for k in changes:
-        print k, changes[k]
-    print changes.order
