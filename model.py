@@ -97,6 +97,7 @@ class Model(MutableMapping):
         self.removed_row_conds = []
         self.changed_row_conds = {}
         self.changed_row_vals = defaultdict(dict)
+        self.changed_order = []
 
     def to_col_idx(self, col_idx_or_name):
         if isinstance(col_idx_or_name, basestring):
@@ -166,13 +167,18 @@ class Model(MutableMapping):
         row_ident = self[row_idx].ident()
 
         col_name = self.to_col_name(col_idx_or_name)
-        if col_name not in self.changed_row_conds:
+
+        if row_ident not in self.changed_row_conds:
             if col_name in self.grp_col_names:
                 row_ident = col_name
                 cond = {col_name: orig_elem}
             else:
                 cond = self[row_idx].cond()
+                cond[col_name] = orig_elem
             self.changed_row_conds[row_ident] = cond
+            self.changed_order.append(row_ident)
+            print '>>>', row_ident
+
         self.changed_row_vals[row_ident][col_name] = val
 
     def add_row(self, row):
@@ -191,7 +197,7 @@ class Model(MutableMapping):
             print sql.insert(self.table, self.col_names, row)
         for row_cond in self.removed_row_conds:
             print sql.delete(self.table, row_cond)
-        for k in self.changed_row_conds:
+        for k in self.changed_order:
             print sql.update(self.table, self.changed_row_conds[k], self.changed_row_vals[k])
 
 if __name__ == '__main__':
@@ -233,11 +239,11 @@ if __name__ == '__main__':
     print m['email'][0]
     print
 
-    ## NOTE: It is not recommended.
-    #print '* modified unique column'
-    #m[0]['serial'] = 10
-    #print m[0]['serial']
-    #print
+    # NOTE: It is not recommended.
+    print '* modified unique column'
+    m[0]['serial'] = 10
+    print m[0]['serial']
+    print
 
     print "* a group column, 'user_id':"
     print m['user_id']
