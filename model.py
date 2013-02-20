@@ -22,13 +22,13 @@ class RowProxy(MutableMapping):
         for col_name in self.model.col_names:
             yield col_name
 
-    def __getitem__(self, col_idx_or_key):
-        return self.model.elem(self.row_idx, col_idx_or_key)
+    def __getitem__(self, col_idx_or_name):
+        return self.model.elem(self.row_idx, col_idx_or_name)
 
-    def __setitem__(self, col_idx_or_key, val):
-        self.model.set_elem(self.row_idx, col_idx_or_key, val)
+    def __setitem__(self, col_idx_or_name, val):
+        self.model.set_elem(self.row_idx, col_idx_or_name, val)
 
-    def __delitem__(self, col_key):
+    def __delitem__(self, col_name):
         raise TypeError('use model.remove() instead')
 
     # --- implement standard mutable sequence ---
@@ -44,9 +44,9 @@ class RowProxy(MutableMapping):
 
 class ColProxy(MutableSequence):
 
-    def __init__(self, model, col_idx_or_key):
+    def __init__(self, model, col_idx_or_name):
         self.model = model
-        self.col_idx = self.model.to_col_idx(col_idx_or_key)
+        self.col_idx = self.model.to_col_idx(col_idx_or_name)
 
     # --- implement standard mutable sequence ---
 
@@ -98,20 +98,20 @@ class Model(MutableMapping):
         self.changed_row_conds = {}
         self.changed_row_vals = defaultdict(dict)
 
-    def to_col_idx(self, col_idx_or_key):
-        if isinstance(col_idx_or_key, basestring):
-            return self.col_offsets[col_idx_or_key]
+    def to_col_idx(self, col_idx_or_name):
+        if isinstance(col_idx_or_name, basestring):
+            return self.col_offsets[col_idx_or_name]
         else:
-            return col_idx_or_key
+            return col_idx_or_name
 
-    def to_col_name(self, col_idx_or_key):
-        if isinstance(col_idx_or_key, (int, long)):
-            return self.col_names[col_idx_or_key]
+    def to_col_name(self, col_idx_or_name):
+        if isinstance(col_idx_or_name, (int, long)):
+            return self.col_names[col_idx_or_name]
         else:
-            return col_idx_or_key
+            return col_idx_or_name
 
-    def to_elem_idx(self, row_idx, col_idx_or_key):
-        return row_idx * self.col_len + self.to_col_idx(col_idx_or_key)
+    def to_elem_idx(self, row_idx, col_idx_or_name):
+        return row_idx * self.col_len + self.to_col_idx(col_idx_or_name)
 
     # --- implement standard mutable sequence ---
 
@@ -143,11 +143,11 @@ class Model(MutableMapping):
     def row(self, i):
         return RowProxy(self, i)
 
-    def col(self, col_idx_or_key):
-        return ColProxy(self, col_idx_or_key)
+    def col(self, col_idx_or_name):
+        return ColProxy(self, col_idx_or_name)
 
-    def elem(self, row_idx, col_idx_or_key):
-        return self._elems[self.to_elem_idx(row_idx, col_idx_or_key)]
+    def elem(self, row_idx, col_idx_or_name):
+        return self._elems[self.to_elem_idx(row_idx, col_idx_or_name)]
 
     def rows(self):
         for i in xrange(self.row_len):
@@ -157,15 +157,15 @@ class Model(MutableMapping):
         for col_name in self.col_names:
             yield self.col(col_name)
 
-    def set_elem(self, row_idx, col_idx_or_key, val):
+    def set_elem(self, row_idx, col_idx_or_name, val):
 
-        elem_idx = self.to_elem_idx(row_idx, col_idx_or_key)
+        elem_idx = self.to_elem_idx(row_idx, col_idx_or_name)
         orig_elem = self._elems[elem_idx]
         self._elems[elem_idx] = val
 
         row_ident = self[row_idx].ident()
 
-        col_name = self.to_col_name(col_idx_or_key)
+        col_name = self.to_col_name(col_idx_or_name)
         if col_name in self.grp_col_names:
             cond = {col_name: orig_elem}
         else:
