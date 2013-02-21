@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from collections import defaultdict, MutableSequence, MutableMapping
+from itertools import groupby
 import sql
-
-#from psycopg2 import pool
-#pool = pool.SimpleConnectionPool(1, 5, database='mosky')
 
 class RowProxy(MutableMapping):
 
@@ -80,24 +78,55 @@ class Model(MutableMapping):
     col_names = tuple()
     uni_col_names = tuple()
     grp_col_names = tuple()
+    ord_col_names = tuple()
 
-    def __init__(self, rows):
+    def __init__(self, grp_col=None):
 
         if not hasattr(self, 'col_offsets'):
             self.__class__.col_offsets = dict((col_name, i) for i, col_name in enumerate(self.col_names))
 
-        self.row_len = len(rows)
-        self.col_len = len(self.col_names)
-
+        if grp_col:
+            self.grp_col_vals = dict(zip(self.grp_col_names, grp_col))
         self._elems = []
-        for i, row in enumerate(rows):
-            self._elems.extend(row)
+
+        self.col_len = len(self.col_names)
+        self.row_len = 0
 
         self.added_rows = []
         self.removed_row_conds = []
         self.changed_row_conds = {}
         self.changed_row_vals = defaultdict(dict)
         self.changed_order = []
+
+    def load(self, rows):
+
+        for i, row in enumerate(rows):
+            self._elems.extend(row)
+
+        self.col_len = len(self.col_names)
+        self.row_len = len(self._elems) / self.col_len
+
+    @classmethod
+    def find(cls, **where):
+        model = cls()
+        cur = cls.execute(sql=sql.select(cls.table, where, cls.col_names, order_by=cls.grp_col_names+cls.ord_col_names))
+        rows = cur.fetchall()
+        if not rows:
+            return None
+        elif not cls.grp_col_names or all(grp_col_name in where for grp_col_name in cls.grp_col_names):
+            model = cls()
+            model.load(rows)
+            return model
+        else:
+            grp_col_idxs = map(model.to_col_idx, cls.grp_col_names)
+            to_key = lambda row: map(row.__getitem__, grp_col_idxs)
+            models = []
+            for key, grouped_rows in groupby(rows, key=to_key):
+                print key
+                model = cls(key)
+                model.load(grouped_rows)
+                models.append(model)
+            return models
 
     def to_col_idx(self, col_idx_or_name):
         if isinstance(col_idx_or_name, basestring):
@@ -126,15 +155,23 @@ class Model(MutableMapping):
     def __getitem__(self, x):
         if isinstance(x, basestring):
             if x in self.grp_col_names:
-                return self.elem(0, x)
+                return self.grp_col_vals.get(x)
             else:
                 return self.col(x)
         elif isinstance(x, (int, long)):
             return self.row(x)
 
     def __setitem__(self, grp_col_name, val):
-        if grp_col_name in self.grp_col_names:
-            self.set_elem(0, grp_col_name, val)
+        if grp_col_name not in self.grp_col_names: return
+
+        elem_idx = self.to_elem_idx(0, grp_col_name)
+
+        if grp_col_name not in self.changed_row_conds:
+            self.changed_row_conds[grp_col_name] = {grp_col_name: self._elems[elem_idx]}
+            self.changed_order.append(grp_col_name)
+        self.changed_row_vals[grp_col_name][grp_col_name] = val
+
+        self.grp_col_vals[grp_col_name] = val
 
     def __delitem__(self, x, val):
         pass
@@ -161,22 +198,23 @@ class Model(MutableMapping):
     def set_elem(self, row_idx, col_idx_or_name, val):
 
         row = self[row_idx]
-        elem_idx  = self.to_elem_idx(row_idx, col_idx_or_name)
-        row_ident = row.ident()
-        col_name  = self.to_col_name(col_idx_or_name)
         col_idx   = self.to_col_idx(col_idx_or_name)
+        col_name  = self.to_col_name(col_idx_or_name)
+        row_ident = row.ident()
 
         if row_ident not in self.changed_row_conds:
-            if col_name in self.grp_col_names:
-                row_ident = col_name
-                cond = {col_name: self._elems[elem_idx]}
-            else:
-                cond = row.cond()
-            self.changed_row_conds[row_ident] = cond
+            self.changed_row_conds[row_ident] = row.cond()
             self.changed_order.append(row_ident)
 
         self.changed_row_vals[row_ident][col_name] = val
-        self._elems[elem_idx] = val
+        self._elems[self.to_elem_idx(row_idx, col_idx_or_name)] = val
+
+    def add(self, **vals):
+        vals.update(self.grp_col_vals)
+        row = [None] * self.col_len
+        for col_name, offset in self.col_offsets.items():
+            row[offset] = vals[col_name]
+        self.add_row(row)
 
     def add_row(self, row):
         self.added_rows.append(row)
@@ -189,86 +227,78 @@ class Model(MutableMapping):
         start = row_idx * self.col_len
         del self._elems[start:start+self.col_len]
 
+    @staticmethod
+    def execute(self, sql=None, sqls=None):
+        if sql:
+            print sql
+        if sqls:
+            for sql in sqls:
+                print sql
+
     def commit(self):
+        sqls = []
         for row in self.added_rows:
-            print sql.insert(self.table, self.col_names, row)
+            sqls.append(sql.insert(self.table, self.col_names, row))
         for row_cond in self.removed_row_conds:
-            print sql.delete(self.table, row_cond)
+            sqls.append(self.execute(sql.delete(self.table, row_cond)))
         for k in self.changed_order:
-            print sql.update(self.table, self.changed_row_conds[k], self.changed_row_vals[k])
+            sqls.append(sql.update(self.table, self.changed_row_conds[k], self.changed_row_vals[k]))
+        self.execute(sqls=sqls)
+
+    def __repr__(self):
+        return '<%s %s>' % (self.__class__.__name__, dict(self))
+
+from psycopg2 import pool
+pool = pool.SimpleConnectionPool(1, 5, database='mosky')
+
+class PostgreSQLModel(Model):
+
+    @staticmethod
+    def execute(sql=None, sqls=None):
+        conn = pool.getconn()
+        cur = conn.cursor()
+        if sql:
+            print sql
+            cur.execute(sql)
+        if sqls:
+            for sql in sqls:
+                print sql
+                cur.execute(sql)
+        conn.commit()
+        conn = pool.putconn(conn)
+        return cur
+
+class User(PostgreSQLModel):
+
+    table = 'users'
+    col_names = ('user_id', 'name')
+    uni_col_names = ('user_id', )
+
+class Detail(PostgreSQLModel):
+
+    table = 'details'
+    col_names = ('detail_id', 'user_id', 'key', 'val')
+    uni_col_names = ('detail_id', )
+    grp_col_names = ('user_id', 'key')
+    ord_col_names = ('detail_id', )
 
 if __name__ == '__main__':
 
-    Model.table = 'user_details'
-    Model.col_names = ('serial', 'user_id', 'email')
-    Model.uni_col_names = set(['serial'])
-    Model.grp_col_names = set(['user_id'])
+    from pprint import pprint
 
-    m = Model(
-        [
-            (0, 'moskytw', 'mosky.tw@typo.com'),
-            (1, 'moskytw', 'mosky.liu@gmail.com'),
-            (2, 'moskytw', '<It is not used anymore.>'),
-        ]
-    )
+    details = Detail.find(user_id='mosky')
+    for detail in details:
+        print detail
 
-    print '* the model:'
-    for col_name in m:
-        print '%-7s:' % col_name, m[col_name]
-    print
+    detail = details[1]
+    print detail
+    detail['key'] = 'emails'
+    detail['val'][0] = 'test@gmail.com'
+    detail.commit()
 
-    print '* the 2nd row, and the values:'
-    print m[1]
-    for col_name, val in m[1].items():
-        print '%-7s:' % col_name, val
-    print
+    #detail = Detail(('mosky', 'email'))
+    #detail.add(detail_id=11, val='newmail@mosky.tw')
+    #detail.commit()
 
-    print "* the 'email' column, and the values:"
-    print m['email']
-    print
-    for i, email in enumerate(m['email']):
-        print '%d:' % i, email
-    print
-
-    print '* fix the typo'
-    m['email'][0] = 'mosky.tw@gmmail.com'
-    print m['email'][0]
-    print
-
-    print '* modified unique column'
-    m[0]['serial'] = 10
-    print m[0]['serial']
-    print
-
-    print '* fix the typo, again'
-    m['email'][0] = 'mosky.tw@gmail.com'
-    print m['email'][0]
-    print
-
-    print "* a group column, 'user_id':"
-    print m['user_id']
-    print
-
-    print "* modifiy the group column, 'user_id':"
-    m['user_id'] = 'mosky'
-    print 'modified:', m['user_id']
-    print
-
-    print '* remove the last row'
-    m.remove_row(2)
-    print 'row_len: ', m.row_len
-    print
-
-    print '* add a row'
-    m.add_row((3, 'mosky', 'mosky@ubuntu-tw.org'))
-    print 'row_len: ', m.row_len
-    print
-
-    print '* the model after above changes:'
-    for col_name in m:
-        print '%-7s:' % col_name, m[col_name]
-    print
-
-    print '* commit'
-    m.commit()
-    print
+    user = User.find(user_id='mosky')
+    print user
