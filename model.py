@@ -31,7 +31,7 @@ class RowProxy(MutableMapping):
     def __delitem__(self, col_name):
         raise TypeError('use model.remove() instead')
 
-    # --- implement standard mutable sequence ---
+    # --- end ---
 
     def __repr__(self):
         return '<RowProxy for row %r: %r>' % (self.row_idx, dict(self))
@@ -69,7 +69,7 @@ class ColProxy(MutableSequence):
     def insert(self, row_idx, val):
         raise TypeError('use model.add() instead')
 
-    # --- implement standard mutable sequence ---
+    # --- end ---
 
     def __repr__(self):
         return '<ColProxy for col %r (%s): %r>' % (self.col_idx, self.model.col_names[self.col_idx], list(self))
