@@ -454,8 +454,8 @@ def insert(table, columns=None, values=None, **fields):
 select_tmpl = SQLTemplate(
     ('select', '<select>'),
     ('from'  , '<table>'),
-    ('<join>', ),
     ('where' , '<where>'),
+    ('<join>', ),
     ('group by', '<group_by>'),
     ('having'  , '<having>'),
     ('order by', '<order_by>'),
