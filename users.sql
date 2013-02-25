@@ -22,7 +22,6 @@ insert into users values ('cindy', 'Cindy Crawford');
 
 insert into details values (default, 'mosky', 'email', 'mosky.tw@gmail.com');
 insert into details values (default, 'mosky', 'email', 'mosky.liu@pinkoi.com');
-insert into details values (default, 'mosky', 'email', 'mosky@ubuntu-tw.org');
 
 insert into details values (default, 'mosky', 'address', 'It is my first address.');
 insert into details values (default, 'mosky', 'address', 'It is my second address.');
@@ -34,3 +33,5 @@ insert into details values (default, 'bob', 'email', 'bob@gmail.com');
 
 insert into details values (default, 'cindy', 'email', 'cindy@facebook.com');
 insert into details values (default, 'cindy', 'email', 'cindy@gmail.com');
+
+insert into details values (default, 'mosky', 'email', 'mosky@ubuntu-tw.org');
