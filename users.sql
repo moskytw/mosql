@@ -13,8 +13,7 @@ create table details (
     val       varchar(256)
 );
 
-create index user_id_index on details (user_id);
-create index key_index on details (key);
+create index details_user_id_key_index on details (user_id, key);
 
 insert into users values ('mosky', 'Mosky Liu');
 insert into users values ('andy' , 'Andy Warhol');
