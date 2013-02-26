@@ -84,12 +84,12 @@ if __name__ == '__main__':
         pprint(rows)
     print
 
-    cur.execute('select * from details order by user_id, key')
+    cur.execute('select * from details order by user_id, key, detail_id')
     for rows in Detail.arrange(cur.fetchall()):
         pprint(rows)
     print
 
-    cur.execute("select * from details where user_id='mosky' and key='email'")
+    cur.execute("select * from details where user_id='mosky' and key='email' order by detail_id")
     detail = list(Detail.arrange(cur.fetchall()))[0]
     print detail
     # TODO:
