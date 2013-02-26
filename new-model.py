@@ -24,7 +24,7 @@ class ModelMeta(type):
 
         return Model
 
-class Model(object):
+class Model(dict):
 
     __metaclass__ = ModelMeta
 
@@ -41,27 +41,23 @@ class Model(object):
             model = cls()
 
             for i, name in enumerate(cls.group):
-                setattr(model, name, grouped_vals[i])
+                model[name] = grouped_vals[i]
 
             for name, row in izip(cls.columns, izip(*rows)):
-                if not hasattr(model, name):
-                    setattr(model, name, row)
+                if name not in model:
+                    model[name] = row
 
             yield model
 
-    def __init__(self, d=None):
-        if d:
-            for k in d:
-                setattr(self, k, d[v])
+    def __init__(self, x=None):
+        if x:
+            super(Model, self).__init__(x)
 
-    def to_ordered_tuples(self):
-        return ((name, getattr(self, name)) for name in self.columns)
-
-    def to_dict(self):
-        return dict(self.to_ordered_tuples())
+    def items(self):
+        return ((name, mode[name]) for name in self.columns)
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.__class__.to_dict(self))
+        return '%s(%s)' % (self.__class__.__name__, super(Model, self).__repr__())
 
 class User(Model):
     columns = ('user_id', 'name')
@@ -91,8 +87,8 @@ if __name__ == '__main__':
     detail = list(Detail.arrange(cur.fetchall()))[0]
     print detail
     # TODO:
-    #detail.val[0] = "rarely used"
-    #del detail.val[0]
+    #detail['val'][0] = "rarely used"
+    #del detail['val'][0]
     #detail.add_row('DEFALUT', 'me@mosky.tw')
     #print detail
 
