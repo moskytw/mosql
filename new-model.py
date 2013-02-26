@@ -49,13 +49,11 @@ class Model(object):
 
             yield model
 
-    @classmethod
-    def to_ordered_tuples(cls, model):
-        return ((name, getattr(model, name)) for name in cls.columns)
+    def to_ordered_tuples(self):
+        return ((name, getattr(self, name)) for name in self.columns)
 
-    @classmethod
-    def to_dict(cls, model):
-        return dict(cls.to_ordered_tuples(model))
+    def to_dict(self):
+        return dict(self.to_ordered_tuples())
 
     def __init__(self, d=None):
         if d:
