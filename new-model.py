@@ -4,43 +4,46 @@
 from itertools import groupby, izip
 import psycopg2
 
-class Columns(object):
 
-    def __init__(self, *names):
-        self.names = names
-        self.offsets = dict((k, i) for i, k in enumerate(names))
+class ModelMeta(type):
 
-        self.primary_key = names
-        self.primary_key_idxs = tuple(range(len(names)))
+    def __new__(meta, name, bases, attrs):
 
-        self.to_group_names = names
-        self.to_group_sets = set(names)
-        self.to_group_names_idxs = self.primary_key_idxs
+        Model = super(ModelMeta, meta).__new__(meta, name, bases, attrs)
 
-    def set_primary_key(self, *names):
-        self.primary_key = names
-        self.primary_key_idxs = tuple(self.offsets[k] for k in names)
+        if Model.group is None:
+            Model.group = Model.columns
 
-    def set_to_group_names(self, *names):
-        self.to_group_names = names
-        self.to_group_sets = set(names)
-        self.to_group_names_idxs = tuple(self.offsets[k] for k in names)
+        if Model.prikey is None:
+            Model.prikey = Model.columns
+
+        if Model.columns:
+            Model.offsets = dict((k, i) for i, k in enumerate(Model.columns))
+            Model.group_idxs = tuple(Model.offsets[k] for k in Model.group)
+            Model.prikey_idxs = tuple(Model.offsets[k] for k in Model.prikey)
+
+        return Model
 
 class Model(object):
 
+    __metaclass__ = ModelMeta
+
     columns = None
+    group   = None
+    prikey  = None
 
     @classmethod
     def arrange(cls, rows):
-        keyfunc = lambda row: tuple(row[i] for i in cls.columns.to_group_names_idxs)
+        keyfunc = lambda row: tuple(row[i] for i in cls.group_idxs)
+
         for grouped_vals, rows in groupby(rows, keyfunc):
 
             model = cls()
 
-            for i, name in enumerate(cls.columns.to_group_names):
+            for i, name in enumerate(cls.group):
                 setattr(model, name, grouped_vals[i])
 
-            for name, row in izip(cls.columns.names, izip(*rows)):
+            for name, row in izip(cls.columns, izip(*rows)):
                 if not hasattr(model, name):
                     setattr(model, name, row)
 
@@ -48,7 +51,7 @@ class Model(object):
 
     @classmethod
     def to_ordered_tuples(cls, model):
-        return ((name, getattr(model, name)) for name in cls.columns.names)
+        return ((name, getattr(model, name)) for name in cls.columns)
 
     @classmethod
     def to_dict(cls, model):
@@ -63,11 +66,11 @@ class Model(object):
         return '%s(%r)' % (self.__class__.__name__, self.__class__.to_dict(self))
 
 class User(Model):
-    columns = Columns('user_id', 'name')
+    columns = ('user_id', 'name')
 
 class Detail(Model):
-    columns = Columns('detail_id', 'user_id', 'key', 'val')
-    columns.set_to_group_names('user_id', 'key')
+    columns = ('detail_id', 'user_id', 'key', 'val')
+    group = ('user_id', 'key')
 
 if __name__ == '__main__':
 
