@@ -34,8 +34,8 @@ class Model(object):
 
     @classmethod
     def arrange(cls, rows):
-        keyfunc = lambda row: tuple(row[i] for i in cls.group_idxs)
 
+        keyfunc = lambda row: tuple(row[i] for i in cls.group_idxs)
         for grouped_vals, rows in groupby(rows, keyfunc):
 
             model = cls()
@@ -49,16 +49,16 @@ class Model(object):
 
             yield model
 
+    def __init__(self, d=None):
+        if d:
+            for k in d:
+                setattr(self, k, d[v])
+
     def to_ordered_tuples(self):
         return ((name, getattr(self, name)) for name in self.columns)
 
     def to_dict(self):
         return dict(self.to_ordered_tuples())
-
-    def __init__(self, d=None):
-        if d:
-            for k in d:
-                setattr(self, k, d[v])
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self.__class__.to_dict(self))
