@@ -14,13 +14,13 @@ class ModelMeta(type):
         if Model.group is None:
             Model.group = Model.columns
 
-        if Model.prikey is None:
-            Model.prikey = Model.columns
+        if Model.identity is None:
+            Model.identity = Model.columns
 
         if Model.columns:
             Model.offsets = dict((k, i) for i, k in enumerate(Model.columns))
             Model.group_idxs = tuple(Model.offsets[k] for k in Model.group)
-            Model.prikey_idxs = tuple(Model.offsets[k] for k in Model.prikey)
+            Model.identity_idxs = tuple(Model.offsets[k] for k in Model.identity)
 
         return Model
 
@@ -28,12 +28,12 @@ class Model(dict):
 
     __metaclass__ = ModelMeta
 
-    columns = None
-    group   = None
-    prikey  = None
+    columns  = None
+    group    = None
+    identity = None
 
     @classmethod
-    def arrange(cls, rows):
+    def group(cls, rows):
 
         keyfunc = lambda row: tuple(row[i] for i in cls.group_idxs)
         for grouped_vals, rows in groupby(rows, keyfunc):
@@ -74,17 +74,17 @@ if __name__ == '__main__':
     cur = conn.cursor()
 
     cur.execute('select * from users order by user_id')
-    for rows in User.arrange(cur.fetchall()):
+    for rows in User.group(cur.fetchall()):
         pprint(rows)
     print
 
     cur.execute('select * from details order by user_id, key, detail_id')
-    for rows in Detail.arrange(cur.fetchall()):
+    for rows in Detail.group(cur.fetchall()):
         pprint(rows)
     print
 
     cur.execute("select * from details where user_id='mosky' and key='email' order by detail_id")
-    detail = list(Detail.arrange(cur.fetchall()))[0]
+    detail = list(Detail.group(cur.fetchall()))[0]
     print detail
     # TODO:
     #detail['val'][0] = "rarely used"
