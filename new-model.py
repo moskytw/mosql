@@ -123,15 +123,15 @@ class Model(dict):
     def __repr__(self):
         return '%s(%s)' % (self.__class__.__name__, super(Model, self).__repr__())
 
-class User(Model):
-    table = 'user'
-    columns = ('user_id', 'name')
-    identity = ('user_id', )
+class Person(Model):
+    table = 'person'
+    columns = ('person_id', 'name')
+    identity = ('person_id', )
 
 class Detail(Model):
     table = 'detail'
-    columns = ('detail_id', 'user_id', 'key', 'val')
-    group = ('user_id', 'key')
+    columns = ('detail_id', 'person_id', 'key', 'val')
+    group = ('person_id', 'key')
     identity = ('detail_id', )
 
 if __name__ == '__main__':
@@ -141,17 +141,17 @@ if __name__ == '__main__':
     conn = psycopg2.connect(database='mosky')
     cur = conn.cursor()
 
-    cur.execute('select * from users order by user_id')
-    for rows in User.arrange(cur.fetchall()):
+    cur.execute('select * from person order by person_id')
+    for rows in Person.arrange(cur.fetchall()):
         pprint(rows)
     print
 
-    cur.execute('select * from details order by user_id, key, detail_id')
+    cur.execute('select * from detail order by person_id, key, detail_id')
     for rows in Detail.arrange(cur.fetchall()):
         pprint(rows)
     print
 
-    cur.execute("select * from details where user_id='mosky' and key='email' order by detail_id")
+    cur.execute("select * from detail where person_id='mosky' and key='email' order by detail_id")
     detail = list(Detail.arrange(cur.fetchall()))[0]
     print detail
     detail['val'][0] = "rarely used"

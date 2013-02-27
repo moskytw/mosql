@@ -1,37 +1,40 @@
 drop table if exists details;
 drop table if exists users;
 
-create table users (
-    user_id varchar(128) primary key,
-    name    varchar(256)
+drop table if exists detail;
+drop table if exists person;
+
+create table person (
+    person_id varchar(128) primary key,
+    name      varchar(256)
 );
 
-create table details (
+create table detail (
     detail_id serial primary key,
-    user_id   varchar(128) references users(user_id),
+    person_id varchar(128) references person(person_id),
     key       varchar(256),
     val       varchar(256)
 );
 
-create index details_user_id_key_index on details (user_id, key);
+create index detail_person_id_key_index on detail (person_id, key);
 
-insert into users values ('mosky', 'Mosky Liu');
-insert into users values ('andy' , 'Andy Warhol');
-insert into users values ('bob'  , 'Bob Dylan');
-insert into users values ('cindy', 'Cindy Crawford');
+insert into person values ('mosky', 'Mosky Liu');
+insert into person values ('andy' , 'Andy Warhol');
+insert into person values ('bob'  , 'Bob Dylan');
+insert into person values ('cindy', 'Cindy Crawford');
 
-insert into details values (default, 'mosky', 'email', 'mosky.tw@gmail.com');
-insert into details values (default, 'mosky', 'email', 'mosky.liu@pinkoi.com');
+insert into detail values (default, 'mosky', 'email', 'mosky.tw@gmail.com');
+insert into detail values (default, 'mosky', 'email', 'mosky.liu@pinkoi.com');
 
-insert into details values (default, 'mosky', 'address', 'It is my first address.');
-insert into details values (default, 'mosky', 'address', 'It is my second address.');
+insert into detail values (default, 'mosky', 'address', 'It is my first address.');
+insert into detail values (default, 'mosky', 'address', 'It is my second address.');
 
-insert into details values (default, 'andy', 'email', 'andy@gmail.com');
+insert into detail values (default, 'andy', 'email', 'andy@gmail.com');
 
-insert into details values (default, 'bob', 'email', 'bob@yahoo.com');
-insert into details values (default, 'bob', 'email', 'bob@gmail.com');
+insert into detail values (default, 'bob', 'email', 'bob@yahoo.com');
+insert into detail values (default, 'bob', 'email', 'bob@gmail.com');
 
-insert into details values (default, 'cindy', 'email', 'cindy@facebook.com');
-insert into details values (default, 'cindy', 'email', 'cindy@gmail.com');
+insert into detail values (default, 'cindy', 'email', 'cindy@facebook.com');
+insert into detail values (default, 'cindy', 'email', 'cindy@gmail.com');
 
-insert into details values (default, 'mosky', 'email', 'mosky@ubuntu-tw.org');
+insert into detail values (default, 'mosky', 'email', 'mosky@ubuntu-tw.org');
