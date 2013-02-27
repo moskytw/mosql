@@ -33,7 +33,7 @@ class Model(dict):
     identity = None
 
     @classmethod
-    def group(cls, rows):
+    def arrange(cls, rows):
 
         keyfunc = lambda row: tuple(row[i] for i in cls.group_idxs)
         for grouped_vals, rows in groupby(rows, keyfunc):
@@ -74,17 +74,17 @@ if __name__ == '__main__':
     cur = conn.cursor()
 
     cur.execute('select * from users order by user_id')
-    for rows in User.group(cur.fetchall()):
+    for rows in User.arrange(cur.fetchall()):
         pprint(rows)
     print
 
     cur.execute('select * from details order by user_id, key, detail_id')
-    for rows in Detail.group(cur.fetchall()):
+    for rows in Detail.arrange(cur.fetchall()):
         pprint(rows)
     print
 
     cur.execute("select * from details where user_id='mosky' and key='email' order by detail_id")
-    detail = list(Detail.group(cur.fetchall()))[0]
+    detail = list(Detail.arrange(cur.fetchall()))[0]
     print detail
     # TODO:
     #detail['val'][0] = "rarely used"
