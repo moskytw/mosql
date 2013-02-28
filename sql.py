@@ -9,10 +9,15 @@ paramstyle = 'pyformat'
 boolstyle  = 'uppercase'
 
 # A hyper None, because None represents null in SQL.
-Empty = ___ = type('Empty', (object,), {
+Empty = ___ = type('Empty', (object, ), {
     '__nonzero__': lambda self: False,
     '__repr__'   : lambda self: '___',
 })()
+
+default = type('default', (object, ), {
+    '__repr__'   : lambda self: 'DEFAULT',
+})()
+
 
 def escape(s):
     '''Replace the ``'`` (single quote) by ``''`` (two single quotes).
@@ -424,6 +429,9 @@ def insert(table, columns=None, values=None, **fields):
 
     >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'))
     INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com')
+
+    >>> print insert('users', {'serial': default})
+    INSERT INTO users (serial) VALUES (DEFAULT)
 
     The exmaples of building `prepared statement`:
 
