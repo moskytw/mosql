@@ -94,6 +94,11 @@ class ModelMeta(ABCMeta):
 
         return Model
 
+Unknown = type('Unknown', (object, ), {
+    '__nonzero__': lambda self: False,
+    '__repr__'   : lambda self: 'Unknown',
+})()
+
 class Model(MutableMapping):
 
     __metaclass__ = ModelMeta
@@ -162,7 +167,10 @@ class Model(MutableMapping):
         return self.elems[row_idx*len(self.column_names)+self.column_offsets_map[col_name]]
 
     def get_row_identity_values(self, row_idx):
-        return tuple(self[row_idx][col_name] for col_name in self.identify_by)
+        row_identity_values = tuple(self[row_idx][col_name] for col_name in self.identify_by)
+        if any(val is Unknown for val in row_identity_values):
+            raise ValueError("this row can't be identified; it has unknown value")
+        return row_identity_values
 
     def __setelem__(self, row_idx, col_name, val):
 
@@ -186,7 +194,7 @@ class Model(MutableMapping):
         self.changes[len(self.changes)] = Change(None, None, row)
 
         for col_name in self.column_names:
-            self.elems.append(row.get(col_name))
+            self.elems.append(row.get(col_name, Unknown))
         self.row_len += 1
 
     def pop(self, row_idx=-1):
@@ -274,6 +282,11 @@ if __name__ == '__main__':
     detail.append(val='new@email.com')
     print detail
     print
+
+    try:
+        detail['val'][-1] = 'change it!'
+    except ValueError:
+        pass
 
     detail.save()
     print
