@@ -91,6 +91,7 @@ class ModelMeta(ABCMeta):
         Model.column_offsets_map = dict((k, i) for i, k in enumerate(Model.column_names))
         group_by_idxs = tuple(Model.column_offsets_map[col_name] for col_name in Model.group_by)
         Model.group_by_key_func = staticmethod(lambda row: tuple(row[i] for i in group_by_idxs))
+        Model.join_caluses = ''.join(map(sql.join, Model.join_table_names))
 
         return Model
 
@@ -118,7 +119,7 @@ class Model(MutableMapping):
     order_by = tuple()
     group_by = tuple()
 
-    join = ''
+    join_table_names = tuple()
 
     dry_run = False
     dump_sql = False
@@ -133,7 +134,7 @@ class Model(MutableMapping):
 
     @classmethod
     def seek(cls, *args, **kargs):
-        return cls.group(cls.run(sql.select(cls.table_name, *args, join=cls.join, **kargs)))
+        return cls.group(cls.run(sql.select(cls.table_name, *args, join=cls.join_caluses, **kargs)))
 
     @classmethod
     def group(cls, rows):
@@ -251,6 +252,7 @@ class Model(MutableMapping):
             else:
                 sqls.append(sql.update(self.table_name, cond, change.row))
         return self.run(sqls)
+        self.__class__.footprints.add(self)
 
     @classmethod
     def run(cls, sqls):
@@ -300,7 +302,7 @@ class Detail(PostgreSQLModel):
 
 class PersonDetail(PostgreSQLModel):
     table_name = 'detail'
-    join = sql.join('person')
+    join_table_names = ('person', )
     column_names = ('person_id', 'detail_id', 'key', 'val', 'name')
     identify_by = ('detail_id', )
     group_by = ('person_id', 'key')
