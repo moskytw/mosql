@@ -94,6 +94,14 @@ class ModelMeta(ABCMeta):
 
         return Model
 
+class Pool(object):
+
+    def getconn(self):
+        pass
+
+    def putconn(self, conn):
+        pass
+
 Unknown = type('Unknown', (object, ), {
     '__nonzero__': lambda self: False,
     '__repr__'   : lambda self: 'Unknown',
@@ -103,6 +111,7 @@ class Model(MutableMapping):
 
     __metaclass__ = ModelMeta
 
+    pool = Pool()
     table_name = ''
     column_names = tuple()
     identify_by = tuple()
@@ -214,25 +223,57 @@ class Model(MutableMapping):
         for i in xrange(self.row_len):
             return self[i]
 
-    def save(self):
+    def save(self, *args, **kargs):
+        sqls = []
         for change in self.changes.values():
             cond = change.get_condition()
             if cond is None:
-                print sql.insert(self.table_name, change.row)
+                sqls.append(sql.insert(self.table_name, change.row))
             elif change.row is None:
-                print sql.delete(cond)
+                sqls.append(sql.delete(self.table_name, cond))
             else:
-                print sql.update(self.table_name, cond, change.row)
+                sqls.append(sql.update(self.table_name, cond, change.row))
+        return self.run(sqls, *args, **kargs)
+
+    def run(self, sqls, dry_run=False, dump_sql=False):
+
+        if isinstance(sqls, basestring):
+            sqls = [sqls]
+
+        if dump_sql:
+            from pprint import pprint
+            pprint(sqls)
+
+        conn = self.pool.getconn()
+        cur = conn.cursor()
+
+        if not dry_run:
+            try:
+                cur.execute('; '.join(sqls))
+            except:
+                conn.rollback()
+                raise
+            else:
+                conn.commit()
+
+        self.pool.putconn(conn)
+
+        return cur
 
     def __repr__(self):
         return repr(dict(self))
 
-class Person(Model):
+import psycopg2.pool
+
+class PostgreSQLModel(Model):
+    pool = psycopg2.pool.SimpleConnectionPool(1, 5, database='mosky')
+
+class Person(PostgreSQLModel):
     table_name = 'person'
     column_names = ('person_id', 'name')
     identify_by = ('person_id', )
 
-class Detail(Model):
+class Detail(PostgreSQLModel):
     table_name = 'detail'
     column_names = ('detail_id', 'person_id', 'key', 'val')
     identify_by = ('detail_id', )
@@ -257,11 +298,13 @@ if __name__ == '__main__':
     print person
     print
 
-    person.clear()
-    print person
-    print
+    #person.clear()
+    #print person
+    #print
+    # psycopg2.IntegrityError: update or delete on table "person" violates foreign key constraint "detail_person_id_fkey" on table "detail"
+    # DETAIL:  Key (person_id)=(mosky) is still referenced from table "detail".
 
-    person.save()
+    person.save(dump_sql=True)
     print
 
     # --- test 1:n (n:n) table ---
@@ -288,7 +331,7 @@ if __name__ == '__main__':
     except ValueError:
         pass
 
-    detail.save()
+    detail.save(dump_sql=True)
     print
 
     conn.close()
