@@ -118,6 +118,8 @@ class Model(MutableMapping):
     order_by = tuple()
     group_by = tuple()
 
+    join = ''
+
     dry_run = False
     dump_sql = False
 
@@ -131,7 +133,7 @@ class Model(MutableMapping):
 
     @classmethod
     def seek(cls, *args, **kargs):
-        return cls.group(cls.run(sql.select(cls.table_name, *args, **kargs)))
+        return cls.group(cls.run(sql.select(cls.table_name, *args, join=cls.join, **kargs)))
 
     @classmethod
     def group(cls, rows):
@@ -290,10 +292,16 @@ class Person(PostgreSQLModel):
     column_names = ('person_id', 'name')
     identify_by = ('person_id', )
 
-
 class Detail(PostgreSQLModel):
     table_name = 'detail'
     column_names = ('detail_id', 'person_id', 'key', 'val')
+    identify_by = ('detail_id', )
+    group_by = ('person_id', 'key')
+
+class PersonDetail(PostgreSQLModel):
+    table_name = 'detail'
+    join = sql.join('person')
+    column_names = ('person_id', 'detail_id', 'key', 'val', 'name')
     identify_by = ('detail_id', )
     group_by = ('person_id', 'key')
 
@@ -305,6 +313,7 @@ if __name__ == '__main__':
 
     persons = Person.find()
     print
+
     for person in persons:
         pprint(person)
     print
@@ -326,11 +335,61 @@ if __name__ == '__main__':
 
     details = Detail.find(person_id=['mosky', 'andy'])
     print
+
     for detail in details:
         pprint(detail)
     print
 
+    detail['val'][0] = 'new@email.com'
+    print detail
+    print
+
+    detail.pop(0)
+    print detail
+    print
+
+    detail.append(val='new@email.com')
+    print detail
+    print
+
+    try:
+        detail['val'][-1] = 'change it!'
+    except ValueError:
+        pass
+
+    detail.save()
+    print
+
     detail = Detail.find(person_id='mosky', key='email')
+
+    detail['val'][0] = 'new@email.com'
+    print detail
+    print
+
+    detail.pop(0)
+    print detail
+    print
+
+    detail.append(val='new@email.com')
+    print detail
+    print
+
+    try:
+        detail['val'][-1] = 'change it!'
+    except ValueError:
+        pass
+
+    detail.save()
+    print
+
+    # --- test join ---
+
+    details = PersonDetail.find()
+    print
+
+    for detail in details:
+        pprint(OrderedDict(detail))
+    print
 
     detail['val'][0] = 'new@email.com'
     print detail
