@@ -26,8 +26,8 @@ def escape(s):
     :type s: str
     :rtype: str
 
-    >>> print dumps("'DROP TABLE users; --", val=True)
-    '\''DROP TABLE users; --'
+    >>> print dumps("'DROP TABLE member; --", val=True)
+    '\''DROP TABLE member; --'
 
     .. warning::
         In MySQL, it only ensures the security in ANSI mode by default.
@@ -418,33 +418,33 @@ def insert(table, columns=None, values=None, **fields):
 
     The simple examples:
 
-    >>> print insert('users', {'id': 'mosky'})
-    INSERT INTO users (id) VALUES ('mosky')
+    >>> print insert('member', {'member_id': 'mosky'})
+    INSERT INTO member (member_id) VALUES ('mosky')
 
-    >>> print insert('users', ('email', 'id', 'name'), ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu'))
-    INSERT INTO users (email, id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu')
+    >>> print insert('member', ('email', 'member_id', 'name'), ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu'))
+    INSERT INTO member (email, member_id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu')
 
-    >>> print insert('users', "email, id, name", "'mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu'")
-    INSERT INTO users (email, id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu')
+    >>> print insert('member', "email, member_id, name", "'mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu'")
+    INSERT INTO member (email, member_id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu')
 
-    >>> print insert('users', values=('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'))
-    INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com')
+    >>> print insert('member', values=('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'))
+    INSERT INTO member VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com')
 
-    >>> print insert('users', {'serial': default})
-    INSERT INTO users (serial) VALUES (DEFAULT)
+    >>> print insert('post', {'post_id': default})
+    INSERT INTO post (post_id) VALUES (DEFAULT)
 
     The exmaples of building `prepared statement`:
 
-    >>> print insert('users', ('id', 'name', 'email'))
-    INSERT INTO users (id, name, email) VALUES (%(id)s, %(name)s, %(email)s)
+    >>> print insert('member', ('member_id', 'name', 'email'))
+    INSERT INTO member (member_id, name, email) VALUES (%(member_id)s, %(name)s, %(email)s)
 
-    >>> print insert('users', {'id': 'mosky', 'name': ___})
-    INSERT INTO users (id, name) VALUES ('mosky', %(name)s)
+    >>> print insert('member', {'member_id': 'mosky', 'name': ___})
+    INSERT INTO member (name, member_id) VALUES (%(name)s, 'mosky')
 
     An example of multi-value:
 
-    >>> print insert('users', values=(('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')))
-    INSERT INTO users VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')
+    >>> print insert('member', values=(('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')))
+    INSERT INTO member VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')
 
     All of the fields:
 
@@ -478,30 +478,30 @@ def select(table, where=None, select=None, **fields):
 
     The simple examples:
 
-    >>> print select('users')
-    SELECT * FROM users
+    >>> print select('member')
+    SELECT * FROM member
 
-    >>> print select('users', {'name': 'Mosky Liu'}, ('id', 'name'), limit=10, order_by=('id', 'created DESC'))
-    SELECT id, name FROM users WHERE name = 'Mosky Liu' ORDER BY id, created DESC LIMIT 10
+    >>> print select('member', {'name': 'Mosky Liu'}, ('member_id', 'name'), limit=10, order_by=('member_id', 'created DESC'))
+    SELECT member_id, name FROM member WHERE name = 'Mosky Liu' ORDER BY member_id, created DESC LIMIT 10
 
-    >>> print select('users', "name = 'Mosky Liu'", 'id, name', limit=10, order_by='id, created DESC')
-    SELECT id, name FROM users WHERE name = 'Mosky Liu' ORDER BY id, created DESC LIMIT 10
+    >>> print select('member', "name = 'Mosky Liu'", 'member_id, name', limit=10, order_by='member_id, created DESC')
+    SELECT member_id, name FROM member WHERE name = 'Mosky Liu' ORDER BY member_id, created DESC LIMIT 10
 
     The exmaples which use the condition(s):
 
-    >>> print select('users', {'id': ('mosky', 'moskytw')})
-    SELECT * FROM users WHERE id IN ('mosky', 'moskytw')
+    >>> print select('member', {'member_id': ('mosky', 'moskytw')})
+    SELECT * FROM member WHERE member_id IN ('mosky', 'moskytw')
 
-    >>> print select('users', {'email like': '%@gmail.com'})
-    SELECT * FROM users WHERE email LIKE '%@gmail.com'
+    >>> print select('member', {'email like': '%@gmail.com'})
+    SELECT * FROM member WHERE email LIKE '%@gmail.com'
 
     The examples of using `prepared statement`:
 
-    >>> print select('users', ('name', 'email'))
-    SELECT * FROM users WHERE name = %(name)s AND email = %(email)s
+    >>> print select('member', ('name', 'email'))
+    SELECT * FROM member WHERE name = %(name)s AND email = %(email)s
 
-    >>> print select('users', {'name': ___, 'email': 'mosky DOT tw AT gmail.com' })
-    SELECT * FROM users WHERE name = %(name)s AND email = 'mosky DOT tw AT gmail.com'
+    >>> print select('member', {'name': ___, 'email': 'mosky DOT tw AT gmail.com' })
+    SELECT * FROM member WHERE name = %(name)s AND email = 'mosky DOT tw AT gmail.com'
 
     The exmaples of using ``join``:
 
@@ -649,14 +649,14 @@ def update(table, where=None, set=None, **fields):
 
     :rtype: str
 
-    >>> print update('users', {'id': 'mosky'}, {'email': 'mosky DOT tw AT gmail.com'})
-    UPDATE users SET email = 'mosky DOT tw AT gmail.com' WHERE id = 'mosky'
+    >>> print update('member', {'member_id': 'mosky'}, {'email': 'mosky DOT tw AT gmail.com'})
+    UPDATE member SET email = 'mosky DOT tw AT gmail.com' WHERE member_id = 'mosky'
 
-    >>> print update('users', "id = 'mosky'", "email = 'mosky DOT tw AT gmail.com'")
-    UPDATE users SET email = 'mosky DOT tw AT gmail.com' WHERE id = 'mosky'
+    >>> print update('member', "member_id = 'mosky'", "email = 'mosky DOT tw AT gmail.com'")
+    UPDATE member SET email = 'mosky DOT tw AT gmail.com' WHERE member_id = 'mosky'
 
-    >>> print update('users', ('id', ), ('email', 'name'))
-    UPDATE users SET email = %(email)s, name = %(name)s WHERE id = %(id)s
+    >>> print update('member', ('member_id', ), ('email', 'name'))
+    UPDATE member SET email = %(email)s, name = %(name)s WHERE member_id = %(member_id)s
 
     All of the fields:
 
@@ -682,11 +682,11 @@ def delete(table, where=None, **fields):
 
     :rtype: str
 
-    >>> print delete('users', {'id': 'mosky'})
-    DELETE FROM users WHERE id = 'mosky'
+    >>> print delete('member', {'member_id': 'mosky'})
+    DELETE FROM member WHERE member_id = 'mosky'
 
-    >>> print delete('users', "id = 'mosky'")
-    DELETE FROM users WHERE id = 'mosky'
+    >>> print delete('member', "member_id = 'mosky'")
+    DELETE FROM member WHERE member_id = 'mosky'
 
     All of the fields:
 
