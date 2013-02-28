@@ -118,6 +118,21 @@ class Model(MutableMapping):
     order_by = tuple()
     group_by = tuple()
 
+    dry_run = False
+    dump_sql = False
+
+    @classmethod
+    def find(cls, **where):
+        models = list(cls.seek(where=where, order_by=cls.group_by+cls.order_by))
+        if len(models) == 1 and all(col_name in where for col_name in cls.group_by):
+            return models[0]
+        else:
+            return models
+
+    @classmethod
+    def seek(cls, *args, **kargs):
+        return cls.group(cls.run(sql.select(cls.table_name, *args, **kargs)))
+
     @classmethod
     def group(cls, rows):
         for grouped_row_vals, rows in groupby(rows, cls.group_by_key_func):
@@ -223,7 +238,7 @@ class Model(MutableMapping):
         for i in xrange(self.row_len):
             return self[i]
 
-    def save(self, *args, **kargs):
+    def save(self):
         sqls = []
         for change in self.changes.values():
             cond = change.get_condition()
@@ -233,21 +248,22 @@ class Model(MutableMapping):
                 sqls.append(sql.delete(self.table_name, cond))
             else:
                 sqls.append(sql.update(self.table_name, cond, change.row))
-        return self.run(sqls, *args, **kargs)
+        return self.run(sqls)
 
-    def run(self, sqls, dry_run=False, dump_sql=False):
+    @classmethod
+    def run(cls, sqls):
 
         if isinstance(sqls, basestring):
             sqls = [sqls]
 
-        if dump_sql:
+        if cls.dump_sql:
             from pprint import pprint
             pprint(sqls)
 
-        conn = self.pool.getconn()
+        conn = cls.pool.getconn()
         cur = conn.cursor()
 
-        if not dry_run:
+        if not cls.dry_run:
             try:
                 cur.execute('; '.join(sqls))
             except:
@@ -256,7 +272,7 @@ class Model(MutableMapping):
             else:
                 conn.commit()
 
-        self.pool.putconn(conn)
+        cls.pool.putconn(conn)
 
         return cur
 
@@ -267,11 +283,13 @@ import psycopg2.pool
 
 class PostgreSQLModel(Model):
     pool = psycopg2.pool.SimpleConnectionPool(1, 5, database='mosky')
+    dump_sql = True
 
 class Person(PostgreSQLModel):
     table_name = 'person'
     column_names = ('person_id', 'name')
     identify_by = ('person_id', )
+
 
 class Detail(PostgreSQLModel):
     table_name = 'detail'
@@ -281,16 +299,13 @@ class Detail(PostgreSQLModel):
 
 if __name__ == '__main__':
 
-    import psycopg2
     from pprint import pprint
-
-    conn = psycopg2.connect(database='mosky')
-    cur = conn.cursor()
 
     # --- test 1:1 table ---
 
-    cur.execute('select * from person order by person_id')
-    for person in Person.group(cur.fetchall()):
+    persons = Person.find()
+    print
+    for person in persons:
         pprint(person)
     print
 
@@ -304,15 +319,18 @@ if __name__ == '__main__':
     # psycopg2.IntegrityError: update or delete on table "person" violates foreign key constraint "detail_person_id_fkey" on table "detail"
     # DETAIL:  Key (person_id)=(mosky) is still referenced from table "detail".
 
-    person.save(dump_sql=True)
+    person.save()
     print
 
     # --- test 1:n (n:n) table ---
 
-    cur.execute('select * from detail order by person_id, key')
-    for detail in Detail.group(cur.fetchall()):
+    details = Detail.find(person_id=['mosky', 'andy'])
+    print
+    for detail in details:
         pprint(detail)
     print
+
+    detail = Detail.find(person_id='mosky', key='email')
 
     detail['val'][0] = 'new@email.com'
     print detail
@@ -331,7 +349,5 @@ if __name__ == '__main__':
     except ValueError:
         pass
 
-    detail.save(dump_sql=True)
+    detail.save()
     print
-
-    conn.close()
