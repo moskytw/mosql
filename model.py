@@ -74,10 +74,10 @@ class Change(object):
         self.row = row
 
     def get_condition(self):
-        try:
-            return dict(izip(self.row_identity_column_names, self.row_identity_values))
-        except TypeError:
+        if self.row_identity_column_names is None or self.row_identity_values is None:
             return None
+        else:
+            return dict(izip(self.row_identity_column_names, self.row_identity_values))
 
 class ModelMeta(ABCMeta):
 
