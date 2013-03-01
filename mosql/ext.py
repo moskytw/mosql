@@ -3,7 +3,7 @@
 
 '''It contains the builders of addational SQL statements.'''
 
-from .util import *
+from .util import ___, dumps, SQLTemplate
 
 join_tmpl = SQLTemplate(
     ('<type>', ),

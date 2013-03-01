@@ -3,8 +3,7 @@
 
 '''It contains the builders of common SQL statement.'''
 
-from .defi import ___, Empty, default
-from .util import SQLTemplate
+from .util import ___, default, SQLTemplate
 
 insert_tmpl = SQLTemplate(
     # It is a template group, and

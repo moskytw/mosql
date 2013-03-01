@@ -3,7 +3,17 @@
 
 '''It contains useful tools to build SQL with common Python's data types.'''
 
-from .defi import ___, Empty
+# A hyper None, because None represents null in SQL.
+Empty = ___ = type('Empty', (object, ), {
+    '__nonzero__': lambda self: False,
+    '__str__'    : lambda self: '___',
+    '__repr__'   : lambda self: 'Empty',
+})()
+
+default = type('default', (object, ), {
+    '__str__'   : lambda self: 'DEFAULT',
+    '__repr__'   : lambda self: 'default',
+})()
 
 # The default styles of ``dumps``
 encoding   = 'UTF-8'
@@ -117,7 +127,7 @@ def dumps(x, **format_spec):
     >>> print dumps(('x', 'y >', 'z <'), condition=True)
     x = %(x)s AND y > %(y)s AND z < %(z)s
 
-    The examples of using :py:class:`~mosql.defi.Empty` object, ``___`` (triple-underscore) to build `prepared statement`:
+    The examples of using :py:class:`~mosql.util.Empty` object, ``___`` (triple-underscore) to build `prepared statement`:
 
     >>> print dumps({'a >=': 1, 'b': ___ }, condition=True)
     b = %(b)s AND a >= 1
