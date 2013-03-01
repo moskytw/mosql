@@ -227,6 +227,8 @@ class Model(MutableMapping):
         for grouped_row_vals, rows in groupby(rows, cls.group_by_key_func):
             yield cls(dict(izip(cls.group_by, grouped_row_vals)), rows)
 
+    #TODO: method ``assume``
+
     def __init__(self, grouped_row, rows):
 
         self.grouped_row = grouped_row
