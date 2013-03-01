@@ -312,6 +312,8 @@ if __name__ == '__main__':
 
     # --- test 1:1 table ---
 
+    print '# Find everything in person'
+    print
     persons = Person.find()
     print
 
@@ -319,21 +321,35 @@ if __name__ == '__main__':
         pprint(person)
     print
 
-    person['name'] = 'New Name'
+    print '# Find mosky in person'
+    print
+    person = person.find(person_id='mosky')[0]
+    print
     print person
     print
 
-    #person.clear()
-    #print person
-    #print
-    # psycopg2.IntegrityError: update or delete on table "person" violates foreign key constraint "detail_person_id_fkey" on table "detail"
-    # DETAIL:  Key (person_id)=(mosky) is still referenced from table "detail".
+    print '# Rename mosky'
+    print
+    person['name'] = 'Mosky Liu 2'
+    print person
+    print
+
+    person.save()
+    print
+
+    print '# Rename mosky back'
+    print
+    person['name'] = 'Mosky Liu'
+    print person
+    print
 
     person.save()
     print
 
     # --- test 1:n (n:n) table ---
 
+    print '# Find mosky and andy in detail'
+    print
     details = Detail.find(person_id=['mosky', 'andy'])
     print
 
@@ -341,15 +357,16 @@ if __name__ == '__main__':
         pprint(detail)
     print
 
-    detail['val'][0] = 'new@email.com'
+    print "# Find mosky's email"
+    print
+    detail = detail.find(person_id='mosky', key='email')
+    print
     print detail
     print
 
-    detail.pop(0)
-    print detail
+    print '# Append a new email'
     print
-
-    detail.append(val='new@email.com')
+    detail.append(val='mosky@dummy.com')
     print detail
     print
 
@@ -361,53 +378,29 @@ if __name__ == '__main__':
     detail.save()
     print
 
-    detail = Detail.find(person_id='mosky', key='email')
-
-    detail['val'][0] = 'new@email.com'
+    print "# Retrieve mosky's email"
+    print
+    detail = detail.find(person_id='mosky', key='email')
+    print
     print detail
     print
 
-    detail.pop(0)
+    print '# Remoe the last row'
+    print
+    detail.pop()
     print detail
     print
-
-    detail.append(val='new@email.com')
-    print detail
-    print
-
-    try:
-        detail['val'][-1] = 'change it!'
-    except ValueError:
-        pass
 
     detail.save()
     print
 
     # --- test join ---
 
+    print '# Test join'
+    print
     details = PersonDetail.find()
     print
 
     for detail in details:
-        pprint(OrderedDict(detail))
-    print
-
-    detail['val'][0] = 'new@email.com'
-    print detail
-    print
-
-    detail.pop(0)
-    print detail
-    print
-
-    detail.append(val='new@email.com')
-    print detail
-    print
-
-    try:
-        detail['val'][-1] = 'change it!'
-    except ValueError:
-        pass
-
-    detail.save()
+        pprint(detail)
     print
