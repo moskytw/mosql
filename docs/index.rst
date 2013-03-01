@@ -55,7 +55,8 @@ The documentions
 .. toctree::
     :maxdepth: 2
 
-    api.rst
+    result.rst
+    builders.rst
 
 Indices and tables
 ==================

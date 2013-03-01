@@ -1,18 +1,3 @@
-
-Handling of Result Set 
-======================
-
-Start with MoSQL's model
-------------------------
-
-(I am working on this tutorial. :P)
-
-The API --- :py:mod:`mosql.result`
-----------------------------------
-
-.. automodule:: mosql.result
-    :members:
-
 Building SQL Statements
 =======================
 
@@ -33,4 +18,3 @@ The basic stringification --- :py:mod:`mosql.util`
 
 .. automodule:: mosql.util
     :members:
-
