@@ -251,8 +251,8 @@ class Model(MutableMapping):
                 sqls.append(sql.delete(self.table_name, cond))
             else:
                 sqls.append(sql.update(self.table_name, cond, change.row))
+        self.changes.clear()
         return self.run(sqls)
-        self.__class__.footprints.add(self)
 
     @classmethod
     def run(cls, sqls):
