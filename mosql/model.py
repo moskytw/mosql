@@ -11,7 +11,7 @@ except ImportError:
 
 from abc import ABCMeta
 
-import sql
+from . import common as sql
 
 class Row(MutableMapping):
 
@@ -91,7 +91,11 @@ class ModelMeta(ABCMeta):
         Model.column_offsets_map = dict((k, i) for i, k in enumerate(Model.column_names))
         group_by_idxs = tuple(Model.column_offsets_map[col_name] for col_name in Model.group_by)
         Model.group_by_key_func = staticmethod(lambda row: tuple(row[i] for i in group_by_idxs))
-        Model.join_caluses = ''.join(map(sql.join, Model.join_table_names))
+        if Model.join_table_names:
+            import mosql.ext
+            Model.join_caluses = ''.join(map(mosql.ext.join, Model.join_table_names))
+        else:
+            Model.join_caluses = ''
 
         return Model
 
