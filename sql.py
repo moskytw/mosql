@@ -20,7 +20,6 @@ default = type('default', (object, ), {
     '__repr__'   : lambda self: 'default',
 })()
 
-
 def escape(s):
     '''Replace the ``'`` (single quote) by ``''`` (two single quotes).
 
