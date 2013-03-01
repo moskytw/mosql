@@ -3,45 +3,59 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-MoSQL - More than SQL
-=====================
+MoSQL --- More than SQL
+=======================
 
-(still under development)
+MoSQL is a lightweight Python library assists programmer to use SQL.
 
-MoSQL is a lightweight Python library helps you to build SQL with common Python's data types.
+It has two major parts:
 
-Here are functions for basically create, read, update and delete. It still has hyper interface to access database, but it is still under early development.
+The first part is SQL builders helps you to build SQL with common Python data type:
 
-`INSERT INTO ...`
------------------
+::
 
-.. autofunction:: sql.insert
-    :noindex:
+    >>> from mosql.common import select
+    >>> select('person', {'age >': 18})
+    'SELECT * FROM person WHERE age > 18'
 
-`SELECT ...`
------------------
+It converts the Python types to SQL statements. You can find more exmaples in :py:mod:`mosql.common`.
 
-.. autofunction:: sql.select
-    :noindex:
+The second part is a hyper abstarct of the result set:
 
-`UPDATE ...`
------------------
+::
 
-.. autofunction:: sql.update
-    :noindex:
+    >>> from my_models import Detail
+    >>> for detail in Detail.find(person_id='mosky')):
+    ...     print detail
+    {'person_id': 'mosky', 'detail_id': [3, 4], 'val': ['address', '...'], 'key': 'address'}
+    {'person_id': 'mosky', 'detail_id': [5, 6, 7], 'val': ['email', '...', '...'], 'key': 'email'}
 
-`DELETE FROM ...`
------------------
-.. autofunction:: sql.delete
-    :noindex:
+The returned objects are not just dicts or lists. They are proxies record your operations on it, and allow you to save them back to database.
+
+It is acceptable to feed the raw result set to a :py:class:`~mosql.result.Model` by :py:meth:`~mosql.result.Model.group`. It's up to you.
+
+Installation
+------------
+
+It is easy to install MoSQL with `pip`:
+
+::
+
+    $ sudo pip install mosql
+
+Or clone the source code from `Github`:
+
+::
+
+    $ git clone git://github.com/moskytw/mosql.git
 
 The documentions
 ================
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 2
 
-   api.rst
+    api.rst
 
 Indices and tables
 ==================
