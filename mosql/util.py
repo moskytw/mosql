@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It contains useful functions to build SQL with common Python's data types.'''
+'''It contains useful tools to build SQL with common Python's data types.'''
 
 from .defi import ___, Empty
 
@@ -24,7 +24,7 @@ def escape(s):
         In MySQL, it only ensures the security in ANSI mode by default.
 
     .. note::
-        When using :py:class:`~sql.SQLTemplate`, you can replace this function by assigning a function to the formating specification, ``escape``.
+        When using :py:class:`~mosql.util.SQLTemplate`, you can replace this function by assigning a function to the formating specification, ``escape``.
     '''
     return s.replace("'", "''")
 
@@ -117,7 +117,7 @@ def dumps(x, **format_spec):
     >>> print dumps(('x', 'y >', 'z <'), condition=True)
     x = %(x)s AND y > %(y)s AND z < %(z)s
 
-    The examples of using :py:class:`Empty` object, ``___`` (triple-underscore) to build `prepared statement`:
+    The examples of using :py:class:`~mosql.defi.Empty` object, ``___`` (triple-underscore) to build `prepared statement`:
 
     >>> print dumps({'a >=': 1, 'b': ___ }, condition=True)
     b = %(b)s AND a >= 1
@@ -243,6 +243,7 @@ class SQLTemplate(object):
     ...     ('select', '<select>'),
     ...     # It is another template group.
     ...     ('from', '<table>'),
+    ...     ('<join>', ),
     ...     ('where', '<where>'),
     ...     ('group by', '<group_by>'),
     ...     ('having', '<having>'),
@@ -263,7 +264,7 @@ class SQLTemplate(object):
     KEY %(data)s
 
     .. seealso::
-        The all of the formating specification: :py:func:`~sql.dumps`.
+        The all of the formating specification: :py:func:`~mosql.util.dumps`.
 
     If the formating specification isn't set, it raise a KeyError exception rather than an AttributeError:
 
@@ -280,7 +281,7 @@ class SQLTemplate(object):
     If you want to know what fields it has, just print it.
 
     >>> print select_tmpl
-    SQLTemplate(('select', '<select>'), ('from', '<table>'), ('where', '<where>'), ('group by', '<group_by>'), ('having', '<having>'), ('order by', '<order_by>'), ('limit', '<limit>'), ('offset', '<offset>'))
+    SQLTemplate(('select', '<select>'), ('from', '<table>'), ('<join>',), ('where', '<where>'), ('group by', '<group_by>'), ('having', '<having>'), ('order by', '<order_by>'), ('limit', '<limit>'), ('offset', '<offset>'))
     '''
 
     def __init__(self, *template_groups):

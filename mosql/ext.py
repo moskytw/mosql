@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+'''It contains the builders of addational SQL statements.'''
+
 from .util import *
 
 join_tmpl = SQLTemplate(
@@ -42,7 +44,7 @@ def join(table, on=None, using=None, type=None, **fields):
     SQLTemplate(('<type>',), ('join', '<table>'), ('on', '<on>'), ('using', '<using>'))
 
     .. seealso::
-        :py:func:`~sql.cross`, :py:func:`~sql.natural`, :py:func:`~sql.inner`, :py:func:`~sql.left` and :py:func:`~sql.right`
+        :py:func:`~mosql.ext.cross`, :py:func:`~mosql.ext.natural`, :py:func:`~mosql.ext.inner`, :py:func:`~mosql.ext.left` and :py:func:`~mosql.ext.right`
 
     '''
 

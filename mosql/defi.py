@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+'''It defines some special types.'''
+
 # A hyper None, because None represents null in SQL.
 Empty = ___ = type('Empty', (object, ), {
     '__nonzero__': lambda self: False,

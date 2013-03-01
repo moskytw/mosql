@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+'''It contains the builders of common SQL statement.'''
+
 from .defi import ___, Empty, default
 from .util import SQLTemplate
 
@@ -115,7 +117,7 @@ def select(table, where=None, select=None, **fields):
     SELECT * FROM table_x NATUAL JOIN table_y NATUAL JOIN table_z
 
     .. seealso::
-        Here is a function helps you to build the `join` statement: :py:func:`~sql.join`.
+        Here is a function helps you to build the `join` statement: :py:func:`mosql.ext.join`.
 
     All of the fields:
 
