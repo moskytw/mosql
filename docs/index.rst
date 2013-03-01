@@ -30,8 +30,6 @@ The second part is a hyper abstarct of the result set:
     {'person_id': 'mosky', 'detail_id': [3, 4], 'val': ['address', '...'], 'key': 'address'}
     {'person_id': 'mosky', 'detail_id': [5, 6, 7], 'val': ['email', '...', '...'], 'key': 'email'}
 
-:
-
 The :py:class:`mosql.result.Model` rendered in a dict is a dict-like object. And the lists in the :py:class:`~mosql.result.Model` are :py:class:`mosql.result.Column`. The :py:class:`~mosql.result.Column` is a proxy. It will redirect your changes on it to :py:class:`~mosql.result.Model`.
 
 Installation
