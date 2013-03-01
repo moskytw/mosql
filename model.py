@@ -126,7 +126,7 @@ class Model(MutableMapping):
 
     @classmethod
     def find(cls, **where):
-        models = list(cls.seek(where=where, order_by=cls.group_by+cls.order_by))
+        models = list(cls.seek(where=where, order_by=cls.group_by+(cls.order_by or cls.identify_by)))
         if len(models) == 1 and all(col_name in where for col_name in cls.group_by):
             return models[0]
         else:
