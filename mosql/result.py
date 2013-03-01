@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+'''It aims to help you to handle the result set.'''
+
 from itertools import izip, groupby
 from collections import MutableSequence, MutableMapping
 
@@ -14,6 +16,15 @@ from abc import ABCMeta
 from . import common as sql
 
 class Row(MutableMapping):
+    '''A row proxy for a :py:class:`Model`.
+
+    It implements :py:class:`MutableMapping`, but the setting item is the only mutable operation that is accepted.
+
+    :param model: the model behind this proxy
+    :type model: :py:class:`Model`
+    :param row_idx: the index of fixed row
+    :type row_idx: str
+    '''
 
     def __init__(self, model, row_idx):
         self.model = model
@@ -39,6 +50,15 @@ class Row(MutableMapping):
         return repr(dict(self))
 
 class Column(MutableSequence):
+    '''A column proxy for a :py:class:`Model`.
+
+    It implements :py:class:`MutableSequence`, but the setting item is the only mutable operation that is accepted.
+
+    :param model: the model behind this proxy
+    :type model: :py:class:`Model`
+    :param col_name: the name of fixed column
+    :type col_name: str
+    '''
 
     def __init__(self, model, col_name):
         self.model = model
@@ -67,6 +87,15 @@ class Column(MutableSequence):
         return repr(list(self))
 
 class Change(object):
+    '''It records a single change on a row.
+
+    :param row_identity_column_names: the column names which can identify a row
+    :type row_identity_column_names: tuple
+    :param row_identity_values: the values which can identify a row
+    :type row_identity_values: tuple
+    :param row: the changed row
+    :type row: dict
+    '''
 
     def __init__(self, row_identity_column_names, row_identity_values, row):
         self.row_identity_column_names = row_identity_column_names
@@ -74,12 +103,18 @@ class Change(object):
         self.row = row
 
     def get_condition(self):
+        '''It returns the condition in a dict, or None if it has not condition.
+
+        :rtype: dict or None
+        '''
+
         if self.row_identity_column_names is None or self.row_identity_values is None:
             return None
         else:
             return dict(izip(self.row_identity_column_names, self.row_identity_values))
 
 class ModelMeta(ABCMeta):
+    '''It will pre-process the class attributes of :py:class:`Model`.'''
 
     def __new__(meta, name, bases, attrs):
 
@@ -100,36 +135,75 @@ class ModelMeta(ABCMeta):
         return Model
 
 class Pool(object):
+    '''An abstract class describes a protocol of connection pool used in :py:class:`Model`.
+
+    .. note::
+        If you are using `Psycopg <http://initd.org/psycopg/>`_, you can use its `pool <http://initd.org/psycopg/docs/pool.html>`_ directly.'''
 
     def getconn(self):
+        '''Get a connection.
+
+        :rtype: a connection which is defined in Python DB API 2.0'''
         pass
 
     def putconn(self, conn):
+        '''Put a connection back.'''
         pass
 
 Unknown = type('Unknown', (object, ), {
     '__nonzero__': lambda self: False,
     '__repr__'   : lambda self: 'Unknown',
 })()
+'''It represents a value decided by database.'''
 
 class Model(MutableMapping):
+    '''The core of this module. It provides a friendly interface to access result set.
+
+    It implements :py:class:`MutableMapping`, but the setting item is the only mutable operation that is accepted. Use :py:meth:`Model.append` or :py:meth:`Model.pop` to add or remove rows.
+
+    :param grouped_row: the grouped row
+    :type grouped_row: dict
+    :param rows: the rows
+    :type rows: tuple in list
+    '''
 
     __metaclass__ = ModelMeta
 
     pool = Pool()
+    '''The connection pool, which is described in :py:class:`Pool`.'''
+
     table_name = ''
+    '''The name of main table.'''
+
     column_names = tuple()
+    '''The name of columns.'''
+
     identify_by = tuple()
-    order_by = tuple()
+    '''The name of columns which can identify a row. Usually, it is the primary key.'''
+
     group_by = tuple()
+    '''A model is consisted of one or more rows. It will use this attribute to group the result set.'''
+
+    order_by = tuple()
+    '''By default, it uses :py:attr:`Model.identify_by` to order the column values in a instance. Change it by assigning this attribute.'''
 
     join_table_names = tuple()
+    '''Use it to do natural join with other tables.'''
 
     dry_run = False
+    '''It prevents the changes to be written into database.'''
+
     dump_sql = False
+    '''Show the SQL it executed to stdout.'''
 
     @classmethod
     def find(cls, **where):
+        '''Find the rows matched `where` condition in database.
+
+        :rtype: model or models
+
+        It return a model if you fill all of :py:attr:`Model.group_by` columns, and the number of grouped result is just one.
+        '''
         models = list(cls.seek(where=where, order_by=cls.group_by+(cls.order_by or cls.identify_by)))
         if len(models) == 1 and all(col_name in where for col_name in cls.group_by):
             return models[0]
@@ -138,10 +212,18 @@ class Model(MutableMapping):
 
     @classmethod
     def seek(cls, *args, **kargs):
+        '''The arguments will be passed to :py:func:`mosql.common.select`.
+
+        :rtype: models
+        '''
         return cls.group(cls.run(sql.select(cls.table_name, *args, join=cls.join_caluses, **kargs)))
 
     @classmethod
     def group(cls, rows):
+        '''It groups the existent rows.
+
+        :rtype: models in a generator
+        '''
         for grouped_row_vals, rows in groupby(rows, cls.group_by_key_func):
             yield cls(dict(izip(cls.group_by, grouped_row_vals)), rows)
 
@@ -217,6 +299,7 @@ class Model(MutableMapping):
         raise TypeError('this operation is not supported')
 
     def append(self, **row):
+        '''Append a row. It will fill the columns in :py:attr:`Model.group_by` automatically.'''
 
         for col_name in self.group_by:
             if col_name not in row:
@@ -229,23 +312,42 @@ class Model(MutableMapping):
         self.row_len += 1
 
     def pop(self, row_idx=-1):
+        '''Pop a row.
+
+        :rtype: row in list
+        '''
+
         row_identity_values = self.get_row_identity_values(row_idx)
         self.changes[row_identity_values] = Change(self.identify_by, row_identity_values, None)
 
         self.row_len -= 1
         col_len = len(self.column_names)
         start = row_idx * col_len
+
+        row = self.elems[start:start+col_len]
         del self.elems[start:start+col_len]
 
+        return row
+
     def clear(self):
+        '''Pop all of the rows.'''
+
         for i in xrange(self.row_len):
             self.pop()
 
     def rows(self):
+        '''Get the rows.
+
+        :rtype: rows in generator'''
+
         for i in xrange(self.row_len):
-            return self[i]
+            yield self[i]
 
     def save(self):
+        '''Save changes.
+
+        :rtype: cursor'''
+
         sqls = []
         for change in self.changes.values():
             cond = change.get_condition()
@@ -260,6 +362,12 @@ class Model(MutableMapping):
 
     @classmethod
     def run(cls, sqls):
+        '''Run a SQL or SQLs.
+
+        :param sqls: a SQL or SQLs.
+        :type sqls: str or list
+
+        :rtype: cursor'''
 
         if isinstance(sqls, basestring):
             sqls = [sqls]
