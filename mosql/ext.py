@@ -11,7 +11,7 @@ join_tmpl = SQLTemplate(
     ('on'    , '<on>'),
     ('using' , '<using>'),
 )
-'''The template for :py:func:`~mosql.ext.join`.'''
+'''The template for :py:func:`mosql.ext.join`.'''
 
 def join(table, on=None, using=None, type=None, **fields):
     '''It is a shortcut for the SQL statement, ``join ...`` .
@@ -45,7 +45,7 @@ def join(table, on=None, using=None, type=None, **fields):
     SQLTemplate(('<type>',), ('join', '<table>'), ('on', '<on>'), ('using', '<using>'))
 
     .. seealso::
-        :py:func:`~mosql.ext.cross`, :py:func:`~mosql.ext.natural`, :py:func:`~mosql.ext.inner`, :py:func:`~mosql.ext.left` and :py:func:`~mosql.ext.right`
+        :py:func:`mosql.ext.cross`, :py:func:`mosql.ext.natural`, :py:func:`mosql.ext.inner`, :py:func:`mosql.ext.left` and :py:func:`mosql.ext.right`
 
     '''
 

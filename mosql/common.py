@@ -14,7 +14,7 @@ insert_tmpl = SQLTemplate(
     ('values'   , '<values>'),
     ('returning', '<returning>'),
 )
-'''The template for :py:func:`~mosql.common.insert`.'''
+'''The template for :py:func:`mosql.common.insert`.'''
 
 def insert(table, columns=None, values=None, **fields):
     '''It is a shortcut for the SQL statement, ``insert into ...`` .
@@ -75,7 +75,7 @@ select_tmpl = SQLTemplate(
     ('limit' , '<limit>'),
     ('offset', '<offset>'),
 )
-'''The template for :py:func:`~mosql.common.select`.'''
+'''The template for :py:func:`mosql.common.select`.'''
 
 def select(table, where=None, select=None, **fields):
     '''It is a shortcut for the SQL statement, ``select ...`` .
@@ -139,7 +139,7 @@ update_tmpl = SQLTemplate(
     ('where' , '<where>'),
     ('returning', '<returning>'),
 )
-'''The template for :py:func:`~mosql.common.update`.'''
+'''The template for :py:func:`mosql.common.update`.'''
 
 def update(table, where=None, set=None, **fields):
     '''It is a shortcut for the SQL statement, ``update ...`` .
@@ -173,7 +173,7 @@ delete_tmpl = SQLTemplate(
     ('where'    , '<where>'),
     ('returning', '<returning>'),
 )
-'''The template for :py:func:`~mosql.common.delet`.'''
+'''The template for :py:func:`mosql.common.delet`.'''
 
 def delete(table, where=None, **fields):
     '''It is a shortcut for the SQL statement, ``delete from ...`` .
