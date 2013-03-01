@@ -3,22 +3,31 @@
 
 '''It contains useful tools to build SQL with common Python's data types.'''
 
-# A hyper None, because None represents null in SQL.
 Empty = ___ = type('Empty', (object, ), {
     '__nonzero__': lambda self: False,
     '__str__'    : lambda self: '___',
     '__repr__'   : lambda self: 'Empty',
 })()
+'''It represents a hyper None, because the normal None is ``NULL`` in SQL.'''
 
 default = type('default', (object, ), {
     '__str__'   : lambda self: 'DEFAULT',
     '__repr__'   : lambda self: 'default',
 })()
+'''It represents the ``DEFAULT`` in SQL.'''
 
 # The default styles of ``dumps``
 encoding   = 'UTF-8'
+''':py:func:`~mosql.util.dumps` encodes the `unicode` type by this value.'''
+
 paramstyle = 'pyformat'
+'''The paramter style.
+
+.. seealso::
+    `Python Database API Specification v2.0 - paramstyle <http://www.python.org/dev/peps/pep-0249/#paramstyle>`_'''
+
 boolstyle  = 'uppercase'
+'''It has two options: 'uppercase' or 'bit'.'''
 
 def escape(s):
     '''Replace the ``'`` (single quote) by ``''`` (two single quotes).
