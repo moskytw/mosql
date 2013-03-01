@@ -120,7 +120,7 @@ def select(table, where=None, select=None, **fields):
     All of the fields:
 
     >>> print select_tmpl
-    SQLTemplate(('select', '<select>'), ('from', '<table>'), ('where', '<where>'), ('<join>',), ('group by', '<group_by>'), ('having', '<having>'), ('order by', '<order_by>'), ('limit', '<limit>'), ('offset', '<offset>'))
+    SQLTemplate(('select', '<select>'), ('from', '<table>'), ('<join>',), ('where', '<where>'), ('group by', '<group_by>'), ('having', '<having>'), ('order by', '<order_by>'), ('limit', '<limit>'), ('offset', '<offset>'))
     '''
 
     fields['table'] = table
