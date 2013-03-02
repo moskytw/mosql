@@ -192,7 +192,7 @@ class Model(MutableMapping):
     It implements :py:class:`MutableMapping`, but the setting item is the only mutable operation that is accepted.
 
     :param rows: the result set
-    :type rows: tuple in list
+    :type rows: two-level nest iterable
     '''
 
     __metaclass__ = ModelMeta
