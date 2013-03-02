@@ -32,62 +32,44 @@ if __name__ == '__main__':
     # --- test 1:1 table ---
 
     print '# Find everything in person'
-    print
     persons = Person.find()
-    print
-
     for person in persons:
         pprint(person)
     print
 
     print '# Find mosky in person'
-    print
     person = person.find(person_id='mosky')[0]
-    print
     print person
     print
 
     print '# Rename mosky'
-    print
     person['name'] = 'Mosky Liu 2'
     print person
-    print
-
     person.save()
     print
 
     print '# Rename mosky back'
-    print
     person['name'] = 'Mosky Liu'
     print person
-    print
-
     person.save()
     print
 
     # --- test 1:n (n:n) table ---
 
     print '# Find mosky and andy in detail'
-    print
     details = Detail.find(person_id=['mosky', 'andy'])
-    print
-
     for detail in details:
         pprint(detail)
     print
 
     print "# Find mosky's email"
-    print
     detail = detail.find(person_id='mosky', key='email')
-    print
     print detail
     print
 
     print '# Append a new email'
-    print
     detail.append(val='mosky@dummy.com')
     print detail
-    print
 
     try:
         detail['val'][-1] = 'change it!'
@@ -98,28 +80,20 @@ if __name__ == '__main__':
     print
 
     print "# Retrieve mosky's email"
-    print
     detail = detail.find(person_id='mosky', key='email')
-    print
     print detail
     print
 
     print '# Remoe the last row'
-    print
     detail.pop()
     print detail
-    print
-
     detail.save()
     print
 
     # --- test join ---
 
     print '# Test join'
-    print
     details = PersonDetail.find()
-    print
-
     for detail in details:
         pprint(detail)
     print
