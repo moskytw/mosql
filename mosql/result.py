@@ -125,6 +125,9 @@ class ModelMeta(ABCMeta):
         if not Model.group_by:
             Model.group_by = Model.column_names
 
+        if not Model.identify_by:
+            Model.identify_by = Model.column_names
+
         Model.column_offsets_map = dict((k, i) for i, k in enumerate(Model.column_names))
 
         group_by_idxs = tuple(Model.column_offsets_map[col_name] for col_name in Model.group_by)
