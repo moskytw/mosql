@@ -159,13 +159,22 @@ Unknown = type('Unknown', (object, ), {
 '''It represents a value decided by database.'''
 
 class Model(MutableMapping):
-    '''The core of this module. It provides a friendly interface to access result set.
+    '''This class, which is the core of this moudle, provides a friendly interface to access result set.
+
+    It is the methods you will use in normal scenario:
+
+    1. :py:meth:`Model.find` or :py:meth:`Model.seek` to get a model or models from the database.
+    2. :py:meth:`Model.__getitem__` or :py:meth:`Model.__setitem__` (``model['name']``) to change the values;
+       :py:meth:`Model.append` or :py:meth:`Model.pop` to add or remove rows.
+    3. :py:meth:`Model.save` to save the changes.
+
+    If you want to remove all of a model, :py:meth:`Model.clear` is which you are looking for.
+
+    If you want to create a new model, :py:meth:`Model.new` can help you.
+
+    The last one, :py:meth:`Model.assume`, let you modifiy model without `Model.find` or `Model.seek`.
 
     It implements :py:class:`MutableMapping`, but the setting item is the only mutable operation that is accepted.
-
-    Use :py:meth:`Model.append` or :py:meth:`Model.pop` to add or remove rows in a `Model`, or :py:meth:`Model.new` to create a new `Model` instance from a dict.
-
-    It provides :py:meth:`Model.find` and :py:meth:`Model.seek` to do `select` on a database. :py:meth:`Model.assume` let you update database without doing a `select` on the database.
 
     :param rows: the result set
     :type rows: tuple in list
