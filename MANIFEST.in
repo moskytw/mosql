@@ -1,0 +1,5 @@
+include README*
+graft examples
+graft docs
+graft tests
+prune docs/_build
