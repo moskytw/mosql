@@ -250,7 +250,7 @@ class Model(MutableMapping):
 
         :rtype: a generator of :py:class:`Model`
         '''
-        return cls.group(cls.run(sql.select(cls.table_name, *args, join=cls.join_caluses, **kargs)))
+        return cls.group(cls.run(sql.select(cls.table_name, *args, select=cls.column_names, join=cls.join_caluses, **kargs)))
 
     @classmethod
     def group(cls, rows):
