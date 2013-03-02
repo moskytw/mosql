@@ -158,12 +158,14 @@ class Pool(object):
     '''An abstract class describes a protocol of connections pool used in :py:class:`Model`.
 
     .. note::
-        If you are using `Psycopg <http://initd.org/psycopg/>`_, you can use its `Connections Pool <http://initd.org/psycopg/docs/pool.html>`_ directly.'''
+        If you are using `Psycopg <http://initd.org/psycopg/>`_, you can use its `Connections Pool <http://initd.org/psycopg/docs/pool.html>`_ directly.
+    '''
 
     def getconn(self):
         '''Get a connection.
 
-        :rtype: the `connection` which is defined in `Python DB API 2.0 <http://www.python.org/dev/peps/pep-0249/#connection-objects>`_'''
+        :rtype: the `connection` which is defined in `Python DB API 2.0 <http://www.python.org/dev/peps/pep-0249/#connection-objects>`_i
+        '''
         pass
 
     def putconn(self, conn):
