@@ -1,8 +1,7 @@
-
-.. _tutorial-of-model:
-
 Handling of Result Set 
 ======================
+
+.. _tutorial-of-model:
 
 Start with MoSQL's model
 ------------------------
