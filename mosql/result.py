@@ -163,9 +163,7 @@ class Model(MutableMapping):
 
     It implements :py:class:`MutableMapping`, but the setting item is the only mutable operation that is accepted. Use :py:meth:`Model.append` or :py:meth:`Model.pop` to add or remove rows.
 
-    :param grouped_row: the grouped row
-    :type grouped_row: dict
-    :param rows: the rows
+    :param rows: the result set
     :type rows: tuple in list
     '''
 
@@ -227,13 +225,12 @@ class Model(MutableMapping):
         :rtype: a generator of :py:class:`Model`
         '''
         for grouped_row_vals, rows in groupby(rows, cls.group_by_key_func):
-            yield cls(dict(izip(cls.group_by, grouped_row_vals)), rows)
+            yield cls(rows)
 
     #TODO: method ``assume``
 
-    def __init__(self, grouped_row, rows):
 
-        self.grouped_row = grouped_row
+    def __init__(self, rows):
 
         self.row_len = 0
         self.elems = []
@@ -243,6 +240,9 @@ class Model(MutableMapping):
 
         self.proxies = {}
         self.changes = OrderedDict()
+
+        self.grouped_row = {}
+        self.grouped_row = dict((col_name, self[col_name][0]) for col_name in self.group_by)
 
     def __len__(self):
         return len(self.column_names)
