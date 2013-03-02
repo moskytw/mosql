@@ -161,7 +161,11 @@ Unknown = type('Unknown', (object, ), {
 class Model(MutableMapping):
     '''The core of this module. It provides a friendly interface to access result set.
 
-    It implements :py:class:`MutableMapping`, but the setting item is the only mutable operation that is accepted. Use :py:meth:`Model.append` or :py:meth:`Model.pop` to add or remove rows.
+    It implements :py:class:`MutableMapping`, but the setting item is the only mutable operation that is accepted.
+
+    Use :py:meth:`Model.append` or :py:meth:`Model.pop` to add or remove rows in a `Model`, or :py:meth:`Model.new` to create a new `Model` instance from a dict.
+
+    It provides :py:meth:`Model.find` and :py:meth:`Model.seek` to do `select` on a database. :py:meth:`Model.assume` let you update database without doing a `select` on the database.
 
     :param rows: the result set
     :type rows: tuple in list
@@ -189,6 +193,7 @@ class Model(MutableMapping):
 
     join_table_names = tuple()
     '''The tables you want to do the natural joins.'''
+    # TODO: make user can write data via model which has join other tables
 
     dry_run = False
     '''It prevents the changes to be written into database.'''
@@ -198,7 +203,7 @@ class Model(MutableMapping):
 
     @classmethod
     def find(cls, **where):
-        '''Find the rows matched `where` condition in database.
+        '''Find the rows matched `where` condition in the database.
 
         :rtype: :py:class:`Model` or Models
 
@@ -229,7 +234,7 @@ class Model(MutableMapping):
 
     @classmethod
     def assume(cls, **model_dict):
-        '''Assume a model is existent in database.
+        '''Assume a model is existent in a table.
 
         :param model_dict: part of full model in a dict
         :type model_dict: dict

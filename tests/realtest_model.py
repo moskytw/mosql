@@ -23,7 +23,6 @@ class PersonDetail(Detail):
     join_table_names = ('person', )
     column_names = ('person_id', 'detail_id', 'key', 'val', 'name')
     group_by = ('person_id', 'key', 'name')
-    # TODO: make user can write data via model has join
 
 if __name__ == '__main__':
 

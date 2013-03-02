@@ -260,7 +260,7 @@ class SQLTemplate(object):
 
     >>> select_tmpl = SQLTemplate(
     ...     # It is a template group, and
-    ...     # it only be rendered if every <field> is be filled.
+    ...     # it only be rendered if every <field> is filled.
     ...     ('select', '<select>'),
     ...     # It is another template group.
     ...     ('from', '<table>'),

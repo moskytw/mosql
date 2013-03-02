@@ -9,7 +9,7 @@ from .util import ___, default, SQLTemplate
 
 insert_tmpl = SQLTemplate(
     # It is a template group, and
-    # it only be rendered if every <field> is be filled.
+    # it only be rendered if every <field> is filled.
     ('insert into', '<table>'),
     # It is another template group.
     ('<columns>', ),
