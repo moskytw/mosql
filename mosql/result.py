@@ -5,7 +5,7 @@ __all__ = ['Model', 'ModelMeta', 'Column', 'Row', 'Pool', 'Change']
 
 '''It aims to help you to handle the result set.'''
 
-from itertools import izip, groupby
+from itertools import izip, groupby, repeat
 from collections import MutableSequence, MutableMapping
 
 try:
@@ -227,8 +227,47 @@ class Model(MutableMapping):
         for grouped_row_vals, rows in groupby(rows, cls.group_by_key_func):
             yield cls(rows)
 
-    #TODO: method ``assume``
+    @classmethod
+    def assume(cls, **model_dict):
+        '''Assume a model is existent in database.
 
+        :param model_dict: part of full model in a dict
+        :type model_dict: dict
+        :rtype: :py:class:`Model`
+        '''
+
+        cols = []
+        for col_name in cls.column_names:
+
+            x = model_dict.get(col_name, Unknown)
+
+            if col_name in cls.group_by:
+                cols.append(repeat(x))
+            elif x is Unknown:
+                cols.append(repeat(Unknown))
+            else:
+                cols.append(x)
+
+        if all(isinstance(x, repeat) for x in cols):
+            cols = [[next(x)] for x in cols]
+
+        return cls(izip(*cols))
+
+    @classmethod
+    def new(cls, **model_dict):
+        '''Load a model from a dict, and mark the all of the rows are new.
+
+        :param model_dict: part of full model in a dict
+        :type model_dict: dict
+        :rtype: :py:class:`Model`
+        '''
+
+        model = cls.assume(**model_dict)
+
+        for row in model.rows():
+            model.changes[len(model.changes)] = Change(None, None, dict((k, v) for k, v in row.items() if v is not Unknown))
+
+        return model
 
     def __init__(self, rows):
 
