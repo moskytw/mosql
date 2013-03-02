@@ -39,7 +39,7 @@ After setuped the `mosql.result.Model`, it is more easy to access this table:
     {'person_id': 'mosky', 'detail_id': [3, 4], 'val': ['address', '...'], 'key': 'address'}
     {'person_id': 'mosky', 'detail_id': [1, 6, 10], 'val': ['email', '...', '...'], 'key': 'email'}
 
-For simplicity, the `mosql.result.Model` is rendered as a dict, and the lists in the :`mosql.result.Model` are not simple lists, too. They are `mosql.result.Column` which act as a proxy. It will redirect your operations on it to the `mosql.result.Model` which it belongs to.
+For simplicity, the `mosql.result.Model` is rendered as a dict, and the lists in the `mosql.result.Model` are not simple lists, too. They are `mosql.result.Column` which act as a proxy. It will redirect your operations on it to the `mosql.result.Model` which it belongs to.
 
 `Start with MoSQL’s model <http://mosql.mosky.tw/result.html#tutorial-of-model>`_ describes more details about how to use`mosql.result.Model`.
 
