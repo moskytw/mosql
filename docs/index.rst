@@ -44,7 +44,7 @@ After setuped the :py:class:`mosql.result.Model`, it is more easy to access this
     {'person_id': 'mosky', 'detail_id': [3, 4], 'val': ['address', '...'], 'key': 'address'}
     {'person_id': 'mosky', 'detail_id': [1, 6, 10], 'val': ['email', '...', '...'], 'key': 'email'}
 
-For simplicity, the :py:class:`~mosql.result.Model` is rendered as a dict. It is not a simple dict. And the list in the :py:class:`~mosql.result.Model` is not simple list, too. It is :py:class:`mosql.result.Column` which act as a proxy. It will redirect your operations on it to the :py:class:`~mosql.result.Model` which it belongs to.
+For simplicity, the :py:class:`~mosql.result.Model` is rendered as a dict. Of course, it is not a simple dict, and the list in the :py:class:`~mosql.result.Model` is not simple list, too. The list-like is :py:class:`mosql.result.Column` which act as a proxy. It will redirect your operations on it to the :py:class:`~mosql.result.Model` which it belongs to.
 
 :ref:`tutorial-of-model` describes more details about how to use :py:class:`mosql.result.Model`.
 
