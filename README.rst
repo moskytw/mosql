@@ -13,7 +13,7 @@ The first part is SQL builders which help you to build SQL with common Python da
     >>> select('person', {'age >': 18})
     'SELECT * FROM person WHERE age > 18'
 
-It converts the Python data types to SQL statements. You can find more exmaples in :py:mod:`mosql.common`.
+It converts the Python data types to SQL statements. You can find more exmaples in `mosql.common <http://mosql.mosky.tw/builders.html#module-mosql.common>`_.
 
 The second part is a easy-to-use interface of the result set. We assume there is a table like this:
 
@@ -29,7 +29,7 @@ The second part is a easy-to-use interface of the result set. We assume there is
              1 | mosky     | email   | ...
     (5 rows)
 
-After setuped the :py:class:`mosql.result.Model`, it is more easy to access this table:
+After setuped the `mosql.result.Model`, it is more easy to access this table:
 
 ::
 
@@ -39,9 +39,9 @@ After setuped the :py:class:`mosql.result.Model`, it is more easy to access this
     {'person_id': 'mosky', 'detail_id': [3, 4], 'val': ['address', '...'], 'key': 'address'}
     {'person_id': 'mosky', 'detail_id': [1, 6, 10], 'val': ['email', '...', '...'], 'key': 'email'}
 
-For simplicity, the :py:class:`~mosql.result.Model` is rendered as a dict, and the lists in the :py:class:`~mosql.result.Model` are not simple lists, too. They are :py:class:`mosql.result.Column` which act as a proxy. It will redirect your operations on it to the :py:class:`~mosql.result.Model` which it belongs to.
+For simplicity, the `mosql.result.Model` is rendered as a dict, and the lists in the :`mosql.result.Model` are not simple lists, too. They are `mosql.result.Column` which act as a proxy. It will redirect your operations on it to the `mosql.result.Model` which it belongs to.
 
-:ref:`tutorial-of-model` describes more details about how to use :py:class:`mosql.result.Model`.
+`Start with MoSQL’s model <http://mosql.mosky.tw/result.html#tutorial-of-model>`_ describes more details about how to use`mosql.result.Model`.
 
 Installation
 ------------
