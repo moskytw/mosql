@@ -1,2 +1,4 @@
+tags
+/build
+/docs/_build
 *.pyc
-docs/_build
