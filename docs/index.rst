@@ -6,7 +6,7 @@
 MoSQL --- More than SQL
 =======================
 
-MoSQL is a lightweight Python library which assists programmer to use (SQL) relational database.
+MoSQL is a lightweight Python library which assists programmer to use SQL.
 
 It has two major parts:
 
