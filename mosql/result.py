@@ -36,7 +36,7 @@ class Row(MutableMapping):
         return len(self.model.column_names)
 
     def __iter__(self):
-        for col_name in self.column_names:
+        for col_name in self.model.column_names:
             yield col_name
 
     def __getitem__(self, col_name):
