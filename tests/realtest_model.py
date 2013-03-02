@@ -42,7 +42,7 @@ if __name__ == '__main__':
     print
 
     print '# Rename mosky'
-    person['name'] = 'Mosky Liu 2'
+    person.name = 'Mosky Liu 2'
     print person
     person.save()
     print
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     print detail
 
     try:
-        detail['val'][-1] = 'change it!'
+        detail.val[-1] = 'change it!'
     except ValueError:
         pass
 

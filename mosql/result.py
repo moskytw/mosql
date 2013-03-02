@@ -126,13 +126,28 @@ class ModelMeta(ABCMeta):
             Model.group_by = Model.column_names
 
         Model.column_offsets_map = dict((k, i) for i, k in enumerate(Model.column_names))
+
         group_by_idxs = tuple(Model.column_offsets_map[col_name] for col_name in Model.group_by)
         Model.group_by_key_func = staticmethod(lambda row: tuple(row[i] for i in group_by_idxs))
+
         if Model.join_table_names:
             import mosql.ext
             Model.join_caluses = ''.join(map(mosql.ext.join, Model.join_table_names))
         else:
             Model.join_caluses = ''
+
+        for col_name in Model.column_names:
+            if not hasattr(Model, col_name):
+                setattr(Model, col_name,
+                    # it is a colsure
+                    (lambda x:
+                        property(
+                            lambda self: self.__getitem__(x),
+                            lambda self, v: self.__setitem__(x, v),
+                            lambda self: self.__delitem__(x)
+                        )
+                    )(col_name)
+                )
 
         return Model
 
