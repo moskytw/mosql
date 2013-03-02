@@ -3,6 +3,8 @@
 
 '''It contains the builders of addational SQL statements.'''
 
+__all__ = ['or_', 'join', 'join_tmpl', 'natural', 'left', 'right', 'inner', 'cross']
+
 from .util import ___, dumps, SQLTemplate
 
 join_tmpl = SQLTemplate(

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__all__ = ['encoding', 'paramstyle', 'boolstyle', 'default', 'Empty', 'SQLTemplate', 'dumps', 'escape', 'splitop']
+
 '''It contains useful tools to build SQL with common Python's data types.'''
 
 Empty = ___ = type('Empty', (object, ), {
@@ -249,7 +251,7 @@ def dumps(x, **format_spec):
     return str(x)
 
 class SQLTemplate(object):
-    '''A SQL template.
+    '''A SQL template engine.
 
     :param template_groups: the template groups
     :type template_groups: two-level nest iterable
@@ -285,7 +287,7 @@ class SQLTemplate(object):
     .. seealso::
         The all of the formating specification: :py:func:`mosql.util.dumps`.
 
-    If the formating specification isn't set, it raise a KeyError exception rather than an AttributeError:
+    If the formating specification isn't set, it raise a :py:exc:`KeyError` rather than an :py:exc:`AttributeError`:
 
     >>> print tmpl.x
     Traceback (most recent call last):

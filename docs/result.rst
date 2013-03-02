@@ -1,4 +1,6 @@
 
+.. _tutorial-of-model:
+
 Handling of Result Set 
 ======================
 

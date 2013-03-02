@@ -20,7 +20,21 @@ The first part is SQL builders which help you to build SQL with common Python da
 
 It converts the Python data types to SQL statements. You can find more exmaples in :py:mod:`mosql.common`.
 
-The second part is a hyper abstarct of the result set:
+The second part is a easy-to-use interface of the result set. We assume there is a table like this:
+
+::
+
+    db=> select * from detail where person_id='mosky';
+     detail_id | person_id |   key   |   val            
+    -----------+-----------+---------+---------
+             4 | mosky     | address | address
+             3 | mosky     | address | ...
+            10 | mosky     | email   | email
+             6 | mosky     | email   | ...
+             1 | mosky     | email   | ...
+    (5 rows)
+
+After setuped the :py:class:`mosql.result.Model`, it is more easy to access this table:
 
 ::
 
@@ -28,9 +42,11 @@ The second part is a hyper abstarct of the result set:
     >>> for detail in Detail.find(person_id='mosky')):
     ...     print detail
     {'person_id': 'mosky', 'detail_id': [3, 4], 'val': ['address', '...'], 'key': 'address'}
-    {'person_id': 'mosky', 'detail_id': [5, 6, 7], 'val': ['email', '...', '...'], 'key': 'email'}
+    {'person_id': 'mosky', 'detail_id': [1, 6, 10], 'val': ['email', '...', '...'], 'key': 'email'}
 
-The :py:class:`mosql.result.Model` rendered in a dict is a dict-like object. And the lists in the :py:class:`~mosql.result.Model` are :py:class:`mosql.result.Column`. The :py:class:`~mosql.result.Column` is a proxy. It will redirect your changes on it to :py:class:`~mosql.result.Model`.
+For simplicity, the :py:class:`~mosql.result.Model` is rendered as a dict, and the lists in the :py:class:`~mosql.result.Model` are not simple lists, too. They are :py:class:`mosql.result.Column` which act as a proxy. It will redirect your operations on it to the :py:class:`~mosql.result.Model` which it belongs to.
+
+:ref:`tutorial-of-model` describes more details about how to use :py:class:`mosql.result.Model`.
 
 Installation
 ------------
@@ -41,7 +57,7 @@ It is easy to install MoSQL with `pip`:
 
     $ sudo pip install mosql
 
-Or clone the source code from `Github`:
+Or clone the source code from `Github <https://github.com/moskytw/mosql>`_:
 
 ::
 

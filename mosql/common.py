@@ -3,6 +3,8 @@
 
 '''It contains the builders of common SQL statement.'''
 
+__all__ = ['insert', 'select', 'update', 'delete', 'insert_tmpl', 'select_tmpl', 'update_tmpl', 'delete_tmpl']
+
 from .util import ___, default, SQLTemplate
 
 insert_tmpl = SQLTemplate(
@@ -173,7 +175,7 @@ delete_tmpl = SQLTemplate(
     ('where'    , '<where>'),
     ('returning', '<returning>'),
 )
-'''The template for :py:func:`mosql.common.delet`.'''
+'''The template for :py:func:`mosql.common.delete`.'''
 
 def delete(table, where=None, **fields):
     '''It is a shortcut for the SQL statement, ``delete from ...`` .

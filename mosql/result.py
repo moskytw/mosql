@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__all__ = ['Model', 'ModelMeta', 'Column', 'Row', 'Pool', 'Change']
+
 '''It aims to help you to handle the result set.'''
 
 from itertools import izip, groupby
@@ -135,15 +137,15 @@ class ModelMeta(ABCMeta):
         return Model
 
 class Pool(object):
-    '''An abstract class describes a protocol of connection pool used in :py:class:`Model`.
+    '''An abstract class describes a protocol of connections pool used in :py:class:`Model`.
 
     .. note::
-        If you are using `Psycopg <http://initd.org/psycopg/>`_, you can use its `pool <http://initd.org/psycopg/docs/pool.html>`_ directly.'''
+        If you are using `Psycopg <http://initd.org/psycopg/>`_, you can use its `Connections Pool <http://initd.org/psycopg/docs/pool.html>`_ directly.'''
 
     def getconn(self):
         '''Get a connection.
 
-        :rtype: a connection which is defined in Python DB API 2.0'''
+        :rtype: the `connection` which is defined in `Python DB API 2.0 <http://www.python.org/dev/peps/pep-0249/#connection-objects>`_'''
         pass
 
     def putconn(self, conn):
@@ -170,7 +172,7 @@ class Model(MutableMapping):
     __metaclass__ = ModelMeta
 
     pool = Pool()
-    '''The connection pool, which is described in :py:class:`Pool`.'''
+    '''The connections pool described in :py:class:`Pool`.'''
 
     table_name = ''
     '''The name of main table.'''
@@ -185,10 +187,10 @@ class Model(MutableMapping):
     '''A model is consisted of one or more rows. It will use this attribute to group the result set.'''
 
     order_by = tuple()
-    '''By default, it uses :py:attr:`Model.identify_by` to order the column values in a instance. Change it by assigning this attribute.'''
+    '''By default, it uses :py:attr:`Model.identify_by` to order the column values in a instance. It can override that.'''
 
     join_table_names = tuple()
-    '''Use it to do natural join with other tables.'''
+    '''The tables you want to do the natural joins.'''
 
     dry_run = False
     '''It prevents the changes to be written into database.'''
@@ -200,9 +202,9 @@ class Model(MutableMapping):
     def find(cls, **where):
         '''Find the rows matched `where` condition in database.
 
-        :rtype: model or models
+        :rtype: :py:class:`Model` or Models
 
-        It return a model if you fill all of :py:attr:`Model.group_by` columns, and the number of grouped result is just one.
+        It return a model if you fill all of the :py:attr:`Model.group_by` columns, and there is only one model after grouping.
         '''
         models = list(cls.seek(where=where, order_by=cls.group_by+(cls.order_by or cls.identify_by)))
         if len(models) == 1 and all(col_name in where for col_name in cls.group_by):
@@ -214,7 +216,7 @@ class Model(MutableMapping):
     def seek(cls, *args, **kargs):
         '''The arguments will be passed to :py:func:`mosql.common.select`.
 
-        :rtype: models
+        :rtype: a generator of :py:class:`Model`
         '''
         return cls.group(cls.run(sql.select(cls.table_name, *args, join=cls.join_caluses, **kargs)))
 
@@ -222,7 +224,7 @@ class Model(MutableMapping):
     def group(cls, rows):
         '''It groups the existent rows.
 
-        :rtype: models in a generator
+        :rtype: a generator of :py:class:`Model`
         '''
         for grouped_row_vals, rows in groupby(rows, cls.group_by_key_func):
             yield cls(dict(izip(cls.group_by, grouped_row_vals)), rows)
@@ -316,7 +318,7 @@ class Model(MutableMapping):
     def pop(self, row_idx=-1):
         '''Pop a row.
 
-        :rtype: row in list
+        :rtype: list
         '''
 
         row_identity_values = self.get_row_identity_values(row_idx)
@@ -340,7 +342,8 @@ class Model(MutableMapping):
     def rows(self):
         '''Get the rows.
 
-        :rtype: rows in generator'''
+        :rtype: a generator of :py:class:`Row`
+        '''
 
         for i in xrange(self.row_len):
             yield self[i]
@@ -348,7 +351,8 @@ class Model(MutableMapping):
     def save(self):
         '''Save changes.
 
-        :rtype: cursor'''
+        :rtype: cursor
+        '''
 
         sqls = []
         for change in self.changes.values():
