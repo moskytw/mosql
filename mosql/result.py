@@ -247,6 +247,18 @@ class Model(MutableMapping):
     '''Show the SQL it executed to stdout.'''
 
     @classmethod
+    def customize(cls, **class_attrs):
+        '''It returns a subclass of Model which is customized by the attributes you provided.
+
+        :param class_attrs: the customized attributes.
+        :type class_attrs: dict
+        :rtype: a subclass of Model
+
+        .. versionadded :: 0.1.1
+        '''
+        return type('%s_%s' % (cls.__name__, class_attrs.get('table_name', 'anonymous')), (cls, ), class_attrs)
+
+    @classmethod
     def find(cls, **where):
         '''It finds the rows matched `where` condition in the database.
 
