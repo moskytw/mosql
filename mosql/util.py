@@ -352,6 +352,7 @@ class SQLTemplate(object):
 
                     # handles the special cases
                     # TODO: it could be abstracted as a parameter of initialization
+                    # TODO: preprocess the special cases and pack them into a Raw class
                     if field_value is Empty:
                         if field_name == 'select':
                             rendered = '*'

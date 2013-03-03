@@ -239,6 +239,7 @@ class Model(MutableMapping):
     join_table_names = tuple()
     '''The tables you want to do the natural joins.'''
     # TODO: make user can write data via model which has join other tables
+    # TODO: use another class, ex. Table, to describe the information of table
 
     dry_run = False
     '''It prevents the changes to be written into database.'''
@@ -476,6 +477,7 @@ class Model(MutableMapping):
         for change in self.changes.values():
             cond = change.get_condition()
             if cond is None:
+                # TODO: let user customize the those functions
                 sqls.append(sql.insert(self.table_name, change.row))
             elif change.row is None:
                 sqls.append(sql.delete(self.table_name, cond))
