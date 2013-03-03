@@ -164,7 +164,7 @@ class Pool(object):
     def getconn(self):
         '''Get a connection.
 
-        :rtype: the `connection` which is defined in `Python DB API 2.0 <http://www.python.org/dev/peps/pep-0249/#connection-objects>`_.
+        :rtype: the `connection` which is defined in `Python DB API 2.0 : Connection Objects <http://www.python.org/dev/peps/pep-0249/#connection-objects>`_.
         '''
         pass
 
