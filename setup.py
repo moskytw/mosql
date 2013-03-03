@@ -11,6 +11,6 @@ setup(
     version = __version__,
     author  = 'Mosky',
     author_email = 'mosky.tw@gmail.com',
-    url = 'http://github.com/moskytw/mosql',
+    url = 'http://mosql.mosky.tw/',
     packages = ['mosql'],
 )
