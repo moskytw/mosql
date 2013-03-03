@@ -50,7 +50,7 @@ As you see, there are two main problems:
 1. The result set always needs to arrange to the form which is easy to use (ex. a dict).
 2. The hand-made SQLs are alien to Python. It is hard to build a SQL without any library.
 
-Although here are two problems, but it has a *big* advantage --- the performance is the **best** in this way.
+Although here are two problems, it has a *big* advantage --- the performance is the **best** in this way.
 
 The :py:class:`~mosql.result.Model` is designed to solve the problems and keep the advantage as complete as possible.
 
