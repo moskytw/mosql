@@ -22,9 +22,9 @@ class Row(MutableMapping):
 
     It implements :py:class:`MutableMapping`, but the setting item is the only mutable operation that is accepted.
 
-    :param model: the model behind this proxy
+    :param model: the model behind this proxy.
     :type model: :py:class:`Model`
-    :param row_idx: the index of fixed row
+    :param row_idx: the index of fixed row.
     :type row_idx: str
     '''
 
@@ -56,9 +56,9 @@ class Column(MutableSequence):
 
     It implements :py:class:`MutableSequence`, but the setting item is the only mutable operation that is accepted.
 
-    :param model: the model behind this proxy
+    :param model: the model behind this proxy.
     :type model: :py:class:`Model`
-    :param col_name: the name of fixed column
+    :param col_name: the name of fixed column.
     :type col_name: str
     '''
 
@@ -91,11 +91,11 @@ class Column(MutableSequence):
 class Change(object):
     '''It records a single change on a row.
 
-    :param row_identity_column_names: the column names which can identify a row
+    :param row_identity_column_names: the column names which can identify a row.
     :type row_identity_column_names: tuple
-    :param row_identity_values: the values which can identify a row
+    :param row_identity_values: the values which can identify a row.
     :type row_identity_values: tuple
-    :param row: the changed row
+    :param row: the changed row.
     :type row: dict
     '''
 
@@ -179,25 +179,41 @@ Unknown = type('Unknown', (object, ), {
 '''It represents a value decided by database.'''
 
 class Model(MutableMapping):
-    '''This class, which is the core of this module, provides a friendly interface to access result set.
+    '''This class, which is the core of this module, provides a friendly interface to access result set and apply the changes to database.
 
-    It is the methods you will use in normal scenario:
+    :param result_set: a result set, usually is a grouped result set.
+    :type result_set: a cursor or tuples in a list
 
-    1. :py:meth:`Model.find` or :py:meth:`Model.seek` to get a model or models from the database.
-    2. :py:meth:`Model.__getitem__` or :py:meth:`Model.__setitem__` (``model['name']``) to change the values;
-       :py:meth:`Model.append` or :py:meth:`Model.pop` to add or remove rows.
-    3. :py:meth:`Model.save` to save the changes.
+    If you don't know how to setup a model, this article can help you -- :ref:`tutorial-of-model`.
 
-    If you want to remove all of a model, :py:meth:`Model.clear` is which you are looking for.
+    The methods help you to retrieve the model(s):
 
-    If you want to create a new model, :py:meth:`Model.new` can help you.
+    .. autosummary ::
 
-    The last one, :py:meth:`Model.assume`, let you modifiy model without `Model.find` or `Model.seek`.
+        Model.find
+        Model.seek
 
-    It implements :py:class:`MutableMapping`, but the setting item is the only mutable operation that is accepted.
+    If you want to modify something:
 
-    :param rows: the result set
-    :type rows: two-level nest iterable
+    .. autosummary ::
+
+        Model.new
+        Model.assume
+        append
+        pop
+        clear
+
+    It implements :py:class:`MutableMapping`, so just treat it as *dict*. But the `__delitem__` and `update` may not work as you think, because it is a result set from database. Try to use the above methods instead.
+
+    .. versionadded :: 0.1.1
+        It also supports to modify value with the attributes (ex. ``user.emails[0]`` is equal to ``user['emails'][0]``).
+
+    Finally, I think you will want to save the changes:
+
+    .. autosummary ::
+
+        save
+
     '''
 
     __metaclass__ = ModelMeta
@@ -215,7 +231,7 @@ class Model(MutableMapping):
     '''The name of columns which can identify a row. Usually, it is the primary key.'''
 
     group_by = tuple()
-    '''A model is consisted of one or more rows. It will use this attribute to group the result set.'''
+    '''A model is consisted of one or more rows. It is used to group the result set.'''
 
     order_by = tuple()
     '''By default, it uses :py:attr:`Model.identify_by` to order the column values in a instance. It can override that.'''
@@ -232,12 +248,19 @@ class Model(MutableMapping):
 
     @classmethod
     def find(cls, **where):
-        '''Find the rows matched `where` condition in the database.
+        '''It finds the rows matched `where` condition in the database.
+
+        :param where: the condition of a SQL select.
+        :type where: dict
 
         :rtype: :py:class:`Model` or Models
 
-        It return a model if you fill all of the :py:attr:`Model.group_by` columns, and there is only one model after grouping.
+        It return a model if you gave all of the :py:attr:`Model.group_by` columns, and there is only one model after grouping.
+
+        .. seealso ::
+            How a dict to be rendered to the SQL --- :py:func:`mosql.common.select`.
         '''
+
         models = list(cls.seek(where=where, order_by=cls.group_by+(cls.order_by or cls.identify_by)))
         if len(models) == 1 and all(col_name in where for col_name in cls.group_by):
             return models[0]
@@ -246,26 +269,32 @@ class Model(MutableMapping):
 
     @classmethod
     def seek(cls, *args, **kargs):
-        '''The arguments will be passed to :py:func:`mosql.common.select`.
+        '''It is a shortcut for calling :py:func:`mosql.common.select` with values which have known, and it will group the result set.
+
+        The all of the arguments will be passed to :py:func:`mosql.common.select`.
 
         :rtype: a generator of :py:class:`Model`
         '''
+
         return cls.group(cls.run(sql.select(cls.table_name, *args, select=cls.column_names, join=cls.join_caluses, **kargs)))
 
     @classmethod
-    def group(cls, rows):
-        '''It groups the existent rows.
+    def group(cls, result_set):
+        '''It groups the existent result set by :py:attr:`Model.group_by`.
 
+        :param result_set: ungrouped result set.
+        :type result_set: a cursor or tuples in a list
         :rtype: a generator of :py:class:`Model`
         '''
-        for grouped_row_vals, rows in groupby(rows, cls.group_by_key_func):
-            yield cls(rows)
+
+        for _, grouped_result_set in groupby(result_set, cls.group_by_key_func):
+            yield cls(grouped_result_set)
 
     @classmethod
     def assume(cls, **model_dict):
-        '''Assume a model is existent in a table.
+        '''If you have known some value of a model, use it to make it be a model without doing a SQL select.
 
-        :param model_dict: part of full model in a dict
+        :param model_dict: the part or full model.
         :type model_dict: dict
         :rtype: :py:class:`Model`
         '''
@@ -289,9 +318,9 @@ class Model(MutableMapping):
 
     @classmethod
     def new(cls, **model_dict):
-        '''Load a model from a dict, and mark the all of the rows are new.
+        '''It works like :py:meth:`Model.assume`, but it treats the rows as new. You can use :py:meth:`Model.save` to save them.
 
-        :param model_dict: part of full model in a dict
+        :param model_dict: the part or full model.
         :type model_dict: dict
         :rtype: :py:class:`Model`
         '''
@@ -303,12 +332,12 @@ class Model(MutableMapping):
 
         return model
 
-    def __init__(self, rows):
+    def __init__(self, result_set):
 
         self.row_len = 0
         self.elems = []
-        for row in rows:
-            self.elems.extend(row)
+        for result in result_set:
+            self.elems.extend(result)
             self.row_len += 1
 
         self.proxies = {}
@@ -376,7 +405,11 @@ class Model(MutableMapping):
         raise TypeError('this operation is not supported')
 
     def append(self, **row):
-        '''Append a row. It will fill the columns in :py:attr:`Model.group_by` automatically.'''
+        '''It adds a row into model.
+
+        :param row: the row you want to add.
+        :type row: dict
+        '''
 
         for col_name in self.group_by:
             if col_name not in row:
@@ -389,7 +422,7 @@ class Model(MutableMapping):
         self.row_len += 1
 
     def pop(self, row_idx=-1):
-        '''Pop a row.
+        '''It removes a row from this model.
 
         :rtype: list
         '''
@@ -407,13 +440,13 @@ class Model(MutableMapping):
         return row
 
     def clear(self):
-        '''Pop all of the rows.'''
+        '''It removes all of the row in this model.'''
 
         for i in xrange(self.row_len):
             self.pop()
 
     def rows(self):
-        '''Get the rows.
+        '''It returns a iterable which traverses all of the rows.
 
         :rtype: a generator of :py:class:`Row`
         '''
@@ -422,7 +455,7 @@ class Model(MutableMapping):
             yield self[i]
 
     def save(self):
-        '''Save changes.
+        '''It saves the changes which cached in model.
 
         :rtype: cursor
         '''
@@ -440,16 +473,18 @@ class Model(MutableMapping):
         return self.run(sqls)
 
     @classmethod
-    def run(cls, sqls):
-        '''Run a SQL or SQLs.
+    def run(cls, sql_or_sqls):
+        '''It runs a SQL or SQLs with the :py:attr:`Model.pool` you specified.
 
-        :param sqls: a SQL or SQLs.
-        :type sqls: str or list
+        :param sql_or_sqls: a string SQL or iterable SQLs.
+        :type sql_or_sqls: str or list
 
         :rtype: cursor'''
 
-        if isinstance(sqls, basestring):
-            sqls = [sqls]
+        if isinstance(sql_or_sqls, basestring):
+            sqls = [sql_or_sqls]
+        else:
+            sqls = sql_or_sqls
 
         if cls.dump_sql:
             from pprint import pprint
