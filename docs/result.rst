@@ -6,23 +6,26 @@ Handling of Result Set
 Start with MoSQL's model
 ------------------------
 
-The result set
-^^^^^^^^^^^^^^
+The :py:class:`mosql.result.Model` is different from traditional ORMs. Rather than abstracting the table, it aims at handling the `result set`.
 
-Let us start from the basic library conformed the `Python DB API 2.0 <http://www.python.org/dev/peps/pep-0249/>`_. Here are some snippets of querying data from PostgreSQL_ with Psycopg2_:
+I prefers to say MoSQL's Model is *not* an ORM, but it looks like matching the definition of ORM. Whatever, it is very different from the other ORMs.
+
+Pure SQL
+^^^^^^^^
+
+Here are some code snippets of using the basic library conformed the `Python DB API 2.0 <http://www.python.org/dev/peps/pep-0249/>`_.
 
 ::
 
-    from pprint import pprint
     import psycopg2
 
     conn = psycopg2.connect(database='mosky')
     cur = conn.cursor()
 
     cur.execute("select detail_id, person_id, key, val from detail where person_id = 'mosky'")
-    pprint(cur.fetchall())
 
-And here is the result:
+    from pprint import pprint
+    pprint(cur.fetchall())
 
 ::
 
@@ -32,7 +35,7 @@ And here is the result:
      (2, 'mosky', 'email', 'It is my second email.'),
      (1, 'mosky', 'email', 'It is my first email.')]
 
-We may change some value after checking the reuslt:
+The above are the code and result of normal SQL select.
 
 ::
 
@@ -40,19 +43,23 @@ We may change some value after checking the reuslt:
 
     conn.commit()
 
-As you saw, we need to compose the SQLs to select or update, and arrange the result set from databse. All of them are annoying works.
+And we will use the above pattern to change the data in a database.
 
-Let :py:class:`mosql.result.Model` do those things for you!
+As you see, there are two main problems:
 
-.. _PostgreSQL: http://postgresql.org
-.. _Psycopg2: http://initd.org/psycopg
+1. The result set always needs to arrange to the form which is easy to use (ex. a dict).
+2. The hand-made SQLs are alien to Python. It is hard to build a SQL without any library.
+
+Although here are two problems, but it has a *big* advantage --- the performance is the **best** in this way.
+
+The :py:class:`~mosql.result.Model` is designed to solve the problems and keep the advantage as complete as possible.
 
 Group the result set
 ^^^^^^^^^^^^^^^^^^^^
 
-You have to inherit :py:class:`mosql.result.Model` to customize your model for different result sets.
+The :py:class:`~mosql.result.Model` works well with traditional way. It provides a useful method: :py:meth:`~mosql.result.Model.group`. It can group the result set from a normal cursor.
 
-For an example, you will need a model like this for the above data:
+Before we use it, we need to customize the Model for fitting our result set:
 
 ::
 
@@ -62,7 +69,7 @@ For an example, you will need a model like this for the above data:
         columns_names = ('detail_id', 'person_id', 'key', 'val')
         group_by      = ('person_id', 'key')
 
-And use it to group the result set:
+Then, use the `group` method to group our result set:
 
 ::
 
@@ -85,7 +92,9 @@ And use it to group the result set:
     key      : email
     val      : ['It is my third email.', 'It is my second email.', 'It is my first email.']
 
-It is a dict-like object, so you can update the value via setting item.
+It is better than original result set, right? And it is transparent for the SQL experts.
+
+And it is just a dict-like object, so you can update the value via setting a new value to them.
 
 ::
 
@@ -99,10 +108,12 @@ It is a dict-like object, so you can update the value via setting item.
 .. versionadded:: 0.1.1
     ``detail.val[0] = 'changed'`` is also accepted.
 
-Drop out the SQLs
+Drop the SQLs out
 ^^^^^^^^^^^^^^^^^
 
-`Pool` defines the how `Model` gets and puts the connection with database. Here is a simple implement of a `Pool`:
+Of course, the :py:class:`~mosql.result.Model` is not just a grouper. It also provides a nice interface of executing SQLs.
+
+For letting Model talk with database, you must define an interface which can gets or puts the connection. The :py:class:`mosql.result.Pool` is such as interface. The built-in Pool is an abstract class. You need to define you own Pool. Here is a simple example:
 
 ::
 
@@ -116,7 +127,12 @@ Drop out the SQLs
         def putconn(self, conn):
             pass
 
-And let `Model` use this `Pool` and set the name of table:
+.. note::
+    If you are using `Psycopg <http://initd.org/psycopg/>`_, the Pool we mentioned is equal to its `Connections Pool <http://initd.org/psycopg/docs/pool.html>`_.
+
+Then, for applying the changes, the Model have to know the name of table.
+
+After prepared the above materials, put them into the Model:
 
 ::
 
@@ -125,12 +141,6 @@ And let `Model` use this `Pool` and set the name of table:
         table_name = 'detail'
         pool       = DummyPool()
         ...
-
-.. note::
-    The above APIs may be changed in further version.
-
-.. note::
-    If you are using `Psycopg <http://initd.org/psycopg/>`_, you can use its `Connections Pool <http://initd.org/psycopg/docs/pool.html>`_ directly.
 
 Then, you can use the Model's :py:meth:`~mosql.result.Model.find` instead of the select.
 
@@ -144,19 +154,21 @@ Then, you can use the Model's :py:meth:`~mosql.result.Model.find` instead of the
     {'person_id': 'mosky', 'detail_id': [4, 3], 'val': ['It is my second address.', 'It is my first address.'], 'key': 'address'},
     {'person_id': 'mosky', 'detail_id': [10, 2, 1], 'val': ['It is my third email.', 'It is my second email.', 'It is my first email.'], 'key': 'email'}
 
-The `Model` will cache the changes, so you need to use Model's :py:meth:`~mosql.result.Model.save` to save the changes back.
+Let us try to change something and save it to databsse.
 
 ::
 
-    Detail.dump_sql = True # for debug
+    Detail.dump_sql = True # for showing the SQL it built
     detail['val'][0] = 'changed'
     detal.save()
+
+The Model will cache the changes in itself, so you need to use Model's :py:meth:`~mosql.result.Model.save` to save the changes back.
 
 ::
 
     ["UPDATE detail SET val = 'changed' WHERE person_id = 'mosky' AND detail_id = 1 AND val = 'It is my first email.' AND key = 'email'"]
 
-The SQL seems stupid. You can teach model how to identify a row.
+Uh, I think some SQL experts can't accept this SQL, because it is too imprecise. We have solution for it. You can teach the Model how to identify a row by adding a tuple:
 
 ::
 
@@ -165,22 +177,24 @@ The SQL seems stupid. You can teach model how to identify a row.
         identify_by = ('detail_id',)
         ...
 
-The SQL will be more accurate:
+The SQL it generated will be more accurate:
 
 ::
 
     ["UPDATE detail SET val = 'changed' WHERE detail_id = 1"]
 
 .. warning::
-    In 0.1.0, you must specify the `identify_by` -- otherwise it will generate a update SQL without any condition.
+    In 0.1.0, you must specify the `identify_by` -- otherwise it will generate a update SQL without any condition. That's terrible.
 
-Although this section named '*Drop out* the SQLs', but MoSQL doesn't aim to create a world without SQL. SQL is the key of application's performance, and MoSQL just try to reduce the complexity of building SQL.
+That's all. You may want to know more methods the Model provides: :ref:`model-api`.
 
 .. seealso::
     `mosql/tests <https://github.com/moskytw/mosql/tree/master/tests>`_ --- there are some real examples.
 
 .. seealso::
-    :ref:`builders` --- it describes how those SQLs was built.
+    :ref:`builders` --- it describes how :py:class:`~mosql.result.Model` to build those SQL from Python's data types.
+
+.. _model-api:
 
 The API --- :py:mod:`mosql.result`
 ----------------------------------

@@ -8,6 +8,8 @@ MoSQL --- More than SQL
 
 MoSQL is a lightweight Python library which assists programmer to use SQL.
 
+It is designed to take the high performance from using pure SQL, and just do the necessary abstracting of SQL.
+
 It has two major parts:
 
 The first part is SQL builders which help you to build SQL with common Python data types:
@@ -44,7 +46,7 @@ After setuped the :py:class:`mosql.result.Model`, it will be a proxy to access y
     {'person_id': 'mosky', 'detail_id': [3, 4], 'val': ['address', '...'], 'key': 'address'}
     {'person_id': 'mosky', 'detail_id': [1, 6, 10], 'val': ['email', '...', '...'], 'key': 'email'}
 
-For simplicity, the `Model` is rendered as the dict, and the :py:class:`mosql.result.Column` is rendered as the list. The `Model` is arranged result set, and `Column` is a proxy for `Model`. Any operation on `Column` will be redirect to `Model`.
+For simplicity, the Model, which is a *dict-like* object, is rendered as the dict, and the :py:class:`mosql.result.Column`, which is a *list-like* object, is rendered as the list. The Model is a *grouped* result set, and the Columns are the *proxies* for a Model. Any operation on the Columns will be redirect to a Model.
 
 :ref:`tutorial-of-model` describes more details about how to use the `Model`.
 
