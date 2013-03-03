@@ -56,13 +56,13 @@ For an example, you will need a model like this for the above data:
 
 ::
 
-    from model.result import Model
+    from mosql.result import Model
 
     class Detail(Model):
         columns_names = ('detail_id', 'person_id', 'key', 'val')
         group_by      = ('person_id', 'key')
 
-And use it to sort the result set:
+And use it to group the result set:
 
 ::
 
@@ -144,7 +144,7 @@ Then, you can use the Model's :py:meth:`~mosql.result.Model.find` instead of the
     {'person_id': 'mosky', 'detail_id': [4, 3], 'val': ['It is my second address.', 'It is my first address.'], 'key': 'address'},
     {'person_id': 'mosky', 'detail_id': [10, 2, 1], 'val': ['It is my third email.', 'It is my second email.', 'It is my first email.'], 'key': 'email'}
 
-The `Model` will cache the changes, so you need to use Model's :py:meth:`~mosql.result.Model.save` to save changes back.
+The `Model` will cache the changes, so you need to use Model's :py:meth:`~mosql.result.Model.save` to save the changes back.
 
 ::
 

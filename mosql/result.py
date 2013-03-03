@@ -164,7 +164,7 @@ class Pool(object):
     def getconn(self):
         '''Get a connection.
 
-        :rtype: the `connection` which is defined in `Python DB API 2.0 <http://www.python.org/dev/peps/pep-0249/#connection-objects>`_i
+        :rtype: the `connection` which is defined in `Python DB API 2.0 <http://www.python.org/dev/peps/pep-0249/#connection-objects>`_.
         '''
         pass
 
@@ -179,7 +179,7 @@ Unknown = type('Unknown', (object, ), {
 '''It represents a value decided by database.'''
 
 class Model(MutableMapping):
-    '''This class, which is the core of this moudle, provides a friendly interface to access result set.
+    '''This class, which is the core of this module, provides a friendly interface to access result set.
 
     It is the methods you will use in normal scenario:
 

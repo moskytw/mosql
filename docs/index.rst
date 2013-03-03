@@ -20,7 +20,7 @@ The first part is SQL builders which help you to build SQL with common Python da
 
 It converts the Python data types to SQL statements. You can find more exmaples in :py:mod:`mosql.common`.
 
-The second part is a easy-to-use interface of the result set. For instance, we assume there is a table like this:
+The second part is a easy-to-use interface of the result set. For an instance, we assume there is a table like this:
 
 ::
 
