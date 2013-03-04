@@ -113,7 +113,7 @@ Drop the SQLs out
 
 Of course, the :py:class:`~mosql.result.Model` is not just a grouper. It also provides a nice interface of executing SQLs.
 
-For letting Model talk with database, you must define an interface which can gets or puts the connection. The :py:class:`mosql.result.Pool` is such as interface. The built-in Pool is an abstract class. You need to define you own Pool. Here is a simple example:
+For letting Model talk with database, you must define an interface which can gets or puts the connection. The :py:class:`mosql.result.Pool` is a such interface. The built-in Pool is an abstract class. You need to define you own Pool. Here is a simple example:
 
 ::
 
