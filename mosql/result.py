@@ -184,16 +184,16 @@ class Model(MutableMapping):
     :param result_set: a result set, usually is a grouped result set.
     :type result_set: a cursor or tuples in a list
 
-    If you don't know how to setup a model, this article can help you -- :ref:`tutorial-of-model`.
+    If you don't know how to setup a model, here is a tutorial of how to use Model -- :ref:`tutorial-of-model`.
 
-    The methods help you to retrieve the model(s):
+    The following methods help you to retrieve the model(s):
 
     .. autosummary ::
 
         Model.find
         Model.seek
 
-    If you want to modify something:
+    If you want to modify something, here are the methods you are looking for:
 
     .. autosummary ::
 
