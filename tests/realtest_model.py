@@ -42,8 +42,6 @@ if __name__ == '__main__':
         pprint(person)
     print
 
-    from sys import exit; exit()
-
     print '# Find mosky in person'
     person = person.find(person_id='mosky')[0]
     print person
