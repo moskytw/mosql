@@ -5,21 +5,14 @@ MoSQL --- More than SQL
 
 MoSQL is a lightweight Python library which assists programmer to use SQL.
 
-It is designed to take the high performance from using pure SQL, and just do the necessary abstracting of SQL.
+It is designed to take the high performance from using the pure SQL, and just do the necessary abstracting of SQL.
 
-It has two major parts:
+It has two major parts: 1. `An Easy-to-Use Model`_ for the result set, and 2. `The SQL Builders`_ which build the SQLs by the common data types in Python.
 
-The first part is SQL builders which help you to build SQL with common Python data types:
+An Easy-to-Use Model
+--------------------
 
-::
-
-    >>> from mosql.common import select
-    >>> select('person', {'age >': 18})
-    'SELECT * FROM person WHERE age > 18'
-
-It converts the Python data types to SQL statements. You can find more exmaples in `mosql.common <http://mosql.mosky.tw/builders.html#module-mosql.common>`_.
-
-The second part is a easy-to-use interface of the result set. For an instance, we assume there is a table like this:
+I show you a quick example with this result set:
 
 ::
 
@@ -33,7 +26,7 @@ The second part is a easy-to-use interface of the result set. For an instance, w
              1 | mosky     | email   | ...
     (5 rows)
 
-After setuped the `mosql.result.Model <http://mosql.mosky.tw/result.html#mosql.result.Model>`_, it will be a proxy to access your result set, and provide a nice interface to modify the rows:
+After settle the `mosql.result.Model <http://mosql.mosky.tw/result.html#mosql.result.Model>`_, it will be a proxy to access your result set, and provide a nice interface to modify the rows:
 
 ::
 
@@ -43,14 +36,38 @@ After setuped the `mosql.result.Model <http://mosql.mosky.tw/result.html#mosql.r
     {'person_id': 'mosky', 'detail_id': [3, 4], 'val': ['address', '...'], 'key': 'address'}
     {'person_id': 'mosky', 'detail_id': [1, 6, 10], 'val': ['email', '...', '...'], 'key': 'email'}
 
-For simplicity, the Model, which is a *dict-like* object, is rendered as the dict, and the `mosql.result.Column`, which is a *list-like* object, is rendered as the list. The Model is a *grouped* result set, and the Columns are the *proxies* for a Model. Any operation on the Columns will be redirect to a Model.
+For simplicity, the Model, which is a *dict-like* object, is rendered as a dict, and the `mosql.result.Column <http://mosql.mosky.tw/result.html#mosql.result.Column>`_, which is a *list-like* object, is rendered as a list. The Model is a *grouped* result set, and the Columns are the *proxies* of a Model.
 
-`Start with MoSQL’s model <http://mosql.mosky.tw/result.html#tutorial-of-model>`_ describes more details about how to use the `Model`.
+If you want to modify this model, just treat them as a dict or a list. The model will record your changes and let you save the changes at any time.
+
+::
+
+    >>> detail = Detail.find(person_id='mosky', key='email')
+    >>> detail['val'][0] = 'I changed my email.'
+    >>> # detail.val[0] = 'I changed my email.' # It also works in 0.1.1 .
+    >>> detail.save()
+
+`Start with MoSQL’s model <http://mosql.mosky.tw/result.html#tutorial-of-model>`_ describes more details about how to use the Model.
+
+The SQL Builders
+----------------
+
+The above model is based on these SQL builders. For an example:
+
+::
+
+    >>> from mosql.common import select
+    >>> select('person', {'age >': 18})
+    'SELECT * FROM person WHERE age > 18'
+
+It converts the common data types in Python to the SQL statements. 
+
+You can find more exmaples in `mosql.common <http://mosql.mosky.tw/builders.html#module-mosql.common>`_. If the common builders aren't enough in your case, it is possible to customize the builder by `mosql.util <http://mosql.mosky.tw/builders.html#module-mosql.util>`_.
 
 Installation
 ------------
 
-It is easy to install MoSQL with `pip`:
+It is easy to install MoSQL with pip:
 
 ::
 
@@ -61,3 +78,19 @@ Or clone the source code from `Github <https://github.com/moskytw/mosql>`_:
 ::
 
     $ git clone git://github.com/moskytw/mosql.git
+
+The Documentions
+================
+
+.. toctree::
+    :maxdepth: 2
+
+    result.rst
+    builders.rst
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
