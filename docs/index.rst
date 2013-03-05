@@ -8,21 +8,16 @@ MoSQL --- More than SQL
 
 MoSQL is a lightweight Python library which assists programmer to use SQL.
 
-It is designed to take the high performance from using pure SQL, and just do the necessary abstracting of SQL.
+It is designed to take the high performance from using the pure SQL, and just do the necessary abstracting of SQL.
 
-It has two major parts:
+It has two major parts: 1. :ref:`an-easy-to-use-model` for the result set, and 2. :ref:`the-sql-builders` which build the SQLs by the common data types in Python.
 
-The first part is SQL builders which help you to build SQL with common Python data types:
+.. _an-easy-to-use-model:
 
-::
+An Easy-to-Use Model
+--------------------
 
-    >>> from mosql.common import select
-    >>> select('person', {'age >': 18})
-    'SELECT * FROM person WHERE age > 18'
-
-It converts the Python data types to SQL statements. You can find more exmaples in :py:mod:`mosql.common`.
-
-The second part is a easy-to-use interface of the result set. For an instance, we assume there is a table like this:
+I show you a quick example with this result set:
 
 ::
 
@@ -36,7 +31,7 @@ The second part is a easy-to-use interface of the result set. For an instance, w
              1 | mosky     | email   | ...
     (5 rows)
 
-After setuped the :py:class:`mosql.result.Model`, it will be a proxy to access your result set, and provide a nice interface to modify the rows:
+After settle the :py:class:`mosql.result.Model`, it will be a proxy to access your result set, and provide a nice interface to modify the rows:
 
 ::
 
@@ -46,14 +41,41 @@ After setuped the :py:class:`mosql.result.Model`, it will be a proxy to access y
     {'person_id': 'mosky', 'detail_id': [3, 4], 'val': ['address', '...'], 'key': 'address'}
     {'person_id': 'mosky', 'detail_id': [1, 6, 10], 'val': ['email', '...', '...'], 'key': 'email'}
 
-For simplicity, the Model, which is a *dict-like* object, is rendered as the dict, and the :py:class:`mosql.result.Column`, which is a *list-like* object, is rendered as the list. The Model is a *grouped* result set, and the Columns are the *proxies* for a Model. Any operation on the Columns will be redirect to a Model.
+For simplicity, the Model, which is a *dict-like* object, is rendered as a dict, and the :py:class:`mosql.result.Column`, which is a *list-like* object, is rendered as a list. The Model is a *grouped* result set, and the Columns are the *proxies* of a Model.
 
-:ref:`tutorial-of-model` describes more details about how to use the `Model`.
+If you want to modify this model, just treat them as a dict or a list. The model will record your changes and let you save the changes at any time.
+
+::
+
+    >>> detail = Detail.find(person_id='mosky', key='email')
+    >>> detail['val'][0] = 'I changed my email.'
+    >>> # detail.val[0] = 'I changed my email.' # It also works in 0.1.1 .
+    >>> detail.save()
+
+:ref:`tutorial-of-model` describes more details about how to use the Model.
+
+.. _the-sql-builders:
+
+The SQL Builders
+----------------
+
+The above model is based on these SQL builders. For an example:
+
+::
+
+    >>> from mosql.common import select
+    >>> select('person', {'age >': 18})
+    'SELECT * FROM person WHERE age > 18'
+
+It converts the common data types in Python to the SQL statements. 
+
+You can find more exmaples in :py:mod:`mosql.common`. If the common builders aren't enough in your case, it is possible to customize the builder by :py:mod:`mosql.util`.
+
 
 Installation
 ------------
 
-It is easy to install MoSQL with `pip`:
+It is easy to install MoSQL with pip:
 
 ::
 
@@ -65,7 +87,7 @@ Or clone the source code from `Github <https://github.com/moskytw/mosql>`_:
 
     $ git clone git://github.com/moskytw/mosql.git
 
-The documentions
+The Documentions
 ================
 
 .. toctree::
@@ -80,4 +102,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

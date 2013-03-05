@@ -3,14 +3,14 @@
 
 __all__ = ['encoding', 'paramstyle', 'boolstyle', 'default', 'Empty', 'SQLTemplate', 'dumps', 'escape', 'splitop']
 
-'''It contains useful tools to build SQL with common Python's data types.'''
+'''It contains useful tools to build SQL by common data types in Python.'''
 
 Empty = ___ = type('Empty', (object, ), {
     '__nonzero__': lambda self: False,
     '__str__'    : lambda self: '___',
     '__repr__'   : lambda self: 'Empty',
 })()
-'''It represents a hyper None, because the normal None is ``NULL`` in SQL.'''
+'''It represents a hyper None, because the normal None is the ``NULL`` in SQL.'''
 
 default = type('default', (object, ), {
     '__str__'   : lambda self: 'DEFAULT',
@@ -23,7 +23,7 @@ encoding   = 'UTF-8'
 ''':py:func:`mosql.util.dumps` encodes the `unicode` type by this value.'''
 
 paramstyle = 'pyformat'
-'''The paramter style.
+'''The parameter style in Python DB API 2.0.
 
 .. seealso::
     `Python Database API Specification v2.0 - paramstyle <http://www.python.org/dev/peps/pep-0249/#paramstyle>`_'''

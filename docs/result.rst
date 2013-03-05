@@ -3,15 +3,15 @@ Handling of Result Set
 
 .. _tutorial-of-model:
 
-Start with MoSQL's model
+Start with MoSQL's Model
 ------------------------
 
 The :py:class:`mosql.result.Model` is different from traditional ORMs. Rather than abstracting the table, it aims at handling the `result set`.
 
 I prefers to say MoSQL's Model is *not* an ORM, but it looks like matching the definition of ORM. Whatever, it is very different from the other ORMs.
 
-Pure SQL
-^^^^^^^^
+The Pure SQL
+^^^^^^^^^^^^
 
 Here are some code snippets of using the basic library conformed the `Python DB API 2.0 <http://www.python.org/dev/peps/pep-0249/>`_.
 
@@ -54,7 +54,7 @@ Although here are two problems, it has a *big* advantage --- the performance is 
 
 The :py:class:`~mosql.result.Model` is designed to solve the problems and keep the advantage as complete as possible.
 
-Group the result set
+Group the Result Set
 ^^^^^^^^^^^^^^^^^^^^
 
 The :py:class:`~mosql.result.Model` works well with traditional way. It provides a useful method: :py:meth:`~mosql.result.Model.group`. It can group the result set from a normal cursor.
