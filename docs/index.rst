@@ -17,7 +17,7 @@ It has two major parts: 1. :ref:`an-easy-to-use-model` for the result set, and 2
 An Easy-to-Use Model
 --------------------
 
-I show you a quick example with this result set:
+I show you an example with this result set:
 
 ::
 
@@ -31,7 +31,7 @@ I show you a quick example with this result set:
              1 | mosky     | email   | ...
     (5 rows)
 
-After settle the :py:class:`mosql.result.Model`, it will be a proxy to access your result set, and provide a nice interface to modify the rows:
+After configuration for :py:class:`mosql.result.Model`, it is a proxy to access your result set, and provide a nice interface to modify the rows:
 
 ::
 
