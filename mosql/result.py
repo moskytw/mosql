@@ -268,33 +268,6 @@ class Model(MutableMapping):
         :rtype: a generator of :py:class:`Model`
         '''
 
-        if hasattr(result_set, 'description'):
-            cls.column_names = tuple(column_meta.name for column_meta in result_set.description)
-
-        if not cls.group_by:
-            cls.group_by = cls.column_names
-
-        if not cls.identify_by:
-            cls.identify_by = cls.column_names
-
-        cls.column_offsets_map = dict((k, i) for i, k in enumerate(cls.column_names))
-
-        group_by_idxs = tuple(cls.column_offsets_map[col_name] for col_name in cls.group_by)
-        cls.group_by_key_func = staticmethod(lambda row: tuple(row[i] for i in group_by_idxs))
-
-        for col_name in cls.column_names:
-            if not hasattr(cls, col_name):
-                setattr(cls, col_name,
-                    # it is a colsure
-                    (lambda x:
-                        property(
-                            lambda self: self.__getitem__(x),
-                            lambda self, v: self.__setitem__(x, v),
-                            lambda self: self.__delitem__(x)
-                        )
-                    )(col_name)
-                )
-
         for _, grouped_result_set in groupby(result_set, cls.group_by_key_func):
             yield cls(grouped_result_set)
 
