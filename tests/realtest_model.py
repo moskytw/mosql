@@ -72,6 +72,11 @@ if __name__ == '__main__':
     print detail
     print
 
+    print "# Dump to JSON"
+    from mosql.jsontool import dumps
+    print dumps(detail)
+    print
+
     print '# Append a new email'
     detail.append(val='mosky@dummy.com')
     print detail
