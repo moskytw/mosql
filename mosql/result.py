@@ -260,6 +260,46 @@ class Model(MutableMapping):
         return type('%s_%s' % (cls.__name__, class_attrs.get('table_name', 'anonymous')), (cls, ), class_attrs)
 
     @classmethod
+    def insert(cls, *args, **kargs):
+        '''It is used to generate `insert` statement.
+
+        By default, it passes the arguments to :py:func:`mosql.common.insert`
+        with an additional argument `table_name` as the first positional argument.
+
+        .. versionadded :: 0.1.1'''
+        return sql.insert(cls.table_name, *args, **kargs)
+
+    @classmethod
+    def select(cls, *args, **kargs):
+        '''It is used to generate `select` statement.
+
+        By default, it passes the arguments to :py:func:`mosql.common.select`
+        with an additional argument `table_name` as the first positional argument.
+
+        .. versionadded :: 0.1.1'''
+        return sql.select(cls.table_name, *args, **kargs)
+
+    @classmethod
+    def update(cls, *args, **kargs):
+        '''It is used to generate `update` statement.
+
+        By default, it passes the arguments to :py:func:`mosql.common.update`
+        with an additional argument `table_name` as the first positional argument.
+
+        .. versionadded :: 0.1.1'''
+        return sql.update(cls.table_name, *args, **kargs)
+
+    @classmethod
+    def delete(cls, *args, **kargs):
+        '''It is used to generate `delete` statement.
+
+        By default, it passes the arguments to :py:func:`mosql.common.delete`
+        with an additional argument `table_name` as the first positional argument.
+
+        .. versionadded :: 0.1.1'''
+        return sql.delete(cls.table_name, *args, **kargs)
+
+    @classmethod
     def group(cls, result_set):
         '''It groups the existent result set by :py:attr:`Model.group_by`.
 
@@ -280,7 +320,7 @@ class Model(MutableMapping):
         :rtype: a generator of :py:class:`Model`
         '''
 
-        return cls.group(cls.run(sql.select(cls.table_name, *args, select=cls.column_names, join=cls.join_caluses, **kargs)))
+        return cls.group(cls.run(cls.select(*args, select=cls.column_names, join=cls.join_caluses, **kargs)))
 
     @classmethod
     def find(cls, **where):
@@ -477,12 +517,11 @@ class Model(MutableMapping):
         for change in self.changes.values():
             cond = change.get_condition()
             if cond is None:
-                # TODO: let user customize the those functions
-                sqls.append(sql.insert(self.table_name, change.row))
+                sqls.append(self.insert(change.row))
             elif change.row is None:
-                sqls.append(sql.delete(self.table_name, cond))
+                sqls.append(self.delete(cond))
             else:
-                sqls.append(sql.update(self.table_name, cond, change.row))
+                sqls.append(self.update(cond, change.row))
         self.changes.clear()
         return self.run(sqls)
 
