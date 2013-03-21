@@ -73,7 +73,7 @@ if __name__ == '__main__':
     print
 
     print "# Dump to JSON"
-    from mosql.jsontool import dumps
+    from mosql.json import dumps
     print dumps(detail)
     print
 

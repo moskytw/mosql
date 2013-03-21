@@ -3,8 +3,11 @@
 
 # TODO: the doc
 
+import imp
+
 try:
-    import json
+    # it imports module from built-in first, so it skipped this json.py
+    json = imp.load_module('json', *imp.find_module('json'))
 except ImportError:
     import simplejson as json
 
