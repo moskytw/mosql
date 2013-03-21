@@ -260,6 +260,29 @@ class Model(MutableMapping):
         return type('%s_%s' % (cls.__name__, class_attrs.get('table_name', 'anonymous')), (cls, ), class_attrs)
 
     @classmethod
+    def group(cls, result_set):
+        '''It groups the existent result set by :py:attr:`Model.group_by`.
+
+        :param result_set: ungrouped result set.
+        :type result_set: a cursor or tuples in a list
+        :rtype: a generator of :py:class:`Model`
+        '''
+
+        for _, grouped_result_set in groupby(result_set, cls.group_by_key_func):
+            yield cls(grouped_result_set)
+
+    @classmethod
+    def seek(cls, *args, **kargs):
+        '''It is a shortcut for calling :py:func:`mosql.common.select` with values which have known, and it will group the result set.
+
+        The all of the arguments will be passed to :py:func:`mosql.common.select`.
+
+        :rtype: a generator of :py:class:`Model`
+        '''
+
+        return cls.group(cls.run(sql.select(cls.table_name, *args, select=cls.column_names, join=cls.join_caluses, **kargs)))
+
+    @classmethod
     def find(cls, **where):
         '''It finds the rows matched `where` condition in the database.
 
@@ -279,29 +302,6 @@ class Model(MutableMapping):
             return models[0]
         else:
             return models
-
-    @classmethod
-    def seek(cls, *args, **kargs):
-        '''It is a shortcut for calling :py:func:`mosql.common.select` with values which have known, and it will group the result set.
-
-        The all of the arguments will be passed to :py:func:`mosql.common.select`.
-
-        :rtype: a generator of :py:class:`Model`
-        '''
-
-        return cls.group(cls.run(sql.select(cls.table_name, *args, select=cls.column_names, join=cls.join_caluses, **kargs)))
-
-    @classmethod
-    def group(cls, result_set):
-        '''It groups the existent result set by :py:attr:`Model.group_by`.
-
-        :param result_set: ungrouped result set.
-        :type result_set: a cursor or tuples in a list
-        :rtype: a generator of :py:class:`Model`
-        '''
-
-        for _, grouped_result_set in groupby(result_set, cls.group_by_key_func):
-            yield cls(grouped_result_set)
 
     @classmethod
     def assume(cls, **model_dict):
