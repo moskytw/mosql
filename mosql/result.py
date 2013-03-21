@@ -226,6 +226,7 @@ class Model(MutableMapping):
 
     column_names = tuple()
     '''The name of columns.'''
+    # TODO: auto find the column_names from a cursor
 
     identify_by = tuple()
     '''The name of columns which can identify a row. Usually, it is the primary key.'''
