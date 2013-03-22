@@ -201,3 +201,9 @@ The API --- :py:mod:`mosql.result`
 
 .. automodule:: mosql.result
     :members:
+
+The Compatible JSON encoder and decoder --- :py:mod:`mosql.json`
+----------------------------------------------------------------
+
+.. automodule:: mosql.json
+    :members:
