@@ -208,11 +208,21 @@ class Model(MutableMapping):
     .. versionadded :: 0.1.1
         It also supports to modify value with the attributes (ex. ``user.emails[0]`` is equal to ``user['emails'][0]``).
 
-    Finally, I think you will want to save the changes:
+    I think you will want to save the changes:
 
     .. autosummary ::
 
         save
+
+    It is also possible to customize the SQL statements by the following methods:
+
+    .. autosummary ::
+        insert
+        select
+        update
+        delete
+
+    .. versionadded :: 0.1.1
 
     '''
 
