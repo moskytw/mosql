@@ -307,6 +307,7 @@ class SQLTemplate(object):
 
     def __init__(self, *template_groups):
         self.template_groups = template_groups
+        # TODO: I think it is a bad idea to specifiy the format spec in this way.
         self.format_spec = {}
 
     def __setattr__(self, key, value):
