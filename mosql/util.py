@@ -192,7 +192,7 @@ def dumps(x, **format_spec):
         return str(x)
 
     if x is None:
-        return 'null'
+        return 'NULL'
 
     items = None
     if hasattr(x, 'items'):
@@ -212,6 +212,8 @@ def dumps(x, **format_spec):
             if op is None:
                 if not isinstance(v, basestring) and hasattr(v, '__iter__'):
                     op = 'in'
+                elif v is None or v.upper() == 'NULL':
+                    op = 'IS'
                 else:
                     op = '='
 
