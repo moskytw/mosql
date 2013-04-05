@@ -98,6 +98,7 @@ The Documentions
 
     result.rst
     builders.rst
+    changes.rst
 
 Indices and tables
 ==================
