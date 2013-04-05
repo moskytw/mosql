@@ -345,7 +345,7 @@ class Model(MutableMapping):
         It return a model if you gave all of the :py:attr:`Model.group_by` columns, and there is only one model after grouping.
 
         .. seealso ::
-            How a dict to be rendered to the SQL --- :py:func:`mosql.common.select`.
+            How is a dict rendered to the SQL --- :py:func:`mosql.common.select`.
         '''
 
         models = list(cls.seek(where=where, order_by=cls.group_by+(cls.order_by or cls.identify_by)))
