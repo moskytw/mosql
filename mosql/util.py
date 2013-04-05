@@ -117,8 +117,8 @@ def dumps(x, **format_spec):
     >>> print dumps({'a': 1, 'b': 'str'})
     a = 1, b = 'str'
 
-    >>> print dumps({'a >=': 1, 'b': ('x', 'y')}, condition=True)
-    b IN ('x', 'y') AND a >= 1
+    >>> print dumps({'a >=': 1, 'b': ('x', 'y'), 'c': None}, condition=True)
+    c IS NULL AND b IN ('x', 'y') AND a >= 1
 
     The examples of using ``param`` to build `prepared statement`:
 
