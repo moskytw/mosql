@@ -120,7 +120,7 @@ For letting Model talk with database, you must define an interface which gets or
     class DummyPool(object):
 
         def getconn(self):
-            if not hasattr(self, 'conn')
+            if not hasattr(self, 'conn'):
                 self.conn = psycopg2.connect(database='dbname')
             return self.conn
 
