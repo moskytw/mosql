@@ -66,8 +66,8 @@ Before we use it, we need to customize the Model for fitting our result set:
     from mosql.result import Model
 
     class Detail(Model):
-        columns_names = ('detail_id', 'person_id', 'key', 'val')
-        group_by      = ('person_id', 'key')
+        column_names = ('detail_id', 'person_id', 'key', 'val')
+        group_by     = ('person_id', 'key')
 
 Then, use the `group` method to group our result set:
 
