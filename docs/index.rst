@@ -8,9 +8,10 @@ MoSQL --- More than SQL
 
 MoSQL is a lightweight Python library which assists programmer to use SQL.
 
-It is designed to take the high performance from using the pure SQL, and just do the necessary abstracting of SQL.
+It has two major parts:
 
-It has two major parts: 1. :ref:`an-easy-to-use-model` for the result set, and 2. :ref:`the-sql-builders` which build the SQLs by the common data types in Python.
+1. :ref:`an-easy-to-use-model` for the result set.s
+2. :ref:`the-sql-builders` which build the SQL strings by the common data types in Python.
 
 .. _an-easy-to-use-model:
 
@@ -31,7 +32,7 @@ I show you an example with this result set:
              1 | mosky     | email   | ...
     (5 rows)
 
-After configuration for :py:class:`mosql.result.Model`, it is a proxy to access your result set, and provide a nice interface to modify the rows:
+The :py:class:`mosql.result.Model` act as a proxy of the result set. After `configuring </result.html#tutorial-of-model>`_, it provides a nice inferface to access the rows.
 
 ::
 
@@ -41,7 +42,9 @@ After configuration for :py:class:`mosql.result.Model`, it is a proxy to access 
     {'person_id': 'mosky', 'detail_id': [3, 4], 'val': ['address', '...'], 'key': 'address'}
     {'person_id': 'mosky', 'detail_id': [1, 6, 10], 'val': ['email', '...', '...'], 'key': 'email'}
 
-For simplicity, the Model, which is a *dict-like* object, is rendered as a dict, and the :py:class:`mosql.result.Column`, which is a *list-like* object, is rendered as a list. The Model is a *grouped* result set, and the Columns are the *proxies* of a Model.
+For simplicity, the Model, which is a *dict-like* object, is rendered as a dict, and the :py:class:`mosql.result.Column`, which is a *list-like* object, is rendered as a list.
+
+As you see, some of the columns aren't rendered as lists, because they are the columns grouped. It is the feature :py:class:`~mosql.result.Model` provides. It is more convenient than using SQL's ``group by``.
 
 If you want to modify this model, just treat them as a dict or a list. The model will record your changes and let you save the changes at any time.
 
@@ -67,7 +70,7 @@ The above model is based on these SQL builders. For an example:
     >>> select('person', {'age >': 18})
     'SELECT * FROM person WHERE age > 18'
 
-It converts the common data types in Python to the SQL statements. 
+It converts the common data types in Python into the SQL statements. 
 
 You can find more exmaples in :py:mod:`mosql.common`. If the common builders aren't enough in your case, it is possible to customize the builder by :py:mod:`mosql.util`.
 
