@@ -80,7 +80,7 @@ def dumps(x, **format_spec):
     The examples of basic types:
 
     >>> print dumps(None)
-    null
+    NULL
 
     >>> print dumps(True), dumps(False)
     TRUE FALSE
