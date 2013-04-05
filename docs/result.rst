@@ -6,14 +6,18 @@ Handling of Result Set
 Start with MoSQL's Model
 ------------------------
 
-The :py:class:`mosql.result.Model` is different from traditional ORMs. Rather than abstracting the table, it aims at handling the `result set`.
+The :py:class:`mosql.result.Model` works well without any other library, but it is better to cooperate with a library which conforms the `Python DB API 2.0`_, such as `Psycopg <http://initd.org/psycopg/>`_ (for PostgreSQL) or `MySQLdb <http://sourceforge.net/projects/mysql-python/>`_ (for MySQL).
 
-I prefers to say MoSQL's Model is *not* an ORM, but it looks like matching the definition of ORM. Whatever, it is very different from the other ORMs.
+This tutorial has three section:
+
+1. `The Pure SQL`_ introduces how to use a library conformed `Python DB API 2.0` and the advantages of using :py:class:`~mosql.result.Model`.
+2. `Group the Result Set`_ explains the basic configuration of using :py:class:`~mosql.result.Model`.
+3. `Drop the SQLs out`_ shows how to work without the SQLs. 
 
 The Pure SQL
 ^^^^^^^^^^^^
 
-Here are some code snippets of using the basic library conformed the `Python DB API 2.0 <http://www.python.org/dev/peps/pep-0249/>`_.
+Here are some code snippets of using the basic library conformed the `Python DB API 2.0`_.
 
 ::
 
@@ -54,6 +58,8 @@ Although here are two problems, it has a *big* advantage --- the performance is 
 
 The :py:class:`~mosql.result.Model` is designed to solve the problems and keep the advantage as complete as possible.
 
+.. _`Python DB API 2.0`: http://www.python.org/dev/peps/pep-0249/
+
 Group the Result Set
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -68,6 +74,9 @@ Before we use it, we need to customize the Model for fitting our result set:
     class Detail(Model):
         column_names = ('detail_id', 'person_id', 'key', 'val')
         group_by     = ('person_id', 'key')
+
+.. warning::
+    In v0.1.0, you must list all of the column names. It is fixed in v0.1.1.
 
 Then, use the `group` method to group our result set:
 
@@ -130,6 +139,9 @@ For letting Model talk with database, you must define an interface which gets or
 .. note::
     If you are using `Psycopg <http://initd.org/psycopg/>`_, the Pool we mentioned is equal to its `Connections Pool <http://initd.org/psycopg/docs/pool.html>`_.
 
+.. note::
+    If you are using `official MySQL connector for Python <https://pypi.python.org/pypi/mysql-connector-python>`_, you may need to set ``buffered`` argument to True at the ``connect``.
+
 Then, for applying the changes, the Model have to know the name of table.
 
 After prepared the above materials, put them into the Model:
@@ -142,7 +154,7 @@ After prepared the above materials, put them into the Model:
         pool       = DummyPool()
         ...
 
-Then, you can use the Model's :py:meth:`~mosql.result.Model.find` instead of the select.
+Then, you can use the Model's :py:meth:`~mosql.result.Model.find` (or :py:meth:`~mosql.result.Model.seek`) instead of the select.
 
 ::
 
@@ -184,7 +196,7 @@ The SQL it generated will be more accurate:
     ["UPDATE detail SET val = 'changed' WHERE detail_id = 1"]
 
 .. warning::
-    In 0.1.0, you must specify the `identify_by` -- otherwise it will generate a update SQL without any condition. That's terrible.
+    In 0.1.0, you must specify the `identify_by` -- otherwise it will generate a update SQL without any condition. That's terrible. It is fixed in v0.1.1.
 
 That's all. You may want to know more methods the Model provides: :ref:`model-api`.
 
