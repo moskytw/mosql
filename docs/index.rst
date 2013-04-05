@@ -10,7 +10,7 @@ MoSQL is a lightweight Python library which assists programmer to use SQL.
 
 It has two major parts:
 
-1. :ref:`an-easy-to-use-model` for the result set.s
+1. :ref:`an-easy-to-use-model` for the result set.
 2. :ref:`the-sql-builders` which build the SQL strings by the common data types in Python.
 
 .. _an-easy-to-use-model:
