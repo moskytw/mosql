@@ -8,7 +8,7 @@ Start with MoSQL's Model
 
 The :py:class:`mosql.result.Model` works well without any other library, but it is better to cooperate with a library which conforms the `Python DB API 2.0`_, such as `Psycopg <http://initd.org/psycopg/>`_ (for PostgreSQL) or `MySQLdb <http://sourceforge.net/projects/mysql-python/>`_ (for MySQL).
 
-This tutorial has three section:
+This tutorial has three sections:
 
 1. `The Pure SQL`_ introduces how to use a library conformed `Python DB API 2.0` and the advantages of using :py:class:`~mosql.result.Model`.
 2. `Group the Result Set`_ explains the basic configuration of using :py:class:`~mosql.result.Model`.
@@ -140,7 +140,7 @@ For letting Model talk with database, you must define an interface which gets or
     If you are using `Psycopg <http://initd.org/psycopg/>`_, the Pool we mentioned is equal to its `Connections Pool <http://initd.org/psycopg/docs/pool.html>`_.
 
 .. note::
-    If you are using `official MySQL connector for Python <https://pypi.python.org/pypi/mysql-connector-python>`_, you may need to set ``buffered`` argument to True at the ``connect``.
+    If you are using `official MySQL connector for Python <https://pypi.python.org/pypi/mysql-connector-python>`_, you may need to set ``buffered`` argument to True in the ``connect``.
 
 Then, for applying the changes, the Model have to know the name of table.
 
