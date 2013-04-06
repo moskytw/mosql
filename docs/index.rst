@@ -13,6 +13,40 @@ It has two major parts:
 1. :ref:`an-easy-to-use-model` for the result set.
 2. :ref:`the-sql-builders` which build the SQL strings by the common data types in Python.
 
+.. raw:: html
+
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/zh_TW/all.js#xfbml=1";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+
+
+    <style>
+    #social-btns div {
+        float: left;
+    }
+    #social-btns:after {
+        content: ".";
+        display: block;
+        font-size: 0;
+        clear: both;
+    }
+    </style>
+
+    <div id='social-btns'>
+        <div>
+            <iframe src="http://ghbtns.com/github-btn.html?user=moskytw&repo=mosql&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="85" height="20"></iframe>
+        </div>
+
+        <div>
+            <div class="fb-like" data-href="http://mosql.mosky.tw" data-send="true" data-layout="button_count" data-width="450" data-show-faces="true"></div>
+        </div>
+    </div>
+
 .. _an-easy-to-use-model:
 
 An Easy-to-Use Model
