@@ -122,11 +122,11 @@ class ModelMeta(ABCMeta):
 
         Model = super(ModelMeta, meta).__new__(meta, name, bases, attrs)
 
-        if not Model.group_by:
-            Model.group_by = Model.column_names
-
         if not Model.identify_by:
             Model.identify_by = Model.column_names
+
+        if not Model.group_by:
+            Model.group_by = Model.identify_by
 
         Model.column_offsets_map = dict((k, i) for i, k in enumerate(Model.column_names))
 
@@ -239,13 +239,13 @@ class Model(MutableMapping):
     # TODO: auto find the column_names from a cursor
 
     identify_by = tuple()
-    '''The name of columns which can identify a row. Usually, it is the primary key.'''
+    '''The columns which identify a row (usually, it is the primary key.)'''
 
     group_by = tuple()
-    '''A model is consisted of one or more rows. It is used to group the result set.'''
+    '''The columns which group the rows into a model. By default, it takes the value of `identify_by`.'''
 
     order_by = tuple()
-    '''By default, it uses :py:attr:`Model.identify_by` to order the column values in a instance. It can override that.'''
+    '''The columns which order the rows.'''
 
     join_table_names = tuple()
     '''The tables you want to do the natural joins.'''
@@ -329,9 +329,21 @@ class Model(MutableMapping):
         The all of the arguments will be passed to :py:meth:`Model.select`.
 
         :rtype: a generator of :py:class:`Model`
+
+        .. versionchanged :: 0.1.2
+            It respects the arguments from users.
         '''
 
-        return cls.group(cls.run(cls.select(*args, select=cls.column_names, join=cls.join_caluses, **kargs)))
+        if 'order_by' not in kargs:
+            kargs['order_by'] = cls.group_by+cls.order_by
+
+        if 'select' not in kargs:
+            kargs['select'] = cls.column_names
+
+        if 'join' not in kargs:
+            kargs['join'] = cls.join_caluses
+
+        return cls.group(cls.run(cls.select(*args, **kargs)))
 
     @classmethod
     def find(cls, **where):
@@ -346,9 +358,12 @@ class Model(MutableMapping):
 
         .. seealso ::
             How is a dict rendered to the SQL --- :py:func:`mosql.common.select`.
+
+        .. versionchanged :: 0.1.2
+            Let :py:meth:`Model.seek` decide the ``order_by``.
         '''
 
-        models = list(cls.seek(where=where, order_by=cls.group_by+(cls.order_by or cls.identify_by)))
+        models = list(cls.seek(where=where))
         if len(models) == 1 and all(col_name in where for col_name in cls.group_by):
             return models[0]
         else:
