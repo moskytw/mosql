@@ -122,11 +122,11 @@ class ModelMeta(ABCMeta):
 
         Model = super(ModelMeta, meta).__new__(meta, name, bases, attrs)
 
-        if not Model.group_by:
-            Model.group_by = Model.column_names
-
         if not Model.identify_by:
             Model.identify_by = Model.column_names
+
+        if not Model.group_by:
+            Model.group_by = Model.identify_by
 
         Model.column_offsets_map = dict((k, i) for i, k in enumerate(Model.column_names))
 
@@ -239,10 +239,10 @@ class Model(MutableMapping):
     # TODO: auto find the column_names from a cursor
 
     identify_by = tuple()
-    '''The name of columns which can identify a row. Usually, it is the primary key.'''
+    '''The columns which identify a row (usually, it is the primary key.)'''
 
     group_by = tuple()
-    '''A model is consisted of one or more rows. It is used to group the result set.'''
+    '''The columns which group the rows into a model. By default, it takes the value of `identify_by`.'''
 
     order_by = tuple()
     '''The columns which order the rows.'''
