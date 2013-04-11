@@ -2,6 +2,14 @@
 The Changes
 ===========
 
+v0.1.2
+------
+
+1. added the :py:mod:`mosql.mysql`.
+2. make :py:meth:`mosql.result.Model.seek` respect the arguments from users.
+3. make :py:attr:`~mosql.result.Model.group_by` use the value of :py:attr:`~mosql.result.Model.identify_by`, by default.
+4. stop using the value of :py:attr:`~mosql.result.Model.identify_by` as :py:attr:`~mosql.result.Model.order_by`.
+
 v0.1.1
 ------
 
