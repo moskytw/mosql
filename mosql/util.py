@@ -38,8 +38,11 @@ def escape(s):
     :type s: str
     :rtype: str
 
-    >>> print dumps("'DROP TABLE member; --", val=True)
-    '\''DROP TABLE member; --'
+    >>> print escape("'; DROP TABLE member; --")
+    ''; DROP TABLE member; --
+
+    >>> print dumps("'; DROP TABLE member; --", val=True)
+    '\''; DROP TABLE member; --'
 
     .. warning::
         In MySQL, it only ensures the security in ANSI mode by default.
