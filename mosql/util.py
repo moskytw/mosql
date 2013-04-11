@@ -45,7 +45,7 @@ def escape(s):
     '\''; DROP TABLE member; --'
 
     .. warning::
-        In MySQL, it only ensures the security in ANSI mode by default.
+        In MySQL, it only ensures the security in ANSI mode by default. You may want to use :py:func:`mosql.mysql.escape`.
 
     .. note::
         When using :py:class:`mosql.util.SQLTemplate`, you can replace this function by assigning a function to the formating specification, ``escape``.

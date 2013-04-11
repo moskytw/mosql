@@ -20,3 +20,9 @@ The Basic Stringification --- :py:mod:`mosql.util`
 
 .. automodule:: mosql.util
     :members:
+
+The Specific Utils for MySQL --- :py:mod:`mosql.mysql`
+------------------------------------------------------
+
+.. automodule:: mosql.mysql
+    :members:
