@@ -17,6 +17,7 @@ Person = PostgreSQLModel.customize(
     table_name   = 'person',
     column_names = ('person_id', 'name'),
     identify_by = ('person_id', ),
+    group_by = ('person_id', )
 )
 
 class Detail(PostgreSQLModel):
@@ -43,7 +44,7 @@ if __name__ == '__main__':
     print
 
     print '# Find mosky in person'
-    person = person.find(person_id='mosky')[0]
+    person = Person.find(person_id='mosky')
     print person
     print
 
