@@ -2,6 +2,12 @@
 The Changes
 ===========
 
+v0.1.3
+------
+
+1. reverted the #3 changes in the previous version.
+2. make the rows order by nothing by default.
+
 v0.1.2
 ------
 
