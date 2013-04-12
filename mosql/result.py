@@ -335,7 +335,7 @@ class Model(MutableMapping):
         '''
 
         if 'order_by' not in kargs:
-            kargs['order_by'] = cls.group_by+cls.order_by
+            kargs['order_by'] = cls.order_by
 
         if 'select' not in kargs:
             kargs['select'] = cls.column_names
