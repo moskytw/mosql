@@ -66,7 +66,7 @@ def splitop(s):
     ('with', 'op')
     '''
     op = None
-    space_pos = s.rfind(' ')
+    space_pos = s.find(' ')
     if space_pos != -1:
         s, op = s[:space_pos], s[space_pos+1:]
     return s, op
