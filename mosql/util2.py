@@ -96,7 +96,7 @@ allowed_operators = set([
 ])
 
 def is_allowed_operator(op):
-    return op.upper() in allowed_operators
+    return op in allowed_operators
 
 def to_pairs(x):
 
