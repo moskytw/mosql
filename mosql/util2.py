@@ -19,6 +19,17 @@ def escape(s):
     '''The function which escapes the value.
 
     By default, it just replaces ' (single-quote) with '' (two single-quotes).
+
+    It aims at avoid SQL injection. Here are some examples:
+
+    >>> tmpl = "select * from person where person_id = '%s';"
+    >>> evil_value = "' or true; --"
+
+    >>> print tmpl % evil_value
+    select * from person where person_id = '' or true; --';
+
+    >>> print tmpl % escape(evil_value)
+    select * from person where person_id = '\'' or true; --';
     '''
     return s.replace("'", "''")
 
@@ -47,6 +58,17 @@ def escape_identifier(s):
     '''The function which escapes the identifier.
 
     By default, it just replaces " (double-quote) with "" (two double-quotes).
+
+    It also aims at avoid SQL injection. Here are some examples:
+
+    >>> tmpl = 'select * from person where "%s" = \\'mosky\\';'
+    >>> evil_value = 'person_id" = \\'\\' or true; --'
+
+    >>> print tmpl % evil_value
+    select * from person where "person_id" = '' or true; --" = 'mosky';
+
+    >>> print tmpl % escape_identifier(evil_value)
+    select * from person where "person_id"" = '' or true; --" = 'mosky';
     '''
     return s.replace('"', '""')
 
@@ -195,7 +217,37 @@ def _to_pairs(x):
 @joiner
 def build_where(x):
     '''It is a joiner function which builds the where list of SQL from a `dict`
-    or pairs.'''
+    or `pairs`.
+
+    If input is a `dict` or `pairs`:
+
+    >>> print build_where({'detail_id': 1, 'age >= ': 20, 'created': date(2013, 4, 16)})
+    "created" = '2013-04-16' AND "detail_id" = 1 AND "age" >= 20
+
+    >>> print build_where((('detail_id', 1), ('age >= ', 20), ('created', date(2013, 4, 16))))
+    "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
+
+    It does noting if input is a string:
+
+    >>> print build_where('"detail_id" = 1 AND "age" >= 20 AND "created" = \\'2013-04-16\\'')
+    "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
+
+    The operator will change by the value.
+
+    >>> print build_where({'name': None})
+    "name" IS NULL
+
+    >>> print build_where({'person_id': ['andy', 'bob']})
+    "person_id" IN ('andy', 'bob')
+
+    It is possible to customize your operators:
+
+    >>> print build_where({'email like': '%@gmail.com%'})
+    "email" LIKE '%@gmail.com%'
+
+    >>> print build_where({raw('count(person_id) >'): 10})
+    count(person_id) > 10
+    '''
 
     ps = _to_pairs(x)
 
@@ -243,7 +295,21 @@ def build_where(x):
 @joiner
 def build_set(x):
     '''It is a joiner function which builds the set list of SQL from a `dict` or
-    pairs.'''
+    pairs.
+
+    If input is a `dict` or `pairs`:
+
+    >>> print build_set({'a': 1, 'b': True, 'c': date(2013, 4, 16)})
+    "a"=1, "c"='2013-04-16', "b"=TRUE
+
+    >>> print build_set((('a', 1), ('b', True), ('c', date(2013, 4, 16))))
+    "a"=1, "b"=TRUE, "c"='2013-04-16'
+
+    It does noting if input is a string:
+
+    >>> print build_set('"a"=1, "b"=TRUE, "c"=\\'2013-04-16\\'')
+    "a"=1, "b"=TRUE, "c"='2013-04-16'
+    '''
 
     ps = _to_pairs(x)
 
@@ -263,6 +329,19 @@ class Clause(object):
 
     :param formatters: the qualifier or joiner functions
     :type formatters: iterable
+
+    Here is an example of using :class:`Clause`:
+
+    >>> values = Clause('values', (value, concat_by_comma, paren))
+
+    >>> print values.format(('a', 'b', 'c'))
+    VALUES ('a', 'b', 'c')
+
+    >>> print values.format((default, 'b', 'c'))
+    VALUES (DEFAULT, 'b', 'c')
+
+    >>> print values.format((raw('r'), 'b', 'c'))
+    VALUES (r, 'b', 'c')
     '''
 
     def __init__(self, prefix, formatters, hidden=False):
@@ -292,6 +371,21 @@ class Statement(object):
 
     :param clauses: the clauses which consist this statement
     :type clauses: :class:`Clause`
+
+    Here is an example of using :class:`Statement`:
+
+    >>> insert_into = Clause('insert into', (identifier, ))
+    >>> columns     = Clause('columns'    , (identifier, concat_by_comma, paren), hidden=True)
+    >>> values      = Clause('values'     , (value, concat_by_comma, paren))
+
+    >>> insert_into_stat = Statement((insert_into, columns, values))
+
+    >>> print insert_into_stat.format({
+    ...     'insert_into': 'person',
+    ...     'columns'    : ('person_id', 'name'),
+    ...     'values'     : ('daniel', 'Diane Leonard'),
+    ... })
+    INSERT INTO "person" ("person_id", "name") VALUES ('daniel', 'Diane Leonard')
     '''
 
     def __init__(self, clauses):
