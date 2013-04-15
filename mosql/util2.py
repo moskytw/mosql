@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 __all__ = [
-    'Clause', 'Statement',
     'escape', 'stringify_bool', 'delimit_identifier', 'escape_identifier',
     'raw', 'default',
     'qualifier', 'value', 'identifier', 'paren',
@@ -10,6 +9,7 @@ __all__ = [
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'allowed_operators',
     'build_where', 'build_set',
+    'Clause', 'Statement',
 ]
 
 from functools import wraps
