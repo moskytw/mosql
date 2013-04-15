@@ -150,7 +150,8 @@ def build_where(x):
                 op = '='
         else:
             op = op.upper()
-            assert op in allowed_operators, 'the operator is not allowed: %r' % op
+            if allowed_operators is not None:
+                assert op in allowed_operators, 'the operator is not allowed: %r' % op
 
         v = value(v)
         if _is_iterable_not_str(v):
