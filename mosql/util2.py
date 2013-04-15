@@ -245,13 +245,17 @@ if __name__ == '__main__':
     print select_stat.format({'select': raw('*'), 'from': 'person', 'where': (('person_id', 'mosky'), ('name', 'Mosky Liu'))})
     print select_stat.format({'select': raw('*'), 'from': 'person', 'where': 'person_id = any (select person_id from person)'})
 
-    #def select(table, where=None, select=raw('*'), **clause_args):
+    def select(table, where=None, select=raw('*'), **clause_args):
 
-    #    clause_args['from'] = table
-    #    clause_args['where'] = where
-    #    clause_args['select'] = select
+        clause_args['from'] = table
+        clause_args['where'] = where
+        clause_args['select'] = select
 
-    #    return select_stat.format(clause_args)
+        return select_stat.format(clause_args)
+
+    print select('person', {'person_id': 'mosky'})
+    print select('person', {"person_id = '' OR true; --": 'mosky'})
+    print select('person', {raw("function(x)"): 'mosky'})
 
     #from timeit import timeit
 
