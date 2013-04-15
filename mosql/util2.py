@@ -165,13 +165,13 @@ def build_set(x):
 class Clause(object):
 
     def __init__(self, prefix, formatters):
-        self.prefix = prefix
+        self.prefix = prefix.upper()
         self.formatters = formatters
 
     def format(self, x):
         for formatter in self.formatters:
             x = formatter(x)
-        return '%s %s' % (self.prefix.upper(), x)
+        return '%s %s' % (self.prefix, x)
 
     def __repr__(self):
         return 'Clause(%s, %s)' % (self.prefix, self.formatters)
