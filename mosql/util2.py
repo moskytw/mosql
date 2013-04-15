@@ -78,7 +78,7 @@ def qualifier(f):
         if isinstance(x, raw):
             return x
         elif _is_iterable_not_str(x):
-            return map(f, x)
+            return [item if isinstance(item, raw) else f(item) for item in x]
         else:
             return f(x)
 
