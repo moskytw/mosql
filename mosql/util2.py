@@ -90,8 +90,8 @@ allowed_operators = set([
     '<', '>', '<=', '>=', '=', '<>', '!=',
     'IS', 'IS NOT',
     'IN', 'NOT IN',
-    'LIKE', 'NOTE LIKE',
-    'NOT SIMILAR TO', 'SIMILAR TO',
+    'LIKE', 'NOT LIKE',
+    'SIMILAR TO', 'NOT SIMILAR TO',
     '~', '~*', '!~', '!~*',
 ])
 
