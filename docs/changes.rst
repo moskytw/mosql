@@ -2,6 +2,11 @@
 The Changes
 ===========
 
+v0.1.4
+------
+
+1. fixed the dumped value of datetime, date and time
+
 v0.1.3
 ------
 
