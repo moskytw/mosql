@@ -222,7 +222,7 @@ def build_where(x):
             else:
                 op = '='
         else:
-            op = op.upper()
+            op = op.strip().upper()
             if allowed_operators is not None:
                 assert op in allowed_operators, 'the operator is not allowed: %r' % op
 
