@@ -67,7 +67,7 @@ def qualifier(f):
     function, `f`, or simply apply the qualifier function to the input if the
     input is not an `iterable`.
 
-    The `iterable` here means the iterable except `str`.
+    The `iterable` here means the iterable except string.
 
     It also makes a qualifier function returns the input without changes if the
     input is an instance of :class:`raw`.
@@ -91,7 +91,7 @@ def value(x):
     ================ ======
     input            output
     ================ ======
-    `str`            string escaped (by :func:`escape`)
+    string           string escaped (by :func:`escape`)
     datetime objects *same as above*
     `bool`           bool stringified (by :func:`stringify_bool`)
     ``None``         ``'NULL'``
@@ -136,7 +136,7 @@ def joiner(f):
     '''A decorator which makes the input apply this function only if the input
     is an `iterable`, otherwise it just returns the same input.
 
-    The `iterable` here means the iterable except `str`.
+    The `iterable` here means the iterable except string.
     '''
 
     @wraps(f)
