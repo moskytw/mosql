@@ -268,6 +268,7 @@ if __name__ == '__main__':
     # -> 40.8449561596
     # -> 41.3672270775 # use stringify_bool
     # -> 46.4586949348 # use stringify_bool and *_identifier
+    # -> 41.871696949  # close the feature of delimiting identifier by set delimit_identifier to None
 
     #from mosql.common import select as old_select
 
