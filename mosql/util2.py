@@ -371,7 +371,7 @@ if __name__ == '__main__':
         return select_stat.format(clause_args)
 
     print select('person', {'person_id': 'mosky'})
-    print select('person', {raw("function(x)"): 'mosky'})
+    print select('person', {raw("function(x) ="): 'mosky'})
 
     #print select('person', {"person_id = '' OR true; --": 'mosky'})
     # -> AssertionError: the operator is not allowed: "= '' OR TRUE; --"
