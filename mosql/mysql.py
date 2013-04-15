@@ -27,7 +27,7 @@ def escape(s):
     >>> sql_tmpl = "SELECT * FROM member WHERE name = '%s' AND email = '...';"
     >>> val = "'; DROP TABLE member; --"
     >>> print sql_tmpl % escape(val)
-    SELECT * FROM member WHERE name = '\'\;\ DROP\ TABLE\ member\;\ \-\-' AND email = '...';
+    SELECT * FROM member WHERE name = '\\'\;\ DROP\ TABLE\ member\;\ \-\-' AND email = '...';
     '''
 
     escaped_chars = []
