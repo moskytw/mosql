@@ -7,6 +7,9 @@ from datetime import datetime, date, time
 def escape(s):
     return s.replace("'", "''")
 
+def stringify_bool(b):
+    return 'TRUE' if b else 'FALSE'
+
 def escape_identifier(s):
     return s.replace('"', '""')
 
@@ -44,8 +47,7 @@ def value(x):
     elif x is None:
         return 'NULL'
     elif isinstance(x, bool):
-        # TODO: bit style
-        return 'TRUE' if x else 'FALSE'
+        return stringify_bool(x)
     else:
         return str(x)
 
@@ -254,6 +256,7 @@ if __name__ == '__main__':
 
     #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
     # -> 40.8449561596
+    # -> 41.3672270775 # use stringify_bool
 
     #from mosql.common import select as old_select
 
