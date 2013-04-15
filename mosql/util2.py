@@ -67,7 +67,10 @@ def value(x):
 
 @qualifier
 def identifier(s):
-    return delimit_identifier(escape_identifier(s))
+    if delimit_identifier is None:
+        return s
+    else:
+        return delimit_identifier(escape_identifier(s))
 
 @qualifier
 def paren(s):
