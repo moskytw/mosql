@@ -372,18 +372,24 @@ if __name__ == '__main__':
 
     print select('person', {'person_id': 'mosky'})
     print select('person', {raw("function(x)"): 'mosky'})
+
     #print select('person', {"person_id = '' OR true; --": 'mosky'})
     # -> AssertionError: the operator is not allowed: "= '' OR TRUE; --"
 
-    #from timeit import timeit
+    from timeit import timeit
 
     #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
-    # -> 40.8449561596
-    # -> 41.3672270775 # use stringify_bool
-    # -> 46.4586949348 # use stringify_bool and *_identifier
-    # -> 41.871696949  # close the feature of delimiting identifier by set delimit_identifier to None
+    # -> 47.6618270874
+
+    #allowed_operators = None
+    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
+    # -> 47.9289941788
+
+    #delimit_identifier = None
+    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
+    # -> 43.3604869843
 
     #from mosql.common import select as old_select
 
     #print timeit(lambda: old_select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
-    # -> 67.9556078911
+    # -> 67.3775911331
