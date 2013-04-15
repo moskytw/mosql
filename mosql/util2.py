@@ -265,9 +265,10 @@ class Clause(object):
     :type formatters: iterable
     '''
 
-    def __init__(self, prefix, formatters):
+    def __init__(self, prefix, formatters, hidden=False):
         self.prefix = prefix.upper()
         self.formatters = formatters
+        self.hidden = hidden
 
     def format(self, x):
         '''Apply `x` to this clause template.
@@ -277,7 +278,11 @@ class Clause(object):
 
         for formatter in self.formatters:
             x = formatter(x)
-        return '%s %s' % (self.prefix, x)
+
+        if self.hidden:
+            return '%s' % x
+        else:
+            return '%s %s' % (self.prefix, x)
 
     def __repr__(self):
         return 'Clause(%s, %s)' % (self.prefix, self.formatters)
@@ -321,9 +326,9 @@ if __name__ == '__main__':
     identifier_list = (identifier, concat_by_comma)
 
     insert_into = Clause('insert into', single_identifier)
-    columns     = Clause('', (identifier, concat_by_comma, paren))
-    values      = Clause('', (value, concat_by_comma, paren))
-    returning   = Clause('returning', identifier_list)
+    columns     = Clause('columns'    , (identifier, concat_by_comma, paren), hidden=True)
+    values      = Clause('values'     , (value, concat_by_comma, paren))
+    returning   = Clause('returning'  , identifier_list)
 
     insert_into_stat = Statement([insert_into, columns, values, returning])
 
@@ -335,7 +340,7 @@ if __name__ == '__main__':
 
     select   = Clause('select'  , identifier_list)
     from_    = Clause('from'    , identifier_list)
-    joins    = Clause(''        , statement_list)
+    joins    = Clause('joins'   , statement_list, hidden=True)
     where    = Clause('where'   , where_list)
     group_by = Clause('group by', identifier_list)
     having   = Clause('having'  , where_list)
