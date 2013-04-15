@@ -203,34 +203,40 @@ def build_where(x):
 
     for k, v in ps:
 
-        # split the op out
-        op = None
+        op = ''
+
         if not isinstance(k, raw):
+
+            # split the op out
             space_pos = k.find(' ')
             if space_pos != -1:
-                k, op = k[:space_pos], k[space_pos+1:]
+                k, op = k[:space_pos], k[space_pos+1:].strip()
 
-        # qualify the k, op and v
+            # qualify the k and op
 
-        k = identifier(k)
+            k = identifier(k)
 
-        if not op:
-            if _is_iterable_not_str(v):
-                op = 'IN'
-            elif v is None:
-                op = 'IS'
+            if not op:
+                if _is_iterable_not_str(v):
+                    op = 'IN'
+                elif v is None:
+                    op = 'IS'
+                else:
+                    op = '='
             else:
-                op = '='
-        else:
-            op = op.strip().upper()
-            if allowed_operators is not None:
-                assert op in allowed_operators, 'the operator is not allowed: %r' % op
+                op = op.upper()
+                if allowed_operators is not None:
+                    assert op in allowed_operators, 'the operator is not allowed: %r' % op
 
+        # qualify the v
         v = value(v)
         if _is_iterable_not_str(v):
             v = paren(concat_by_comma(v))
 
-        pieces.append('%s %s %s' % (k, op, v))
+        if op:
+            pieces.append('%s %s %s' % (k, op, v))
+        else:
+            pieces.append('%s %s' % (k, v))
 
     return concat_by_and(pieces)
 
