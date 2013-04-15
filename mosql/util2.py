@@ -130,10 +130,6 @@ def build_where(x):
 
         k = identifier(k)
 
-        if op:
-            op = op.upper()
-            assert is_allowed_operator(op), 'the operator is not allowed: %r' % op
-
         if not op:
             if is_iterable_not_str(v):
                 op = 'IN'
@@ -141,6 +137,9 @@ def build_where(x):
                 op = 'IS'
             else:
                 op = '='
+        else:
+            op = op.upper()
+            assert is_allowed_operator(op), 'the operator is not allowed: %r' % op
 
         v = value(v)
         if is_iterable_not_str(v):
