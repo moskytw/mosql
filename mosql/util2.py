@@ -1,6 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+__all__ = [
+    'Clause', 'Statement',
+    'escape', 'stringify_bool', 'delimit_identifier', 'escape_identifier',
+    'raw', 'default',
+    'qualifier', 'value', 'identifier', 'paren',
+    'aggregater',
+    'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
+    'allowed_operators',
+    'build_where', 'build_set',
+]
+
 from functools import wraps
 from datetime import datetime, date, time
 
@@ -23,7 +34,7 @@ class raw(str):
 
 default = raw('DEFAULT')
 
-def is_iterable_not_str(x):
+def _is_iterable_not_str(x):
     return not isinstance(x, basestring) and hasattr(x, '__iter__')
 
 def qualifier(f):
@@ -32,7 +43,7 @@ def qualifier(f):
     def qualifier_wrapper(x):
         if isinstance(x, raw):
             return x
-        elif is_iterable_not_str(x):
+        elif _is_iterable_not_str(x):
             return map(f, x)
         else:
             return f(x)
@@ -66,7 +77,7 @@ def aggregater(f):
 
     @wraps(f)
     def aggregater_wrapper(x):
-        if is_iterable_not_str(x):
+        if _is_iterable_not_str(x):
             return f(x)
         else:
             return x
@@ -98,10 +109,7 @@ allowed_operators = set([
     '~', '~*', '!~', '!~*',
 ])
 
-def is_allowed_operator(op):
-    return op in allowed_operators
-
-def to_pairs(x):
+def _to_pairs(x):
 
     if hasattr(x, 'iteritems'):
         x = x.iteritems()
@@ -113,7 +121,7 @@ def to_pairs(x):
 @aggregater
 def build_where(x):
 
-    ps = to_pairs(x)
+    ps = _to_pairs(x)
 
     pieces = []
 
@@ -131,7 +139,7 @@ def build_where(x):
         k = identifier(k)
 
         if not op:
-            if is_iterable_not_str(v):
+            if _is_iterable_not_str(v):
                 op = 'IN'
             elif v is None:
                 op = 'IS'
@@ -139,10 +147,10 @@ def build_where(x):
                 op = '='
         else:
             op = op.upper()
-            assert is_allowed_operator(op), 'the operator is not allowed: %r' % op
+            assert op in allowed_operators, 'the operator is not allowed: %r' % op
 
         v = value(v)
-        if is_iterable_not_str(v):
+        if _is_iterable_not_str(v):
             v = paren(concat_by_comma(v))
 
         pieces.append('%s %s %s' % (k, op, v))
@@ -152,7 +160,7 @@ def build_where(x):
 @aggregater
 def build_set(x):
 
-    ps = to_pairs(x)
+    ps = _to_pairs(x)
 
     pieces = []
     for k, v in ps:
