@@ -132,8 +132,7 @@ def build_where(x):
 
         if op:
             op = op.upper()
-            if not is_allowed_operator(op):
-                op = None
+            assert is_allowed_operator(op), 'the operator is not allowed: %r' % op
 
         if not op:
             if is_iterable_not_str(v):
@@ -254,8 +253,9 @@ if __name__ == '__main__':
         return select_stat.format(clause_args)
 
     print select('person', {'person_id': 'mosky'})
-    print select('person', {"person_id = '' OR true; --": 'mosky'})
     print select('person', {raw("function(x)"): 'mosky'})
+    #print select('person', {"person_id = '' OR true; --": 'mosky'})
+    # -> AssertionError: the operator is not allowed: "= '' OR TRUE; --"
 
     #from timeit import timeit
 
