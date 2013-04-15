@@ -16,18 +16,43 @@ from functools import wraps
 from datetime import datetime, date, time
 
 def escape(s):
+    '''The function which escapes the value.
+
+    By default, it just replaces ' (single-quote) with '' (two single-quotes).
+    '''
     return s.replace("'", "''")
 
 def stringify_bool(b):
+    '''The function which stringify the bool.
+
+    By default, it returns ``'TRUE'`` if `b` is true, otherwise it returns
+    ``'FALSE'``.
+    '''
     return 'TRUE' if b else 'FALSE'
 
 def delimit_identifier(s):
+    '''The function which delimits the identifier.
+
+    By default, it conforms the standard to encloses the identifier, `s`, by "
+    (double quote).
+
+    .. note::
+        MySQL uses ` (back-quote). MS SQL uses [] (brackets).
+
+    Set it ``None`` to disable the feature of delimiting identifiers.
+    '''
     return '"%s"' % s
 
 def escape_identifier(s):
+    '''The function which escapes the identifier.
+
+    By default, it just replaces " (double-quote) with "" (two double-quotes).
+    '''
     return s.replace('"', '""')
 
 class raw(str):
+    '''This is a subclass of built-in `str` type. The qualifier function do
+    noting when the input is an instance of this class'''
 
     def __repr__(self):
         return 'raw(%s)' % self
@@ -38,6 +63,15 @@ def _is_iterable_not_str(x):
     return not isinstance(x, basestring) and hasattr(x, '__iter__')
 
 def qualifier(f):
+    '''A decorator which makes all items in an `iterable` apply a qualifier
+    function, `f`, or simply apply the qualifier function to the input if the
+    input is not an `iterable`.
+
+    The `iterable` here means the iterable except `str`.
+
+    It also makes a qualifier function returns the input without changes if the
+    input is an instance of :class:`raw`.
+    '''
 
     @wraps(f)
     def qualifier_wrapper(x):
@@ -52,6 +86,18 @@ def qualifier(f):
 
 @qualifier
 def value(x):
+    '''It is a qualifier function for values.
+
+    ================ ======
+    input            output
+    ================ ======
+    `str`            string escaped (by :func:`escape`)
+    datetime objects *same as above*
+    `bool`           bool stringified (by :func:`stringify_bool`)
+    ``None``         ``'NULL'``
+    other            string (by :func:`str`)
+    ================ ======
+    '''
 
     if isinstance(x, (datetime, date, time)):
         x = str(x)
@@ -67,6 +113,15 @@ def value(x):
 
 @qualifier
 def identifier(s):
+    '''It is a qualifier function for identifiers.
+
+    It uses the :func:`delimit_identifier` and :func:`escape_identifier` to
+    qualifiy the input.
+
+    It returns the input with no changes if :func:`delimit_identifier` is
+    ``None``.
+    '''
+
     if delimit_identifier is None:
         return s
     else:
@@ -74,9 +129,15 @@ def identifier(s):
 
 @qualifier
 def paren(s):
+    '''A qualifier function which encloses the input with () (paren).'''
     return '(%s)' % s
 
 def joiner(f):
+    '''A decorator which makes the input apply this function only if the input
+    is an `iterable`, otherwise it just returns the same input.
+
+    The `iterable` here means the iterable except `str`.
+    '''
 
     @wraps(f)
     def joiner_wrapper(x):
@@ -89,18 +150,22 @@ def joiner(f):
 
 @joiner
 def concat_by_and(i):
+    '''a joiner function which concats the iterable by ``'AND'``.'''
     return ' AND '.join(i)
 
 @joiner
 def concat_by_or(i):
+    '''a joiner function which concats the iterable by ``'OR'``.'''
     return ' OR '.join(i)
 
 @joiner
 def concat_by_space(i):
+    '''a joiner function which concats the iterable by a space.'''
     return ' '.join(i)
 
 @joiner
 def concat_by_comma(i):
+    '''a joiner function which concats the iterable by , (comma).'''
     return ', '.join(i)
 
 allowed_operators = set([
@@ -111,6 +176,12 @@ allowed_operators = set([
     'SIMILAR TO', 'NOT SIMILAR TO',
     '~', '~*', '!~', '!~*',
 ])
+'''The operators which are allowed by :func:`build_where`.
+
+An ``AssertionError`` is raised if an operator not allowed is found.
+
+Set it ``None`` to disable the feature of checking the operator.
+'''
 
 def _to_pairs(x):
 
@@ -123,6 +194,8 @@ def _to_pairs(x):
 
 @joiner
 def build_where(x):
+    '''It is a joiner function which builds the where list of SQL from a `dict`
+    or pairs.'''
 
     ps = _to_pairs(x)
 
@@ -163,6 +236,8 @@ def build_where(x):
 
 @joiner
 def build_set(x):
+    '''It is a joiner function which builds the set list of SQL from a `dict` or
+    pairs.'''
 
     ps = _to_pairs(x)
 
@@ -175,12 +250,25 @@ def build_set(x):
 # NOTE: To keep simple, the below classes shouldn't rely on the above functions
 
 class Clause(object):
+    '''It represents a clause of SQL.
+
+    :param prefix: the lead word(s) of this clause
+    :type prefix: str
+
+    :param formatters: the qualifier or joiner functions
+    :type formatters: iterable
+    '''
 
     def __init__(self, prefix, formatters):
         self.prefix = prefix.upper()
         self.formatters = formatters
 
     def format(self, x):
+        '''Apply `x` to this clause template.
+
+        :rtype: str
+        '''
+
         for formatter in self.formatters:
             x = formatter(x)
         return '%s %s' % (self.prefix, x)
@@ -189,11 +277,23 @@ class Clause(object):
         return 'Clause(%s, %s)' % (self.prefix, self.formatters)
 
 class Statement(object):
+    '''It represents a statement of SQL.
+
+    :param clauses: the clauses which consist this statement
+    :type clauses: :class:`Clause`
+    '''
 
     def __init__(self, clauses):
         self.clauses = clauses
 
     def format(self, clause_args):
+        '''Apply the `clause_args` to each clauses.
+
+        :param clause_args: the arguments for the clauses
+        :type clause_args: dict
+
+        :rtype: str
+        '''
 
         pieces = []
         for clause in self.clauses:
