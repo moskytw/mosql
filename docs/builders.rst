@@ -18,7 +18,7 @@ More SQL Statements --- :py:mod:`mosql.ext`
 The Basic Stringification --- :py:mod:`mosql.util`
 --------------------------------------------------
 
-.. automodule:: mosql.util
+.. automodule:: mosql.util2
     :members:
 
 The Specific Utils for MySQL --- :py:mod:`mosql.mysql`
