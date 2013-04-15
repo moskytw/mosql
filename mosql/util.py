@@ -178,6 +178,9 @@ def dumps(x, **format_spec):
         elif _paramstyle == 'numberic':
             return ':%d' % x
 
+    if isinstance(x, (datetime, date, time)):
+        x = str(x)
+
     if isinstance(x, str):
         if format_spec.get('val'):
             return "'%s'" % format_spec.get('escape', escape)(x)
@@ -191,7 +194,7 @@ def dumps(x, **format_spec):
         elif _boolstyle == 'bit':
             return 1 if x else 0
 
-    if isinstance(x, (int, float, long, datetime, date, time)):
+    if isinstance(x, (int, float, long)):
         return str(x)
 
     if x is None:
