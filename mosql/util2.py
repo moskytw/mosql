@@ -10,6 +10,9 @@ def escape(s):
 def stringify_bool(b):
     return 'TRUE' if b else 'FALSE'
 
+def delimit_identifier(s):
+    return '"%s"' % s
+
 def escape_identifier(s):
     return s.replace('"', '""')
 
@@ -53,9 +56,7 @@ def value(x):
 
 @qualifier
 def identifier(s):
-    return s
-    # TODO: switchable style
-    return '"%s"' % escape_identifier(s)
+    return delimit_identifier(escape_identifier(s))
 
 @qualifier
 def paren(s):
@@ -257,6 +258,7 @@ if __name__ == '__main__':
     #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
     # -> 40.8449561596
     # -> 41.3672270775 # use stringify_bool
+    # -> 46.4586949348 # use stringify_bool and *_identifier
 
     #from mosql.common import select as old_select
 
