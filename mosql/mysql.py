@@ -25,4 +25,5 @@ mosql.util.delimit_identifier = delimit_identifier
 mosql.util.escape_identifier = escape_identifier
 
 if __name__ == '__main__':
-    pass
+    import doctest
+    doctest.testmod()

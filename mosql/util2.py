@@ -306,6 +306,8 @@ class Statement(object):
         return 'Statement(%s)' % self.clauses
 
 if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
 
     # insert
 
