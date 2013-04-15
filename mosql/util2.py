@@ -376,7 +376,7 @@ if __name__ == '__main__':
     #print select('person', {"person_id = '' OR true; --": 'mosky'})
     # -> AssertionError: the operator is not allowed: "= '' OR TRUE; --"
 
-    from timeit import timeit
+    #from timeit import timeit
 
     #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
     # -> 47.6618270874
