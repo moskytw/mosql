@@ -183,15 +183,9 @@ class Statement(object):
 
     def format(self, clause_args):
 
-        for k in clause_args:
-            new_k = k.replace('_', ' ')
-            if new_k != k:
-                clause_args[new_k] = clause_args[k]
-                del clause_args[k]
-
         pieces = []
         for clause in self.clauses:
-            arg = clause_args.get(clause.prefix)
+            arg = clause_args.get(clause.prefix.lower().replace(' ', '_'))
             if arg is not None:
                 pieces.append(clause.format(arg))
         return ' '.join(pieces)
