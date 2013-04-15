@@ -6,7 +6,7 @@ __all__ = [
     'escape', 'stringify_bool', 'delimit_identifier', 'escape_identifier',
     'raw', 'default',
     'qualifier', 'value', 'identifier', 'paren',
-    'aggregater',
+    'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'allowed_operators',
     'build_where', 'build_set',
@@ -76,30 +76,30 @@ def identifier(s):
 def paren(s):
     return '(%s)' % s
 
-def aggregater(f):
+def joiner(f):
 
     @wraps(f)
-    def aggregater_wrapper(x):
+    def joiner_wrapper(x):
         if _is_iterable_not_str(x):
             return f(x)
         else:
             return x
 
-    return aggregater_wrapper
+    return joiner_wrapper
 
-@aggregater
+@joiner
 def concat_by_and(i):
     return ' AND '.join(i)
 
-@aggregater
+@joiner
 def concat_by_or(i):
     return ' OR '.join(i)
 
-@aggregater
+@joiner
 def concat_by_space(i):
     return ' '.join(i)
 
-@aggregater
+@joiner
 def concat_by_comma(i):
     return ', '.join(i)
 
@@ -121,7 +121,7 @@ def _to_pairs(x):
 
     return x
 
-@aggregater
+@joiner
 def build_where(x):
 
     ps = _to_pairs(x)
@@ -161,7 +161,7 @@ def build_where(x):
 
     return concat_by_and(pieces)
 
-@aggregater
+@joiner
 def build_set(x):
 
     ps = _to_pairs(x)
