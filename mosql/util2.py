@@ -159,7 +159,7 @@ def build_set(x):
 
     return concat_by_comma(pieces)
 
-# NOTE: To keep simple, the below classes shouldn't rely on the below functions
+# NOTE: To keep simple, the below classes shouldn't rely on the above functions
 
 class Clause(object):
 
