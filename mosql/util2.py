@@ -473,15 +473,15 @@ if __name__ == '__main__':
     #from timeit import timeit
 
     #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
-    # -> 47.6618270874
+    # -> 47.4380531311
 
     #allowed_operators = None
     #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
-    # -> 47.9289941788
+    # -> 47.5314428806
 
     #delimit_identifier = None
     #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
-    # -> 43.3604869843
+    # -> 42.827270031
 
     #from mosql.common import select as old_select
 
