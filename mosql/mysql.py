@@ -18,12 +18,12 @@ char_escape_map = {
     '\n' : r'\n',
     '\r' : r'\r',
     '\\' : r'\\',
+    '\'' : r'\'',
     '\"' : r'\"',
     '\x1A' : r'\Z',
     # escape chars in the esapi of OWASP
     '\b' : r'\b',
     '\t' : r'\t',
-    '\'' : r'\'',
     '%'  : r'\%',
     '_'  : r'\_',
 }
