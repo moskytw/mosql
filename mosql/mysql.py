@@ -24,8 +24,8 @@ char_escape_map = {
     # escape chars in the esapi of OWASP
     '\b' : r'\b',
     '\t' : r'\t',
-    '%'  : r'\%',
-    '_'  : r'\_',
+    #'%'  : r'\%',
+    #'_'  : r'\_',
 }
 
 def escape(s):
