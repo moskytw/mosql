@@ -2,6 +2,12 @@
 The Changes
 ===========
 
+v0.1.5
+------
+
+1. refined the :py:mod:`mosql.mysql`.
+2. both PostgreSQL and MySQL with MoSQL passed all of the injection tests from `sqlmap <http://sqlmap.org/>`_.
+
 v0.1.4
 ------
 
