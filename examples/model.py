@@ -9,18 +9,11 @@ class PostgreSQLModel(Model):
     pool = psycopg2.pool.SimpleConnectionPool(1, 5, database='mosky')
     dump_sql = True
 
-#class Person(PostgreSQLModel):
-#    table_name = 'person'
-#    column_names = ('person_id', 'name')
-#    identify_by = ('person_id', )
-#    group_by = ('person_id', )
-
-Person = PostgreSQLModel.customize(
-    table_name   = 'person',
-    column_names = ('person_id', 'name'),
-    identify_by = ('person_id', ),
-    group_by = ('person_id', ),
-)
+class Person(PostgreSQLModel):
+    table_name = 'person'
+    column_names = ('person_id', 'name')
+    identify_by = ('person_id', )
+    group_by = ('person_id', )
 
 class Detail(PostgreSQLModel):
     table_name = 'detail'
