@@ -56,7 +56,7 @@ def escape(s):
     return s.replace("'", "''")
 
 def stringify_bool(b):
-    '''The function which stringify the bool.
+    '''The function which stringifies the bool.
 
     By default, it returns ``'TRUE'`` if `b` is true, otherwise it returns
     ``'FALSE'``.
