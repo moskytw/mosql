@@ -38,7 +38,7 @@ def escape(s):
     >>> evil_value = "' or true; --"
 
     >>> print tmpl % escape(evil_value)
-    select * from person where person_id = '\\'\ or\ true\;\ \-\-';
+    select * from person where person_id = '\\' or true; --';
     '''
 
     global char_escape_map
