@@ -1,6 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+'''It contains the basic SQL builders.
+
+It is designed for standard SQL (or PostgreSQL). If your database uses
+non-standard SQL, you may need to customize and override the following
+functions.
+
+.. autosummary ::
+    escape
+    stringify_bool
+    delimit_identifier
+    escape_identifier
+
+.. note::
+    MoSQL provides the patch for MySQL --- :mod:`mosql.mysql`.
+'''
+
 __all__ = [
     'escape', 'stringify_bool', 'delimit_identifier', 'escape_identifier',
     'raw', 'default',
