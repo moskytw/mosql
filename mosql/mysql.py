@@ -40,26 +40,8 @@ def escape(s):
     >>> print tmpl % escape(evil_value)
     select * from person where person_id = '\\' or true; --';
     '''
-
     global char_escape_map
-
-    escapes = []
-
-    for c in s:
-
-        if ord(c) >= 256:
-            # c is not a 8-bit char
-            escapes.append(c)
-            continue
-
-        if c.isalnum():
-            escapes.append(c)
-            continue
-
-        escape = char_escape_map.get(c)
-        escapes.append(escape if escape else c)
-
-    return ''.join(escapes)
+    return ''.join(char_escape_map.get(c) or c for c in s)
 
 def delimit_identifier(s):
     '''Enclose the identifier, `s`, by ` (back-quote).'''
@@ -89,7 +71,7 @@ if __name__ == '__main__':
     #    return s.replace("'", "''")
 
     #print timeit(lambda: _escape(bytes))
-    # -> 0.090900182724
+    # -> 0.123042106628
 
     #print timeit(lambda: escape(bytes))
-    # -> 13.3156700134
+    # -> 8.062458992
