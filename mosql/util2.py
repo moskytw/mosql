@@ -69,7 +69,8 @@ def delimit_identifier(s):
     By default, it conforms the standard to encloses the identifier, `s`, by "
     (double quote).
 
-    Set it ``None`` to disable the feature of delimiting identifiers.
+    .. note ::
+        It is disableable. Set it ``None`` to disable the feature of delimiting identifiers.
     '''
     return '"%s"' % s
 
@@ -221,7 +222,8 @@ allowed_operators = set([
 
 An ``AssertionError`` is raised if an operator not allowed is found.
 
-Set it ``None`` to disable the feature of checking the operator.
+.. note ::
+    It is disableable. Set it ``None`` to disable the feature of checking the operator.
 '''
 
 def _to_pairs(x):
