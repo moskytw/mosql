@@ -78,3 +78,18 @@ mosql.util.escape_identifier = escape_identifier
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
+
+    #from timeit import timeit
+    #from functools import partial
+
+    #timeit = partial(timeit, number=100000)
+    #bytes = ''.join(chr(i) for i in range(256))
+
+    #def _escape(s):
+    #    return s.replace("'", "''")
+
+    #print timeit(lambda: _escape(bytes))
+    # -> 0.090900182724
+
+    #print timeit(lambda: escape(bytes))
+    # -> 13.3156700134
