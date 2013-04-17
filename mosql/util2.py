@@ -63,9 +63,6 @@ def delimit_identifier(s):
     By default, it conforms the standard to encloses the identifier, `s`, by "
     (double quote).
 
-    .. note::
-        MySQL uses ` (back-quote). MS SQL uses [] (brackets).
-
     Set it ``None`` to disable the feature of delimiting identifiers.
     '''
     return '"%s"' % s
