@@ -249,6 +249,8 @@ def build_where(x):
     count(person_id) > 10
     '''
 
+    global allowed_operators
+
     ps = _to_pairs(x)
 
     pieces = []
