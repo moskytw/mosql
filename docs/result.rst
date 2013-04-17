@@ -201,7 +201,7 @@ The SQL it generated will be more accurate:
 That's all. You may want to know more methods the Model provides: :ref:`model-api`.
 
 .. seealso::
-    `mosql/tests <https://github.com/moskytw/mosql/tree/master/tests>`_ --- there are some real examples.
+    `mosql/tests <https://github.com/moskytw/mosql/tree/master/examples>`_ --- there are some real examples.
 
 .. seealso::
     :ref:`builders` --- it describes how :py:class:`~mosql.result.Model` to build those SQL from Python's data types.
