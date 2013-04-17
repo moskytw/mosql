@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It applys the MySQL-specific stuff to :mod:`mosql.util`.
+'''It applies the MySQL-specific stuff to :mod:`mosql.util`.
 
 Usage:
 
@@ -27,7 +27,7 @@ char_escape_map = {
     #'%'  : r'\%',
     #'_'  : r'\_',
     # The above 2 chars shouldn't be escaped, because '\%' and '\_' evaluate
-    # to string '\%' and '\_' outside of pattern-matching contexts. Programers
+    # to string '\%' and '\_' outside of pattern-matching contexts. Programmers
     # should take responsibility for escaping them in pattern-matching contexts.
 }
 
