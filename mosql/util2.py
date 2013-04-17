@@ -351,6 +351,22 @@ class Clause(object):
     :param formatters: the qualifier or joiner functions
     :type formatters: iterable
 
+    The :func:`qualifier` functions:
+
+    .. autosummary ::
+
+        value
+        identifier
+        paren
+
+    The :func:`joiner` functions:
+
+    .. autosummary ::
+        concat_by_comma
+        concat_by_and
+        concat_by_space
+        concat_by_or
+
     Here is an example of using :class:`Clause`:
 
     >>> values = Clause('values', (value, concat_by_comma, paren))
