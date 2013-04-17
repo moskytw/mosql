@@ -43,6 +43,17 @@ def escape(s):
     global char_escape_map
     return ''.join(char_escape_map.get(c) or c for c in s)
 
+def fast_escape(s):
+    '''This function only escapes the ' (single-quote) and \ (backslash).
+
+    It is enough for security and correctness, and it is faster 50x than using
+    the :func:`escape`.
+
+    It is used for replacing the :func:`mosql.util.escape` if you import this
+    moudle.
+    '''
+    return s.replace('\\', '\\\\').replace("'", r"\'")
+
 def delimit_identifier(s):
     '''Enclose the identifier, `s`, by ` (back-quote).'''
     return '`%s`' % s
@@ -53,7 +64,7 @@ def escape_identifier(s):
 
 import mosql.util
 
-mosql.util.escape = escape
+mosql.util.escape = fast_escape
 mosql.util.delimit_identifier = delimit_identifier
 mosql.util.escape_identifier = escape_identifier
 
@@ -71,7 +82,10 @@ if __name__ == '__main__':
     #    return s.replace("'", "''")
 
     #print timeit(lambda: _escape(bytes))
-    # -> 0.123042106628
+    ## -> 0.118767976761
 
     #print timeit(lambda: escape(bytes))
-    # -> 8.062458992
+    ## -> 7.97847890854
+
+    #print timeit(lambda: fast_escape(bytes))
+    ## -> 0.155963897705
