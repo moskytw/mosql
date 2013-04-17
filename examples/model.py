@@ -13,11 +13,13 @@ class PostgreSQLModel(Model):
 #    table_name = 'person'
 #    column_names = ('person_id', 'name')
 #    identify_by = ('person_id', )
+#    group_by = ('person_id', )
 
 Person = PostgreSQLModel.customize(
     table_name   = 'person',
     column_names = ('person_id', 'name'),
     identify_by = ('person_id', ),
+    group_by = ('person_id', ),
 )
 
 class Detail(PostgreSQLModel):
