@@ -170,7 +170,7 @@ def identifier(s):
 
 @qualifier
 def paren(s):
-    '''A qualifier function which encloses the input with () (paren).'''
+    '''It is a qualifier function which encloses the input with () (paren).'''
     return '(%s)' % s
 
 def joiner(f):
