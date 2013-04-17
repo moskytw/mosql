@@ -192,22 +192,22 @@ def joiner(f):
 
 @joiner
 def concat_by_and(i):
-    '''a joiner function which concats the iterable by ``'AND'``.'''
+    '''A joiner function which concats the iterable by ``'AND'``.'''
     return ' AND '.join(i)
 
 @joiner
 def concat_by_or(i):
-    '''a joiner function which concats the iterable by ``'OR'``.'''
+    '''A joiner function which concats the iterable by ``'OR'``.'''
     return ' OR '.join(i)
 
 @joiner
 def concat_by_space(i):
-    '''a joiner function which concats the iterable by a space.'''
+    '''A joiner function which concats the iterable by a space.'''
     return ' '.join(i)
 
 @joiner
 def concat_by_comma(i):
-    '''a joiner function which concats the iterable by , (comma).'''
+    '''A joiner function which concats the iterable by , (comma).'''
     return ', '.join(i)
 
 allowed_operators = set([
