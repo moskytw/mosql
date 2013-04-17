@@ -12,6 +12,7 @@ conn = db.connect(database='mosky')
 # or MySQL
 #import MySQLdb as db
 #from mosql.mysql import escape
+#from mosql.mysql import fast_escape as escape
 #conn = db.connect(user='root', db='mosky')
 
 # --- main ---
