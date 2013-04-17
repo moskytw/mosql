@@ -15,6 +15,12 @@ functions.
 
 .. note::
     MoSQL provides the patch for MySQL --- :mod:`mosql.mysql`.
+
+If you need you own SQL statements, the following classes may help you.
+
+.. autosummary ::
+    Clause
+    Statement
 '''
 
 __all__ = [
