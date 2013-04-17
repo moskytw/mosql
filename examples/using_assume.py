@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from realtest_model import Person, Detail
+from model import Person, Detail
 
 print "# Find mosky's emails"
 detail = Detail.find(person_id='mosky', key='email')

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from mosql.result import Model
 import psycopg2.pool
+
+from mosql.result import Model
 
 class PostgreSQLModel(Model):
     pool = psycopg2.pool.SimpleConnectionPool(1, 5, database='mosky')
