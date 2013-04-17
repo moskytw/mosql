@@ -13,7 +13,7 @@ It will replace the function in :mod:`mosql.util` with it.
 '''
 
 char_escape_map = {
-    # escape chars in the official libaray
+    # The following 7 chars is escaped in MySQL Connector/C (0.6.2)
     '\0' : r'\0',
     '\n' : r'\n',
     '\r' : r'\r',
@@ -21,11 +21,14 @@ char_escape_map = {
     '\'' : r'\'',
     '\"' : r'\"',
     '\x1A' : r'\Z',
-    # escape chars in the esapi of OWASP
+    # The following 4 chars is escaped in OWASP Enterprise Security API (1.0)
     '\b' : r'\b',
     '\t' : r'\t',
     #'%'  : r'\%',
     #'_'  : r'\_',
+    # The above 2 chars shouldn't be escaped, because '\%' and '\_' evaluate
+    # to string '\%' and '\_' outside of pattern-matching contexts. Programers
+    # should take responsibility for escaping them in pattern-matching contexts.
 }
 
 def escape(s):
