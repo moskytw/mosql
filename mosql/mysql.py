@@ -9,7 +9,7 @@ Usage:
 
     import mosql.mysql
 
-It replaces the function in :mod:`mosql.util` with it.
+It will replace the function in :mod:`mosql.util` with it.
 '''
 
 char_escape_map = {
