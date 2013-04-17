@@ -20,7 +20,7 @@ def escape(s):
 
     By default, it just replaces ' (single-quote) with '' (two single-quotes).
 
-    It aims at avoid SQL injection. Here are some examples:
+    It aims at avoiding SQL injection. Here are some examples:
 
     >>> tmpl = "select * from person where person_id = '%s';"
     >>> evil_value = "' or true; --"
