@@ -27,7 +27,7 @@ If you need you own SQL statements, the following classes may help you.
 __all__ = [
     'escape', 'format_param', 'stringify_bool',
     'delimit_identifier', 'escape_identifier',
-    'raw', 'param', 'default',
+    'raw', 'param', 'default', '___',
     'qualifier', 'value', 'identifier', 'paren',
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
@@ -133,6 +133,8 @@ class param(str):
 
     def __repr__(self):
         return 'param(%s)' % self
+
+___ = param
 
 def _is_iterable_not_str(x):
     return not isinstance(x, basestring) and hasattr(x, '__iter__')
@@ -286,8 +288,8 @@ def build_where(x):
 
     Building prepared where:
 
-    >>> print build_where({'custom_param': param('myparam'), 'auto_param': param})
-    "auto_param" = %(auto_param)s AND "custom_param" = %(myparam)s
+    >>> print build_where({'custom_param': param('myparam'), 'auto_param': param, 'using_alias': ___})
+    "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(myparam)s
 
     It does noting if input is a string:
 
