@@ -55,6 +55,11 @@ def fast_escape(s):
     '''
     return s.replace('\\', '\\\\').replace("'", r"\'")
 
+def format_param(s=''):
+    '''This function always return '%s', so it makes you can use the prepare
+    statement with MySQLdb.'''
+    return '%s'
+
 def delimit_identifier(s):
     '''Enclose the identifier, `s`, by ` (back-quote).'''
     return '`%s`' % s
@@ -66,6 +71,7 @@ def escape_identifier(s):
 import mosql.util
 
 mosql.util.escape = fast_escape
+mosql.util.format_param = format_param
 mosql.util.delimit_identifier = delimit_identifier
 mosql.util.escape_identifier = escape_identifier
 
