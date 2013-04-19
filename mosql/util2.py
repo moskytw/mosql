@@ -161,35 +161,56 @@ def qualifier(f):
 
     return qualifier_wrapper
 
+def _quote_str(x):
+    return "'%s'" % escape(x)
+
+def _quote_datetime(x):
+    return "'%s'" % x
+
+_type_value_map = {
+    str     : _quote_str,
+    unicode : _quote_str,
+    bool    : stringify_bool,
+    datetime: _quote_datetime,
+    date    : _quote_datetime,
+    time    : _quote_datetime,
+    raw     : lambda x: x,
+    param   : format_param,
+}
+
 @qualifier
 def value(x):
     '''It is a qualifier function for values.
 
-    ================ ======
-    input            output
-    ================ ======
-    param insatnce   '%s' or '%(param)s'
-    string           string escaped (by :func:`escape`)
-    datetime objects *same as above*
-    `bool`           bool stringified (by :func:`stringify_bool`)
-    ``None``         ``'NULL'``
-    other            string (by :func:`str`)
-    ================ ======
+    >>> print value('normal string')
+    'normal string'
+
+    >>> print value(u'normal unicode')
+    'normal unicode'
+
+    >>> print value(True)
+    TRUE
+
+    >>> print value(datetime(2013, 4, 19, 14, 41, 10))
+    '2013-04-19 14:41:10'
+
+    >>> print value(date(2013, 4, 19))
+    '2013-04-19'
+
+    >>> print value(time(14, 41, 10))
+    '14:41:10'
+
+    >>> print value(raw('count(person_id) > 1'))
+    count(person_id) > 1
+
+    >>> print value(param('myparam'))
+    %(myparam)s
     '''
 
-    if isinstance(x, (datetime, date, time)):
-        x = str(x)
-
-    if isinstance(x, param):
-        return format_param(x)
-    elif isinstance(x, basestring):
-        return "'%s'" % escape(x)
-    elif x is None:
+    if x is None:
         return 'NULL'
-    elif isinstance(x, bool):
-        return stringify_bool(x)
     else:
-        return str(x)
+        return _type_value_map.get(type(x), str)(x)
 
 @qualifier
 def identifier(s):
