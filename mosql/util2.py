@@ -57,7 +57,7 @@ def escape(s):
     '''
     return s.replace("'", "''")
 
-def format_param(s=None):
+def format_param(s=''):
     '''The function which format the parameter of prepared statement.
 
     By default, it formats the parameter in `pyformat
@@ -65,9 +65,6 @@ def format_param(s=None):
 
     >>> format_param('name')
     '%(name)s'
-
-    >>> format_param('')
-    '%s'
 
     >>> format_param()
     '%s'
