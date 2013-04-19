@@ -284,6 +284,11 @@ def build_where(x):
     >>> print build_where((('detail_id', 1), ('age >= ', 20), ('created', date(2013, 4, 16))))
     "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
 
+    Building prepared where:
+
+    >>> print build_where({'custom_param': param('myparam'), 'auto_param': param})
+    "auto_param" = %(auto_param)s AND "custom_param" = %(myparam)s
+
     It does noting if input is a string:
 
     >>> print build_where('"detail_id" = 1 AND "age" >= 20 AND "created" = \\'2013-04-16\\'')
@@ -314,6 +319,8 @@ def build_where(x):
 
     for k, v in ps:
 
+        # find the op
+
         op = ''
 
         if not isinstance(k, raw):
@@ -322,10 +329,6 @@ def build_where(x):
             space_pos = k.find(' ')
             if space_pos != -1:
                 k, op = k[:space_pos], k[space_pos+1:].strip()
-
-            # qualify the k and op
-
-            k = identifier(k)
 
             if not op:
                 if _is_iterable_not_str(v):
@@ -339,10 +342,17 @@ def build_where(x):
                 if allowed_operators is not None:
                     assert op in allowed_operators, 'the operator is not allowed: %r' % op
 
+        # feature of autoparam
+        if isinstance(v, type) and v.__name__ == 'param':
+            v = param(k)
+
         # qualify the v
         v = value(v)
         if _is_iterable_not_str(v):
             v = paren(concat_by_comma(v))
+
+        # qualify the k
+        k = identifier(k)
 
         if op:
             pieces.append('%s %s %s' % (k, op, v))
@@ -364,6 +374,11 @@ def build_set(x):
     >>> print build_set((('a', 1), ('b', True), ('c', date(2013, 4, 16))))
     "a"=1, "b"=TRUE, "c"='2013-04-16'
 
+    Building prepared set:
+
+    >>> print build_set({'custom_param': param('myparam'), 'auto_param': param})
+    "auto_param"=%(auto_param)s, "custom_param"=%(myparam)s
+
     It does noting if input is a string:
 
     >>> print build_set('"a"=1, "b"=TRUE, "c"=\\'2013-04-16\\'')
@@ -374,6 +389,11 @@ def build_set(x):
 
     pieces = []
     for k, v in ps:
+
+        # feature of autoparam
+        if isinstance(v, type) and v.__name__ == 'param':
+            v = param(k)
+
         pieces.append('%s=%s' % (identifier(k), value(v)))
 
     return concat_by_comma(pieces)
