@@ -172,7 +172,8 @@ _type_value_map = {
     date    : _quote_datetime,
     time    : _quote_datetime,
     raw     : lambda x: x,
-    param   : format_param,
+    # it should be a lazy evaluation to be patchable
+    param   : lambda x: format_param(x),
 }
 
 @qualifier
