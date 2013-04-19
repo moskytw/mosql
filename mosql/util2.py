@@ -9,6 +9,7 @@ functions.
 
 .. autosummary ::
     escape
+    format_param
     stringify_bool
     delimit_identifier
     escape_identifier
@@ -24,8 +25,9 @@ If you need you own SQL statements, the following classes may help you.
 '''
 
 __all__ = [
-    'escape', 'stringify_bool', 'delimit_identifier', 'escape_identifier',
-    'raw', 'default',
+    'escape', 'format_param', 'stringify_bool',
+    'delimit_identifier', 'escape_identifier',
+    'raw', 'param', 'default',
     'qualifier', 'value', 'identifier', 'paren',
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
@@ -54,6 +56,23 @@ def escape(s):
     select * from person where person_id = '\'' or true; --';
     '''
     return s.replace("'", "''")
+
+def format_param(s=None):
+    '''The function which format the parameter of prepared statement.
+
+    By default, it formats the parameter in `pyformat
+    <http://www.python.org/dev/peps/pep-0249/#paramstyle>`_.
+
+    >>> format_param('name')
+    '%(name)s'
+
+    >>> format_param('')
+    '%s'
+
+    >>> format_param()
+    '%s'
+    '''
+    return '%%(%s)s' % s if s else '%s'
 
 def stringify_bool(b):
     '''The function which stringifies the bool.
@@ -101,6 +120,20 @@ class raw(str):
 
 default = raw('DEFAULT')
 
+class param(str):
+    ''':func:`value` builds this type as a parameter for the prepared statement
+
+    >>> value(param(''))
+    '%s'
+    >>> value(param('name'))
+    '%(name)s'
+
+    This is just a subclass of built-in `str` type.
+    '''
+
+    def __repr__(self):
+        return 'param(%s)' % self
+
 def _is_iterable_not_str(x):
     return not isinstance(x, basestring) and hasattr(x, '__iter__')
 
@@ -133,6 +166,7 @@ def value(x):
     ================ ======
     input            output
     ================ ======
+    param insatnce   '%s' or '%(param)s'
     string           string escaped (by :func:`escape`)
     datetime objects *same as above*
     `bool`           bool stringified (by :func:`stringify_bool`)
@@ -144,7 +178,9 @@ def value(x):
     if isinstance(x, (datetime, date, time)):
         x = str(x)
 
-    if isinstance(x, basestring):
+    if isinstance(x, param):
+        return format_param(x)
+    elif isinstance(x, basestring):
         return "'%s'" % escape(x)
     elif x is None:
         return 'NULL'
