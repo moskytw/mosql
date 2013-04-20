@@ -20,7 +20,7 @@ returning = Clause('returning'  , identifier_list)
 
 insert_into_stat = Statement([insert, columns, values, returning])
 
-def insert(table, pairs_or_columns, values=None, **clauses_args):
+def insert(table, pairs_or_columns=None, values=None, **clauses_args):
 
     clauses_args['insert into'] = table
 
