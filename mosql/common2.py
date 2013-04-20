@@ -1,6 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+'''It contains the common SQL builders.
+
+.. autosummary ::
+    insert
+    select
+    update
+    delete
+
+It is designed for building the standard SQL statement (or PostgreSQL).
+
+.. note::
+    If you use MySQL, MoSQL provides a patch for MySQL --- :mod:`mosql.mysql`.
+'''
+
 from .util2 import *
 
 # defines formatting chains
@@ -167,7 +181,7 @@ delete = Clause('delete from', single_identifier)
 delete_stat = Statement([delete, where, returning])
 
 def delete(table, where, **clauses_args):
-    '''It generates the SQL statement, ``delete ...`` .
+    '''It generates the SQL statement, ``delete from ...`` .
 
     The following usages generate the same SQL statement.
 
