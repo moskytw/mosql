@@ -495,7 +495,7 @@ class Statement(object):
     >>> insert_into_stat = Statement((insert_into, columns, values))
 
     >>> print insert_into_stat.format({
-    ...     'insert_into': 'person',
+    ...     'insert into': 'person',
     ...     'columns'    : ('person_id', 'name'),
     ...     'values'     : ('daniel', 'Diane Leonard'),
     ... })
@@ -516,7 +516,7 @@ class Statement(object):
 
         pieces = []
         for clause in self.clauses:
-            arg = clause_args.get(clause.prefix.lower().replace(' ', '_'))
+            arg = clause_args.get(clause.prefix.lower())
             if arg is not None:
                 pieces.append(clause.format(arg))
         return ' '.join(pieces)
