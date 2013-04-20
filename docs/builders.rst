@@ -6,7 +6,7 @@ Building SQL Statements
 The Insert, Select, Update and Delete --- :py:mod:`mosql.common`
 ----------------------------------------------------------------
 
-.. automodule:: mosql.common
+.. automodule:: mosql.common2
     :members:
 
 More SQL Statements --- :py:mod:`mosql.ext`
