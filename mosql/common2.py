@@ -100,8 +100,8 @@ def select(table, where=None, select=raw('*'), **clauses_args):
 
     Building prepare statement with :class:`mosql.util.param`:
 
-    >>> print select('table', {'custom_param': param('myparam'), 'auto_param': param, 'using_alias': ___})
-    SELECT * FROM "table" WHERE "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(myparam)s
+    >>> print select('table', {'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
+    SELECT * FROM "table" WHERE "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
 
     You can also specify the ``group_by``, ``having``, ``order_by``, ``limit``
     and ``offset`` in the keyword arguments. Here are some examples:

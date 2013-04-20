@@ -219,6 +219,9 @@ def identifier(s):
 
     It returns the input with no changes if :func:`delimit_identifier` is
     ``None``.
+
+    >>> print identifier('param')
+    "param"
     '''
 
     if delimit_identifier is None:
@@ -307,15 +310,15 @@ def build_where(x):
 
     Building prepared where:
 
-    >>> print build_where({'custom_param': param('myparam'), 'auto_param': param, 'using_alias': ___})
-    "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(myparam)s
+    >>> print build_where({'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
+    "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
 
     It does noting if input is a string:
 
     >>> print build_where('"detail_id" = 1 AND "age" >= 20 AND "created" = \\'2013-04-16\\'')
     "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
 
-    The operator will change by the value.
+    The default operator will be changed by the value.
 
     >>> print build_where({'name': None})
     "name" IS NULL
