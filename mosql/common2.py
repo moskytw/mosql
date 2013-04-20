@@ -21,6 +21,29 @@ returning = Clause('returning'  , identifier_list)
 insert_into_stat = Statement([insert, columns, values, returning])
 
 def insert(table, pairs_or_columns=None, values=None, **clauses_args):
+    '''It generates the SQL statement, ``insert into ...``.
+
+    The following usages generate the same SQL statement:
+
+    >>> print insert('person', {'person_id': 'mosky', 'name': 'Mosky Liu'})
+    INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
+
+    >>> print insert('person', (('person_id', 'mosky'), ('name', 'Mosky Liu')))
+    INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
+
+    >>> print insert('person', ('person_id', 'name'), ('mosky', 'Mosky Liu'))
+    INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
+
+    or you can ignore the columns:
+
+    >>> print insert('person', values=('mosky', 'Mosky Liu'))
+    INSERT INTO "person" VALUES ('mosky', 'Mosky Liu')
+
+    The :func:`update` and :func:`delete` and it are also supported ``returning``.
+
+    >>> print insert('person', {'person_id': 'andy'}, returning=raw('*'))
+    INSERT INTO "person" ("person_id") VALUES ('andy') RETURNING *
+    '''
 
     clauses_args['insert into'] = table
 
@@ -51,6 +74,52 @@ offset   = Clause('offset'  , single_value)
 select_stat = Statement([select, from_, joins, where, group_by, having, order_by, limit, offset])
 
 def select(table, where=None, select=raw('*'), **clauses_args):
+    '''It generates the SQL statement, ``select ...`` .
+
+    The following usages generate the same SQL statement.
+
+    >>> print select('person', {'person_id': 'mosky'})
+    SELECT * FROM "person" WHERE "person_id" = 'mosky'
+
+    >>> print select('person', (('person_id', 'mosky'), ))
+    SELECT * FROM "person" WHERE "person_id" = 'mosky'
+
+    Building prepare statement with :class:`mosql.util.param`:
+
+    >>> print select('table', {'custom_param': param('myparam'), 'auto_param': param, 'using_alias': ___})
+    SELECT * FROM "table" WHERE "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(myparam)s
+
+    You can also specify the ``group_by``, ``having``, ``order_by``, ``limit``
+    and ``offset`` in the keyword arguments. Here are some examples:
+
+    >>> print select('person', {'name like': 'Mosky%'}, group_by=('age', ))
+    SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' GROUP BY "age"
+
+    >>> print select('person', {'name like': 'Mosky%'}, order_by=('age', ))
+    SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' ORDER BY "age"
+
+    >>> print select('person', {'name like': 'Mosky%'}, limit=3, offset=1)
+    SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' LIMIT 3 OFFSET 1
+
+    The operators are also supported:
+
+    >>> print select('person', {'person_id': ('andy', 'bob')})
+    SELECT * FROM "person" WHERE "person_id" IN ('andy', 'bob')
+
+    >>> print select('person', {'name': None})
+    SELECT * FROM "person" WHERE "name" IS NULL
+
+    >>> print select('person', {'name like': 'Mosky%', 'age >': 20})
+    SELECT * FROM "person" WHERE "age" > 20 AND "name" LIKE 'Mosky%'
+
+    If you want to use the functions, wrap it with :class:`mosql.util.raw`:
+
+    >>> print select('person', select=raw('count(*)'), group_by=('age', ))
+    SELECT count(*) FROM "person" GROUP BY "age"
+
+    .. seealso ::
+        How it builds the where clause --- :func:`mosql.util.build_where`
+    '''
 
     clauses_args['from']   = table
     clauses_args['where']  = where
@@ -74,6 +143,16 @@ set    = Clause('set'   , set_list)
 update_stat = Statement([update, set, where, returning])
 
 def update(table, where, set, **clauses_args):
+    '''It generates the SQL statement, ``update ...`` .
+
+    The following usages generate the same SQL statement.
+
+    >>> print update('person', {'person_id': 'mosky'}, {'name': 'Mosky Liu'})
+    UPDATE "person" SET "name"='Mosky Liu' WHERE "person_id" = 'mosky'
+
+    >>> print update('person', (('person_id', 'mosky'), ), (('name', 'Mosky Liu'),) )
+    UPDATE "person" SET "name"='Mosky Liu' WHERE "person_id" = 'mosky'
+    '''
 
     clauses_args['update'] = table
     clauses_args['where']  = where
@@ -88,6 +167,16 @@ delete = Clause('delete from', single_identifier)
 delete_stat = Statement([delete, where, returning])
 
 def delete(table, where, **clauses_args):
+    '''It generates the SQL statement, ``delete ...`` .
+
+    The following usages generate the same SQL statement.
+
+    >>> print delete('person', {'person_id': 'mosky'})
+    DELETE FROM "person" WHERE "person_id" = 'mosky'
+
+    >>> print delete('person', (('person_id', 'mosky'), ))
+    DELETE FROM "person" WHERE "person_id" = 'mosky'
+    '''
 
     clauses_args['delete from'] = table
     clauses_args['where'] = where
