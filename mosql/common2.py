@@ -197,11 +197,62 @@ def delete(table, where, **clauses_args):
 
     return delete_stat.format(clauses_args)
 
+# join
+
+join  = Clause('join' , single_identifier)
+type  = Clause('type' , tuple(), hidden=True)
+on    = Clause('on'   , (build_on, ))
+using = Clause('using', column_list)
+
+join_stat = Statement([type, join, on, using])
+
+def join(table, using=None, on=None, type=None, **clauses_args):
+
+    clauses_args['join'] = table
+    clauses_args['using'] = using
+    clauses_args['on'] = on
+
+    if not type:
+        if using or on:
+            clauses_args['type'] = 'INNER'
+        else:
+            clauses_args['type'] = 'NATURAL INNER'
+    else:
+        clauses_args['type'] = type.upper()
+
+    return join_stat.format(clauses_args)
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
 
-    print insert('person', {'person_id': 'daniel', 'name': 'Daniel Boulud'})
-    print select('person', {'name like': '%mosky%'}, limit=3, order_by=('a', 'b'))
-    print update('person', {'person_id': 'mosky'}, {'name': 'Mosky Liu'})
-    print delete('person', {'person_id': 'daniel'})
+    # benchmark
+
+    #from timeit import timeit
+    #from functools import partial
+    #timeit = partial(timeit, number=100000)
+
+    #import mosql.util2
+
+    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
+    ## -> 4.87100291252
+
+    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person.person_id', 'person.name'), limit=10, order_by='person_id'))
+    ## -> 5.96183991432
+
+    #mosql.util2.allowed_operators = None
+    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
+    ## -> 4.94034194946
+
+    #mosql.util2.detect_dot = False
+    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
+    ## -> 4.71061205864
+
+    #mosql.util2.delimit_identifier = None
+    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
+    ## -> 4.08425188065
+
+    #from mosql.common import select as old_select
+
+    #print timeit(lambda: old_select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
+    ## -> 6.79131507874
