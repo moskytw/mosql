@@ -9,6 +9,7 @@
     update
     delete
     join
+    or_
 
 It is designed for building the standard SQL statement and tested in PostgreSQL.
 
@@ -16,7 +17,7 @@ It is designed for building the standard SQL statement and tested in PostgreSQL.
     If you use MySQL, here is a patch for MySQL --- :mod:`mosql.mysql`.
 '''
 
-__all__ = ['select', 'insert', 'delete', 'update', 'join']
+__all__ = ['select', 'insert', 'delete', 'update', 'join', 'or_']
 
 from .util import *
 
@@ -261,6 +262,17 @@ def join(table, using=None, on=None, type=None, **clauses_args):
         clauses_args['type'] = type.upper()
 
     return join_stat.format(clauses_args)
+
+# or
+
+def or_(*conditions):
+    '''It concats the conditions by ``OR``.
+
+    >>> print or_({'person_id': 'andy'}, {'person_id': 'bob'})
+    "person_id" = 'andy' OR "person_id" = 'bob'
+    '''
+
+    return concat_by_or(build_where(c) for c in conditions)
 
 if __name__ == '__main__':
     import doctest
