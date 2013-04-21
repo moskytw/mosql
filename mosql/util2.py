@@ -32,7 +32,7 @@ __all__ = [
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'allowed_operators',
-    'build_where', 'build_set',
+    'build_where', 'build_set', 'build_on',
     'Clause', 'Statement',
 ]
 
@@ -432,6 +432,26 @@ def build_set(x):
         pieces.append('%s=%s' % (identifier(k), value(v)))
 
     return concat_by_comma(pieces)
+
+@joiner
+def build_on(x):
+    '''It is a joiner function which builds the simple (the operator is always
+    =) on list of SQL from a `dict` or pairs.
+
+    >>> print build_on({'person.person_id': 'detail.person_id'})
+    "person"."person_id" = "detail"."person_id"
+
+    >>> print build_on((('person.person_id', 'detail.person_id'), ))
+    "person"."person_id" = "detail"."person_id"
+    '''
+
+    ps = _to_pairs(x)
+
+    pieces = []
+    for k, v in ps:
+        pieces.append('%s = %s' % (identifier(k), identifier(v)))
+
+    return concat_by_and(pieces)
 
 # NOTE: To keep simple, the below classes shouldn't rely on the above functions
 

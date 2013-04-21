@@ -8,6 +8,7 @@
     select
     update
     delete
+    join
 
 It is designed for building the standard SQL statement (or PostgreSQL).
 
@@ -21,6 +22,7 @@ from .util2 import *
 single_value      = (value, )
 single_identifier = (identifier, )
 identifier_list   = (identifier, concat_by_comma)
+column_list       = (identifier, concat_by_comma, paren)
 where_list        = (build_where, )
 set_list          = (build_set, )
 statement_list    = (concat_by_space, )
@@ -28,7 +30,7 @@ statement_list    = (concat_by_space, )
 # insert
 
 insert  = Clause('insert into', single_identifier)
-columns = Clause('columns'    , (identifier, concat_by_comma, paren), hidden=True)
+columns = Clause('columns'    , column_list, hidden=True)
 values  = Clause('values'     , (value, concat_by_comma, paren))
 returning = Clause('returning'  , identifier_list)
 
@@ -217,6 +219,20 @@ using = Clause('using', column_list)
 join_stat = Statement([type, join, on, using])
 
 def join(table, using=None, on=None, type=None, **clauses_args):
+    '''It generates the SQL statement, ``... join ...`` .
+
+    >>> print select('person', joins=join('detail'))
+    SELECT * FROM "person" NATURAL INNER JOIN "detail"
+
+    >>> print select('person', joins=join('detail', using=('person_id', )))
+    SELECT * FROM "person" INNER JOIN "detail" USING ("person_id")
+
+    >>> print select('person', joins=join('detail', on={'person.person_id': 'detail.person_id'}))
+    SELECT * FROM "person" INNER JOIN "detail" ON "person"."person_id" = "detail"."person_id"
+
+    >>> print select('person', joins=join('detail', type='cross'))
+    SELECT * FROM "person" CROSS JOIN "detail"
+    '''
 
     clauses_args['join'] = table
     clauses_args['using'] = using
