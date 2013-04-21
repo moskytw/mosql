@@ -243,7 +243,7 @@ def join(table, using=None, on=None, type=None, **clauses_args):
     .. versionadded :: 0.1.6
 
     >>> print select('person', joins=join('detail'))
-    SELECT * FROM "person" NATURAL INNER JOIN "detail"
+    SELECT * FROM "person" NATURAL JOIN "detail"
 
     >>> print select('person', joins=join('detail', using=('person_id', )))
     SELECT * FROM "person" INNER JOIN "detail" USING ("person_id")
@@ -266,7 +266,7 @@ def join(table, using=None, on=None, type=None, **clauses_args):
         if using or on:
             clauses_args['type'] = 'INNER'
         else:
-            clauses_args['type'] = 'NATURAL INNER'
+            clauses_args['type'] = 'NATURAL'
     else:
         clauses_args['type'] = type.upper()
 
