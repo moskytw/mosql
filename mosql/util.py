@@ -31,7 +31,8 @@ __all__ = [
     'escape', 'format_param', 'stringify_bool',
     'delimit_identifier', 'escape_identifier',
     'raw', 'param', 'default', '___',
-    'qualifier', 'value', 'identifier', 'detect_dot', 'paren',
+    'qualifier', 'paren', 'value',
+    'OptionError', 'allowed_options', 'identifier',
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
@@ -219,8 +220,29 @@ def value(x):
     else:
         return _type_value_map.get(type(x), str)(x)
 
-detect_dot = True
-'''The feature of detecting dot is disableable. Set it ``False`` to disable.'''
+class OptionError(Exception):
+    '''The instance of it will be raised when :func:`identifier` detects an
+    invalid option.
+
+    .. seealso ::
+        The operators allowed --- :attr:`allowed_options`.'''
+
+    def __init__(self, op):
+        self.op = op
+
+    def __str__(self):
+        return 'this option is not allowed: %r' % self.op
+
+allowed_options = set(['DESC', 'ASC'])
+'''The options which are allowed by :func:`identifier`.
+
+An :exc:`OptionError` is raised if an option not allowed is found.
+
+.. note ::
+    It is disableable. Set it ``None`` to disable the feature of checking the
+    option. But you have responsibility to ensure the secuirty if you disable
+    it.
+'''
 
 @qualifier
 def identifier(s):
@@ -235,18 +257,42 @@ def identifier(s):
     >>> print identifier('column_name')
     "column_name"
 
-    By default, it detects the dot and splits them:
+    >>> print identifier('column_name desc')
+    "column_name" DESC
 
     >>> print identifier('table_name.column_name')
     "table_name"."column_name"
+
+    >>> print identifier('table_name.column_name DESC')
+    "table_name"."column_name" DESC
     '''
 
     if delimit_identifier is None:
         return s
-    elif detect_dot and s.find('.') != -1:
-        return '.'.join(delimit_identifier(escape_identifier(i)) for i in s.split('.'))
     else:
-        return delimit_identifier(escape_identifier(s))
+
+        # TODO: make it faster
+
+        t, _, c = s.rpartition('.')
+        c, _, op = c.partition(' ')
+
+        r = ''
+
+        if t:
+            t = delimit_identifier(escape_identifier(t))
+            r += t+'.'
+
+        if c:
+            c = delimit_identifier(escape_identifier(c))
+            r += c
+
+        if op:
+            op = op.upper()
+            if allowed_options is not None and op not in allowed_options:
+                raise OptionError(op)
+            r += ' '+op
+
+        return r
 
 @qualifier
 def paren(s):
@@ -300,7 +346,7 @@ class OperatorError(Exception):
         self.op = op
 
     def __str__(self):
-        return 'the operator is not allowed: %r' % self.op
+        return 'this operator is not allowed: %r' % self.op
 
 allowed_operators = set([
     '<', '>', '<=', '>=', '=', '<>', '!=',

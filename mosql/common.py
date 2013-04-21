@@ -129,6 +129,17 @@ def select(table, where=None, select=raw('*'), **clauses_args):
     >>> print select('person', {'name like': 'Mosky%'}, order_by=('age', ))
     SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' ORDER BY "age"
 
+    >>> print select('person', {'name like': 'Mosky%'}, order_by=('age desc', ))
+    SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' ORDER BY "age" DESC
+
+    >>> print select('person', {'name like': 'Mosky%'}, order_by=('age ; DROP person; --', ))
+    Traceback (most recent call last):
+        ...
+    OptionError: this option is not allowed: '; DROP PERSON; --'
+
+    .. seealso ::
+        The options allowed --- :attr:`mosql.util.allowed_options`.
+
     >>> print select('person', {'name like': 'Mosky%'}, limit=3, offset=1)
     SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' LIMIT 3 OFFSET 1
 
@@ -146,7 +157,7 @@ def select(table, where=None, select=raw('*'), **clauses_args):
     >>> print select('person', {"person_id = '' OR true; --": 'mosky'})
     Traceback (most recent call last):
         ...
-    OperatorError: the operator is not allowed: "= '' OR TRUE; --"
+    OperatorError: this operator is not allowed: "= '' OR TRUE; --"
 
     .. seealso ::
         The operators allowed --- :attr:`mosql.util.allowed_operators`.
@@ -298,24 +309,16 @@ if __name__ == '__main__':
     #import mosql.util
 
     #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
-    ## -> 4.87100291252
+    ## -> 5.18916010857
 
     #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person.person_id', 'person.name'), limit=10, order_by='person_id'))
-    ## -> 5.96183991432
-
-    #mosql.util.allowed_operators = None
-    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
-    ## -> 4.94034194946
-
-    #mosql.util.detect_dot = False
-    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
-    ## -> 4.71061205864
+    ## -> 5.35348296165
 
     #mosql.util.delimit_identifier = None
     #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
-    ## -> 4.08425188065
+    ## -> 4.03791189194
 
-    #from mosql.common import select as old_select
+    ##from mosql.common import select as old_select
 
-    #print timeit(lambda: old_select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
-    ## -> 6.79131507874
+    ##print timeit(lambda: old_select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
+    ### -> 6.79131507874
