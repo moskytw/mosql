@@ -475,6 +475,9 @@ class Clause(object):
     The :func:`joiner` functions:
 
     .. autosummary ::
+        build_where
+        build_set
+        build_on
         concat_by_comma
         concat_by_and
         concat_by_space
