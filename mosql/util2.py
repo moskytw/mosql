@@ -31,7 +31,7 @@ __all__ = [
     'qualifier', 'value', 'identifier', 'detect_dot', 'paren',
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
-    'allowed_operators',
+    'OperatorError', 'allowed_operators',
     'build_where', 'build_set', 'build_on',
     'Clause', 'Statement',
 ]
@@ -283,6 +283,19 @@ def concat_by_comma(i):
     '''A joiner function which concats the iterable by , (comma).'''
     return ', '.join(i)
 
+class OperatorError(Exception):
+    '''The instance of it will be raised when :func:`build_where` detects an
+    invalid operator.
+
+    .. seealso ::
+        The operators allowed --- :attr:`allowed_operators`.'''
+
+    def __init__(self, op):
+        self.op = op
+
+    def __str__(self):
+        return 'the operator is not allowed: %r' % self.op
+
 allowed_operators = set([
     '<', '>', '<=', '>=', '=', '<>', '!=',
     'IS', 'IS NOT',
@@ -293,7 +306,7 @@ allowed_operators = set([
 ])
 '''The operators which are allowed by :func:`build_where`.
 
-An ``AssertionError`` is raised if an operator not allowed is found.
+An :exc:`OperatorError` is raised if an operator not allowed is found.
 
 .. note ::
     It is disableable. Set it ``None`` to disable the feature of checking the operator.
@@ -346,6 +359,8 @@ def build_where(x):
 
     >>> print build_where({raw('count(person_id) >'): 10})
     count(person_id) > 10
+
+    By default, the operators are limited. Check the :attr:`allowed_operators` for more information.
     '''
 
     ps = _to_pairs(x)
@@ -374,8 +389,8 @@ def build_where(x):
                     op = '='
             else:
                 op = op.upper()
-                if allowed_operators is not None:
-                    assert op in allowed_operators, 'the operator is not allowed: %r' % op
+                if allowed_operators is not None and op not in allowed_operators:
+                    raise OperatorError(op)
 
         # feature of autoparam
         if isinstance(v, type) and v.__name__ == 'param':

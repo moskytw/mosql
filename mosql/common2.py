@@ -136,7 +136,7 @@ def select(table, where=None, select=raw('*'), **clauses_args):
     >>> print select('person', {"person_id = '' OR true; --": 'mosky'})
     Traceback (most recent call last):
         ...
-    AssertionError: the operator is not allowed: "= '' OR TRUE; --"
+    OperatorError: the operator is not allowed: "= '' OR TRUE; --"
 
     If you want to use the functions, wrap it with :class:`mosql.util.raw`:
 
