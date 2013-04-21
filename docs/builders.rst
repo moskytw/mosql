@@ -9,7 +9,7 @@ The Common SQL Builders --- :py:mod:`mosql.common`
 .. automodule:: mosql.common
     :members:
 
-The Moudle Deprecated --- :py:mod:`mosql.ext`
+The Module Deprecated --- :py:mod:`mosql.ext`
 `````````````````````````````````````````````
 
 .. automodule:: mosql.ext
