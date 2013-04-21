@@ -269,9 +269,9 @@ def identifier(s):
 
     if delimit_identifier is None:
         return s
+    elif s.find('.') == -1 and s.find(' ') == -1:
+        return delimit_identifier(escape_identifier(s))
     else:
-
-        # TODO: make it faster
 
         t, _, c = s.rpartition('.')
         c, _, op = c.partition(' ')

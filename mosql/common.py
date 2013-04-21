@@ -309,14 +309,14 @@ if __name__ == '__main__':
     #import mosql.util
 
     #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
-    ## -> 5.18916010857
+    ## -> 4.97957897186
 
     #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person.person_id', 'person.name'), limit=10, order_by='person_id'))
-    ## -> 5.35348296165
+    ## -> 5.33279800415
 
     #mosql.util.delimit_identifier = None
     #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
-    ## -> 4.03791189194
+    ## -> 3.94950485229
 
     ##from mosql.common import select as old_select
 
