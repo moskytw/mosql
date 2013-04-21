@@ -365,7 +365,8 @@ def build_where(x):
     >>> print build_where({raw('count(person_id) >'): 10})
     count(person_id) > 10
 
-    By default, the operators are limited. Check the :attr:`allowed_operators` for more information.
+    By default, the operators are limited. Check the :attr:`allowed_operators`
+    for more information.
     '''
 
     ps = _to_pairs(x)
