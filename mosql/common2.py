@@ -55,8 +55,8 @@ def insert(table, pairs_or_columns=None, values=None, **clauses_args):
 
     The :func:`update` and :func:`delete` and it are also supported ``returning``.
 
-    >>> print insert('person', {'person_id': 'andy'}, returning=raw('*'))
-    INSERT INTO "person" ("person_id") VALUES ('andy') RETURNING *
+    >>> print insert('person', {'person_id': 'mosky', 'name': 'Mosky Liu'}, returning=raw('*'))
+    INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu') RETURNING *
     '''
 
     clauses_args['insert into'] = table
