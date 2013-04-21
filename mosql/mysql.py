@@ -32,7 +32,10 @@ char_escape_map = {
 }
 
 def escape(s):
-    '''The function is designed for MySQL.
+    '''This function escape the `s` into a executable SQL.
+
+    >>> print escape('\\0\\n\\r\\\\\\'\\"\\x1A\\b\\t')
+    \\0\\n\\r\x5c\\\\'\\"\Z\\b\\t
 
     >>> tmpl = "select * from person where person_id = '%s';"
     >>> evil_value = "' or true; --"
@@ -47,15 +50,30 @@ def fast_escape(s):
     '''This function only escapes the ' (single-quote) and \ (backslash).
 
     It is enough for security and correctness, and it is faster 50x than using
-    the :func:`escape`.
-
-    It is used for replacing the :func:`mosql.util.escape` if you import this
-    moudle.
+    the :func:`escape`, so it is used for replacing the
+    :func:`mosql.util.escape` after you import this moudle.
     '''
     return s.replace('\\', '\\\\').replace("'", r"\'")
 
+def format_param(s=''):
+    '''This function always return '%s', so it makes you can use the prepare
+    statement with MySQLdb.'''
+    return '%s'
+
+def delimit_identifier(s):
+    '''Enclose the identifier, `s`, by ` (back-quote).'''
+    return '`%s`' % s
+
+def escape_identifier(s):
+    '''Escape the ` (back-quote) in the identifier, `s`.'''
+    return s.replace('`', '``')
+
 import mosql.util
+
 mosql.util.escape = fast_escape
+mosql.util.format_param = format_param
+mosql.util.delimit_identifier = delimit_identifier
+mosql.util.escape_identifier = escape_identifier
 
 if __name__ == '__main__':
     import doctest

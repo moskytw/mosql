@@ -1,204 +1,321 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It contains the builders of common SQL statement.'''
+'''It contains the common SQL builders.
 
-__all__ = ['insert', 'select', 'update', 'delete', 'insert_tmpl', 'select_tmpl', 'update_tmpl', 'delete_tmpl']
+.. versionchanged:: 0.1.6
+    It is rewritten for using new :mod:`mosql.util`, but it is compatible with
+    old version.
 
-from .util import ___, default, SQLTemplate
+.. autosummary ::
+    select
+    insert
+    update
+    delete
+    join
+    or_
 
-insert_tmpl = SQLTemplate(
-    # It is a template group, and
-    # it only be rendered if every <field> is filled.
-    ('insert into', '<table>'),
-    # It is another template group.
-    ('<columns>', ),
-    ('values'   , '<values>'),
-    ('returning', '<returning>'),
-)
-'''The template for :py:func:`mosql.common.insert`.'''
+It is designed for building the standard SQL statement and tested in PostgreSQL.
 
-def insert(table, columns=None, values=None, **fields):
-    '''It is a shortcut for the SQL statement, ``insert into ...`` .
+.. note::
+    If you use MySQL, here is a patch for MySQL --- :mod:`mosql.mysql`.
+'''
 
-    :rtype: str
+__all__ = ['select', 'insert', 'delete', 'update', 'join', 'or_']
 
-    The simple examples:
+from .util import *
 
-    >>> print insert('member', {'member_id': 'mosky'})
-    INSERT INTO member (member_id) VALUES ('mosky')
+# defines formatting chains
+single_value      = (value, )
+single_identifier = (identifier, )
+identifier_list   = (identifier, concat_by_comma)
+column_list       = (identifier, concat_by_comma, paren)
+where_list        = (build_where, )
+set_list          = (build_set, )
+statement_list    = (concat_by_space, )
 
-    >>> print insert('member', ('email', 'member_id', 'name'), ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu'))
-    INSERT INTO member (email, member_id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu')
+# insert
 
-    >>> print insert('member', "email, member_id, name", "'mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu'")
-    INSERT INTO member (email, member_id, name) VALUES ('mosky DOT tw AT gmail.com', 'mosky', 'Mosky Liu')
+insert  = Clause('insert into', single_identifier)
+columns = Clause('columns'    , column_list, hidden=True)
+values  = Clause('values'     , (value, concat_by_comma, paren))
+returning = Clause('returning'  , identifier_list)
 
-    >>> print insert('member', values=('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'))
-    INSERT INTO member VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com')
+insert_into_stat = Statement([insert, columns, values, returning])
 
-    >>> print insert('post', {'post_id': default})
-    INSERT INTO post (post_id) VALUES (DEFAULT)
+def insert(table, pairs_or_columns=None, values=None, **clauses_args):
+    '''It generates the SQL statement, ``insert into ...``.
 
-    The exmaples of building `prepared statement`:
+    The following usages generate the same SQL statement:
 
-    >>> print insert('member', ('member_id', 'name', 'email'))
-    INSERT INTO member (member_id, name, email) VALUES (%(member_id)s, %(name)s, %(email)s)
+    >>> print insert('person', {'person_id': 'mosky', 'name': 'Mosky Liu'})
+    INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 
-    >>> print insert('member', {'member_id': 'mosky', 'name': ___})
-    INSERT INTO member (name, member_id) VALUES (%(name)s, 'mosky')
+    >>> print insert('person', (('person_id', 'mosky'), ('name', 'Mosky Liu')))
+    INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 
-    An example of multi-value:
+    >>> print insert('person', ('person_id', 'name'), ('mosky', 'Mosky Liu'))
+    INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 
-    >>> print insert('member', values=(('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')))
-    INSERT INTO member VALUES ('mosky', 'Mosky Liu', 'mosky DOT tw AT gmail.com'), ('moskytw', 'Mosky Liu', 'mosky DOT liu AT pinkoi.com')
+    The columns is ignorable:
 
-    All of the fields:
+    >>> print insert('person', values=('mosky', 'Mosky Liu'))
+    INSERT INTO "person" VALUES ('mosky', 'Mosky Liu')
 
-    >>> print insert_tmpl
-    SQLTemplate(('insert into', '<table>'), ('<columns>',), ('values', '<values>'), ('returning', '<returning>'))
+    The :func:`insert`, :func:`update` and :func:`delete` support ``returning``.
+
+    >>> print insert('person', {'person_id': 'mosky', 'name': 'Mosky Liu'}, returning=raw('*'))
+    INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu') RETURNING *
     '''
 
-    fields['table'] = table
-    if columns:
-        fields['columns'] = columns
-    if values:
-        fields['values'] = values
-    return insert_tmpl.format_from_dict(fields)
+    clauses_args['insert into'] = table
 
-select_tmpl = SQLTemplate(
-    ('select', '<select>'),
-    ('from'  , '<table>'),
-    ('<join>', ),
-    ('where' , '<where>'),
-    ('group by', '<group_by>'),
-    ('having'  , '<having>'),
-    ('order by', '<order_by>'),
-    ('limit' , '<limit>'),
-    ('offset', '<offset>'),
-)
-'''The template for :py:func:`mosql.common.select`.'''
+    if values is None:
+        if hasattr(pairs_or_columns, 'items'):
+            pairs = pairs_or_columns.items()
+        else:
+            pairs = pairs_or_columns
+        clauses_args['columns'], clauses_args['values'] = zip(*pairs)
+    else:
+        clauses_args['columns'] = pairs_or_columns
+        clauses_args['values']  = values
 
-def select(table, where=None, select=None, **fields):
-    '''It is a shortcut for the SQL statement, ``select ...`` .
+    return insert_into_stat.format(clauses_args)
 
-    :rtype: str
+# select
 
-    The simple examples:
+select   = Clause('select'  , identifier_list)
+from_    = Clause('from'    , identifier_list)
+joins    = Clause('joins'   , statement_list, hidden=True)
+where    = Clause('where'   , where_list)
+group_by = Clause('group by', identifier_list)
+having   = Clause('having'  , where_list)
+order_by = Clause('order by', identifier_list)
+limit    = Clause('limit'   , single_value)
+offset   = Clause('offset'  , single_value)
 
-    >>> print select('member')
-    SELECT * FROM member
+select_stat = Statement([select, from_, joins, where, group_by, having, order_by, limit, offset])
 
-    >>> print select('member', {'name': 'Mosky Liu'}, ('member_id', 'name'), limit=10, order_by=('member_id', 'created DESC'))
-    SELECT member_id, name FROM member WHERE name = 'Mosky Liu' ORDER BY member_id, created DESC LIMIT 10
+def select(table, where=None, select=raw('*'), **clauses_args):
+    '''It generates the SQL statement, ``select ...`` .
 
-    >>> print select('member', "name = 'Mosky Liu'", 'member_id, name', limit=10, order_by='member_id, created DESC')
-    SELECT member_id, name FROM member WHERE name = 'Mosky Liu' ORDER BY member_id, created DESC LIMIT 10
+    .. versionchanged:: 0.1.6
+        The clause argument, ``join``, is renamed to ``joins``.
 
-    The exmaples which use the condition(s):
+    The following usages generate the same SQL statement.
 
-    >>> print select('member', {'member_id': ('mosky', 'moskytw')})
-    SELECT * FROM member WHERE member_id IN ('mosky', 'moskytw')
+    >>> print select('person', {'person_id': 'mosky'})
+    SELECT * FROM "person" WHERE "person_id" = 'mosky'
 
-    >>> print select('member', {'email like': '%@gmail.com'})
-    SELECT * FROM member WHERE email LIKE '%@gmail.com'
+    >>> print select('person', (('person_id', 'mosky'), ))
+    SELECT * FROM "person" WHERE "person_id" = 'mosky'
 
-    The examples of using `prepared statement`:
+    It detects the dot in an identifier:
 
-    >>> print select('member', ('name', 'email'))
-    SELECT * FROM member WHERE name = %(name)s AND email = %(email)s
+    >>> print select('person', select=('person.person_id', 'person.name'))
+    SELECT "person"."person_id", "person"."name" FROM "person"
 
-    >>> print select('member', {'name': ___, 'email': 'mosky DOT tw AT gmail.com' })
-    SELECT * FROM member WHERE name = %(name)s AND email = 'mosky DOT tw AT gmail.com'
+    Building prepare statement with :class:`mosql.util.param`:
 
-    The exmaples of using ``join``:
+    >>> print select('table', {'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
+    SELECT * FROM "table" WHERE "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
 
-    >>> print select('table_x', join='NATUAL JOIN table_y')
-    SELECT * FROM table_x NATUAL JOIN table_y
+    You can also specify the ``group_by``, ``having``, ``order_by``, ``limit``
+    and ``offset`` in the keyword arguments. Here are some examples:
 
-    >>> print select('table_x', join=('NATUAL JOIN table_y', 'NATUAL JOIN table_z'))
-    SELECT * FROM table_x NATUAL JOIN table_y NATUAL JOIN table_z
+    >>> print select('person', {'name like': 'Mosky%'}, group_by=('age', ))
+    SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' GROUP BY "age"
 
-    .. seealso::
-        Here is a function helps you to build the `join` statement: :py:func:`mosql.ext.join`.
+    >>> print select('person', {'name like': 'Mosky%'}, order_by=('age', ))
+    SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' ORDER BY "age"
 
-    All of the fields:
+    >>> print select('person', {'name like': 'Mosky%'}, limit=3, offset=1)
+    SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' LIMIT 3 OFFSET 1
 
-    >>> print select_tmpl
-    SQLTemplate(('select', '<select>'), ('from', '<table>'), ('<join>',), ('where', '<where>'), ('group by', '<group_by>'), ('having', '<having>'), ('order by', '<order_by>'), ('limit', '<limit>'), ('offset', '<offset>'))
+    The operators are also supported:
+
+    >>> print select('person', {'person_id': ('andy', 'bob')})
+    SELECT * FROM "person" WHERE "person_id" IN ('andy', 'bob')
+
+    >>> print select('person', {'name': None})
+    SELECT * FROM "person" WHERE "name" IS NULL
+
+    >>> print select('person', {'name like': 'Mosky%', 'age >': 20})
+    SELECT * FROM "person" WHERE "age" > 20 AND "name" LIKE 'Mosky%'
+
+    >>> print select('person', {"person_id = '' OR true; --": 'mosky'})
+    Traceback (most recent call last):
+        ...
+    OperatorError: the operator is not allowed: "= '' OR TRUE; --"
+
+    .. seealso ::
+        The operators allowed --- :attr:`mosql.util.allowed_operators`.
+
+    If you want to use functions, wrap it with :class:`mosql.util.raw`:
+
+    >>> print select('person', select=raw('count(*)'), group_by=('age', ))
+    SELECT count(*) FROM "person" GROUP BY "age"
+
+    .. warning ::
+        You have responsibility to ensure the security if you use :class:`mosql.util.raw`.
+
+    .. seealso ::
+        How it builds the where clause --- :func:`mosql.util.build_where`
     '''
 
-    fields['table'] = table
-    if where:
-        fields['where'] = where
-    if select:
-        fields['select'] = select
-    return select_tmpl.format_from_dict(fields)
+    clauses_args['from']   = table
+    clauses_args['where']  = where
+    clauses_args['select'] = select
 
-update_tmpl = SQLTemplate(
-    ('update', '<table>'),
-    ('set'   , '<set>'),
-    ('where' , '<where>'),
-    ('returning', '<returning>'),
-)
-'''The template for :py:func:`mosql.common.update`.'''
+    if 'order_by' in clauses_args:
+        clauses_args['order by'] = clauses_args['order_by']
+        del clauses_args['order_by']
 
-def update(table, where=None, set=None, **fields):
-    '''It is a shortcut for the SQL statement, ``update ...`` .
+    if 'group_by' in clauses_args:
+        clauses_args['group by'] = clauses_args['group_by']
+        del clauses_args['group_by']
 
-    :rtype: str
+    return select_stat.format(clauses_args)
 
-    >>> print update('member', {'member_id': 'mosky'}, {'email': 'mosky DOT tw AT gmail.com'})
-    UPDATE member SET email = 'mosky DOT tw AT gmail.com' WHERE member_id = 'mosky'
+# update
 
-    >>> print update('member', "member_id = 'mosky'", "email = 'mosky DOT tw AT gmail.com'")
-    UPDATE member SET email = 'mosky DOT tw AT gmail.com' WHERE member_id = 'mosky'
+update = Clause('update', single_identifier)
+set    = Clause('set'   , set_list)
 
-    >>> print update('member', ('member_id', ), ('email', 'name'))
-    UPDATE member SET email = %(email)s, name = %(name)s WHERE member_id = %(member_id)s
+update_stat = Statement([update, set, where, returning])
 
-    All of the fields:
+def update(table, where, set, **clauses_args):
+    '''It generates the SQL statement, ``update ...`` .
 
-    >>> print update_tmpl
-    SQLTemplate(('update', '<table>'), ('set', '<set>'), ('where', '<where>'), ('returning', '<returning>'))
+    The following usages generate the same SQL statement.
+
+    >>> print update('person', {'person_id': 'mosky'}, {'name': 'Mosky Liu'})
+    UPDATE "person" SET "name"='Mosky Liu' WHERE "person_id" = 'mosky'
+
+    >>> print update('person', (('person_id', 'mosky'), ), (('name', 'Mosky Liu'),) )
+    UPDATE "person" SET "name"='Mosky Liu' WHERE "person_id" = 'mosky'
+
+    .. seealso ::
+        How it builds the where clause --- :func:`mosql.util.build_set`
     '''
 
-    fields['table'] = table
-    if where:
-        fields['where'] = where
-    if set:
-        fields['set'] = set
-    return update_tmpl.format_from_dict(fields)
+    clauses_args['update'] = table
+    clauses_args['where']  = where
+    clauses_args['set']    = set
 
-delete_tmpl = SQLTemplate(
-    ('delete from', '<table>'),
-    ('where'    , '<where>'),
-    ('returning', '<returning>'),
-)
-'''The template for :py:func:`mosql.common.delete`.'''
+    return update_stat.format(clauses_args)
 
-def delete(table, where=None, **fields):
-    '''It is a shortcut for the SQL statement, ``delete from ...`` .
+# delete from
 
-    :rtype: str
+delete = Clause('delete from', single_identifier)
 
-    >>> print delete('member', {'member_id': 'mosky'})
-    DELETE FROM member WHERE member_id = 'mosky'
+delete_stat = Statement([delete, where, returning])
 
-    >>> print delete('member', "member_id = 'mosky'")
-    DELETE FROM member WHERE member_id = 'mosky'
+def delete(table, where, **clauses_args):
+    '''It generates the SQL statement, ``delete from ...`` .
 
-    All of the fields:
+    The following usages generate the same SQL statement.
 
-    >>> print delete_tmpl
-    SQLTemplate(('delete from', '<table>'), ('where', '<where>'), ('returning', '<returning>'))
+    >>> print delete('person', {'person_id': 'mosky'})
+    DELETE FROM "person" WHERE "person_id" = 'mosky'
+
+    >>> print delete('person', (('person_id', 'mosky'), ))
+    DELETE FROM "person" WHERE "person_id" = 'mosky'
     '''
 
-    fields['table'] = table
-    if where:
-        fields['where'] = where
-    return delete_tmpl.format_from_dict(fields)
+    clauses_args['delete from'] = table
+    clauses_args['where'] = where
+
+    return delete_stat.format(clauses_args)
+
+# join
+
+join  = Clause('join' , single_identifier)
+type  = Clause('type' , tuple(), hidden=True)
+on    = Clause('on'   , (build_on, ))
+using = Clause('using', column_list)
+
+join_stat = Statement([type, join, on, using])
+
+def join(table, using=None, on=None, type=None, **clauses_args):
+    '''It generates the SQL statement, ``... join ...`` .
+
+    .. versionadded :: 0.1.6
+
+    >>> print select('person', joins=join('detail'))
+    SELECT * FROM "person" NATURAL INNER JOIN "detail"
+
+    >>> print select('person', joins=join('detail', using=('person_id', )))
+    SELECT * FROM "person" INNER JOIN "detail" USING ("person_id")
+
+    >>> print select('person', joins=join('detail', on={'person.person_id': 'detail.person_id'}))
+    SELECT * FROM "person" INNER JOIN "detail" ON "person"."person_id" = "detail"."person_id"
+
+    >>> print select('person', joins=join('detail', type='cross'))
+    SELECT * FROM "person" CROSS JOIN "detail"
+
+    .. seealso ::
+        How it builds the where clause --- :func:`mosql.util.build_on`
+    '''
+
+    clauses_args['join'] = table
+    clauses_args['using'] = using
+    clauses_args['on'] = on
+
+    if not type:
+        if using or on:
+            clauses_args['type'] = 'INNER'
+        else:
+            clauses_args['type'] = 'NATURAL INNER'
+    else:
+        clauses_args['type'] = type.upper()
+
+    return join_stat.format(clauses_args)
+
+# or
+
+def or_(*conditions):
+    '''It concats the conditions by ``OR``.
+
+    .. versionadded :: 0.1.6
+
+    >>> print or_({'person_id': 'andy'}, {'person_id': 'bob'})
+    "person_id" = 'andy' OR "person_id" = 'bob'
+    '''
+
+    return concat_by_or(build_where(c) for c in conditions)
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
+
+    # benchmark
+
+    #from timeit import timeit
+    #from functools import partial
+    #timeit = partial(timeit, number=100000)
+
+    #import mosql.util
+
+    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
+    ## -> 4.87100291252
+
+    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person.person_id', 'person.name'), limit=10, order_by='person_id'))
+    ## -> 5.96183991432
+
+    #mosql.util.allowed_operators = None
+    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
+    ## -> 4.94034194946
+
+    #mosql.util.detect_dot = False
+    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
+    ## -> 4.71061205864
+
+    #mosql.util.delimit_identifier = None
+    #print timeit(lambda: select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
+    ## -> 4.08425188065
+
+    #from mosql.common import select as old_select
+
+    #print timeit(lambda: old_select('person', {'name': 'Mosky Liu'}, ('person_id', 'name'), limit=10, order_by='person_id'))
+    ## -> 6.79131507874

@@ -35,7 +35,7 @@ detail.save()
 print
 
 print '# Add a person, Topaz Chen'
-person = Person.new(person_id='topaz', name='Topaz Chen')
+person = Person.new(person_id='topaz', name=['Topaz Chen'])
 print detail
 person.save()
 print
