@@ -4,17 +4,19 @@
 '''It contains the common SQL builders.
 
 .. autosummary ::
-    insert
     select
+    insert
     update
     delete
     join
 
-It is designed for building the standard SQL statement (or PostgreSQL).
+It is designed for building the standard SQL statement and tested in PostgreSQL.
 
 .. note::
-    If you use MySQL, MoSQL provides a patch for MySQL --- :mod:`mosql.mysql`.
+    If you use MySQL, here is a patch for MySQL --- :mod:`mosql.mysql`.
 '''
+
+__all__ = ['select', 'insert', 'delete', 'update', 'join']
 
 from .util2 import *
 
@@ -50,12 +52,12 @@ def insert(table, pairs_or_columns=None, values=None, **clauses_args):
     >>> print insert('person', ('person_id', 'name'), ('mosky', 'Mosky Liu'))
     INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 
-    or you can ignore the columns:
+    The columns is ignorable:
 
     >>> print insert('person', values=('mosky', 'Mosky Liu'))
     INSERT INTO "person" VALUES ('mosky', 'Mosky Liu')
 
-    The :func:`insert`, :func:`update` and :func:`delete` supports ``returning``.
+    The :func:`insert`, :func:`update` and :func:`delete` support ``returning``.
 
     >>> print insert('person', {'person_id': 'mosky', 'name': 'Mosky Liu'}, returning=raw('*'))
     INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu') RETURNING *
@@ -138,7 +140,10 @@ def select(table, where=None, select=raw('*'), **clauses_args):
         ...
     OperatorError: the operator is not allowed: "= '' OR TRUE; --"
 
-    If you want to use the functions, wrap it with :class:`mosql.util.raw`:
+    .. seealso ::
+        The operators allowed --- :attr:`mosql.util.allowed_operators`.
+
+    If you want to use functions, wrap it with :class:`mosql.util.raw`:
 
     >>> print select('person', select=raw('count(*)'), group_by=('age', ))
     SELECT count(*) FROM "person" GROUP BY "age"
@@ -181,6 +186,9 @@ def update(table, where, set, **clauses_args):
 
     >>> print update('person', (('person_id', 'mosky'), ), (('name', 'Mosky Liu'),) )
     UPDATE "person" SET "name"='Mosky Liu' WHERE "person_id" = 'mosky'
+
+    .. seealso ::
+        How it builds the where clause --- :func:`mosql.util.build_set`
     '''
 
     clauses_args['update'] = table
@@ -235,6 +243,9 @@ def join(table, using=None, on=None, type=None, **clauses_args):
 
     >>> print select('person', joins=join('detail', type='cross'))
     SELECT * FROM "person" CROSS JOIN "detail"
+
+    .. seealso ::
+        How it builds the where clause --- :func:`mosql.util.build_on`
     '''
 
     clauses_args['join'] = table

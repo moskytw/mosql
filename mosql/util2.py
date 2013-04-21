@@ -3,7 +3,7 @@
 
 '''It contains the basic SQL builders.
 
-It is designed for standard SQL (or PostgreSQL). If your database uses
+It is designed for standard SQL and tested in PostgreSQL. If your database uses
 non-standard SQL, you may need to customize and override the following
 functions.
 
@@ -15,7 +15,7 @@ functions.
     escape_identifier
 
 .. note::
-    MoSQL provides the patch for MySQL --- :mod:`mosql.mysql`.
+    Here is a patch for MySQL --- :mod:`mosql.mysql`.
 
 If you need you own SQL statements, the following classes may help you.
 
@@ -365,8 +365,9 @@ def build_where(x):
     >>> print build_where({raw('count(person_id) >'): 10})
     count(person_id) > 10
 
-    By default, the operators are limited. Check the :attr:`allowed_operators`
-    for more information.
+    .. seealso ::
+        By default, the operators are limited. Check the :attr:`allowed_operators`
+        for more information.
     '''
 
     ps = _to_pairs(x)
