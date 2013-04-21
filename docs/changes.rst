@@ -2,6 +2,16 @@
 The Changes
 ===========
 
+v0.1.6
+------
+
+1. :mod:`mosql.util` is faster (1.4x~1.65x) after rewriting.
+2. supports to delimit the identifier (for avoiding injection from identifier).
+3. supports arbitrary SQL statements by :class:`mosql.util.raw`.
+4. supports to customize parameter name of prepared statement by
+   :class:`mosql.util.param`.
+5. :mod:`mosql.ext` is deprecated now. Use :mod:`mosql.common` instead.
+
 v0.1.5
 ------
 
