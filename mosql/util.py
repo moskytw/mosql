@@ -3,6 +3,9 @@
 
 '''It contains the basic SQL builders.
 
+.. versionchanged:: 0.1.6
+    It is rewritten and totally different from old version.
+
 It is designed for standard SQL and tested in PostgreSQL. If your database uses
 non-standard SQL, you may need to customize and override the following
 functions.

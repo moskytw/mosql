@@ -3,6 +3,10 @@
 
 '''It contains the common SQL builders.
 
+.. versionchanged:: 0.1.6
+    It is rewritten for using new :mod:`mosql.util`, but it is compatible with
+    old version.
+
 .. autosummary ::
     select
     insert
@@ -94,6 +98,9 @@ select_stat = Statement([select, from_, joins, where, group_by, having, order_by
 
 def select(table, where=None, select=raw('*'), **clauses_args):
     '''It generates the SQL statement, ``select ...`` .
+
+    .. versionchanged:: 0.1.6
+        The clause argument, ``join``, is renamed to ``joins``.
 
     The following usages generate the same SQL statement.
 
@@ -233,6 +240,8 @@ join_stat = Statement([type, join, on, using])
 def join(table, using=None, on=None, type=None, **clauses_args):
     '''It generates the SQL statement, ``... join ...`` .
 
+    .. versionadded :: 0.1.6
+
     >>> print select('person', joins=join('detail'))
     SELECT * FROM "person" NATURAL INNER JOIN "detail"
 
@@ -267,6 +276,8 @@ def join(table, using=None, on=None, type=None, **clauses_args):
 
 def or_(*conditions):
     '''It concats the conditions by ``OR``.
+
+    .. versionadded :: 0.1.6
 
     >>> print or_({'person_id': 'andy'}, {'person_id': 'bob'})
     "person_id" = 'andy' OR "person_id" = 'bob'
