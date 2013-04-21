@@ -1,425 +1,591 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__all__ = ['encoding', 'paramstyle', 'boolstyle', 'default', 'Empty', 'SQLTemplate', 'dumps', 'escape', 'splitop']
+'''It contains the basic SQL builders.
 
-'''It contains useful tools to build SQL by common data types in Python.'''
+It is designed for standard SQL and tested in PostgreSQL. If your database uses
+non-standard SQL, you may need to customize and override the following
+functions.
 
-Empty = ___ = type('Empty', (object, ), {
-    '__nonzero__': lambda self: False,
-    '__str__'    : lambda self: '___',
-    '__repr__'   : lambda self: 'Empty',
-})()
-'''It represents a hyper None, because the normal None is the ``NULL`` in SQL.'''
+.. autosummary ::
+    escape
+    format_param
+    stringify_bool
+    delimit_identifier
+    escape_identifier
 
-default = type('default', (object, ), {
-    '__str__'   : lambda self: 'DEFAULT',
-    '__repr__'   : lambda self: 'default',
-})()
-'''It represents the ``DEFAULT`` in SQL.'''
+.. note::
+    Here is a patch for MySQL --- :mod:`mosql.mysql`.
 
-# The default styles of ``dumps``
-encoding   = 'UTF-8'
-''':py:func:`mosql.util.dumps` encodes the `unicode` type by this value.'''
+If you need you own SQL statements, the following classes may help you.
 
-paramstyle = 'pyformat'
-'''The parameter style in Python DB API 2.0.
+.. autosummary ::
+    Clause
+    Statement
+'''
 
-.. seealso::
-    `Python Database API Specification v2.0 - paramstyle <http://www.python.org/dev/peps/pep-0249/#paramstyle>`_'''
+__all__ = [
+    'escape', 'format_param', 'stringify_bool',
+    'delimit_identifier', 'escape_identifier',
+    'raw', 'param', 'default', '___',
+    'qualifier', 'value', 'identifier', 'detect_dot', 'paren',
+    'joiner',
+    'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
+    'OperatorError', 'allowed_operators',
+    'build_where', 'build_set', 'build_on',
+    'Clause', 'Statement',
+]
 
-boolstyle  = 'uppercase'
-'''It has two options: 'uppercase' or 'bit'.'''
+from functools import wraps
+from datetime import datetime, date, time
 
 def escape(s):
-    '''Replace the ``'`` (single quote) by ``''`` (two single quotes).
+    '''The function which escapes the value.
 
-    :param s: a string which you want to escape
-    :type s: str
-    :rtype: str
+    By default, it just replaces ' (single-quote) with '' (two single-quotes).
 
-    >>> print escape("'; DROP TABLE member; --")
-    ''; DROP TABLE member; --
+    It aims at avoiding SQL injection. Here are some examples:
 
-    >>> print dumps("'; DROP TABLE member; --", val=True)
-    '\''; DROP TABLE member; --'
+    >>> tmpl = "select * from person where person_id = '%s';"
+    >>> evil_value = "' or true; --"
 
-    .. warning::
-        In MySQL, it only ensures the security in ANSI mode by default. You may want to use :py:func:`mosql.mysql.escape`.
+    >>> print tmpl % evil_value
+    select * from person where person_id = '' or true; --';
 
-    .. note::
-        When using :py:class:`mosql.util.SQLTemplate`, you can replace this function by assigning a function to the formating specification, ``escape``.
+    >>> print tmpl % escape(evil_value)
+    select * from person where person_id = '\'' or true; --';
     '''
     return s.replace("'", "''")
 
-def splitop(s):
-    '''Split `s` by rightmost space into the left string and a string operator in a 2-tuple.
+def format_param(s=''):
+    '''The function which format the parameter of prepared statement.
 
-    :param s: a string which you want to split.
-    :type s: str
-    :rtype: 2-tuple
+    By default, it formats the parameter in `pyformat
+    <http://www.python.org/dev/peps/pep-0249/#paramstyle>`_.
 
-    >>> print splitop('withoutop')
-    ('withoutop', None)
+    >>> format_param('name')
+    '%(name)s'
 
-    >>> print splitop('with op')
-    ('with', 'op')
+    >>> format_param()
+    '%s'
     '''
-    op = None
-    space_pos = s.find(' ')
-    if space_pos != -1:
-        s, op = s[:space_pos], s[space_pos+1:]
-    return s, op
+    return '%%(%s)s' % s if s else '%s'
 
-from datetime import date, time, datetime
+def stringify_bool(b):
+    '''The function which stringifies the bool.
 
-def dumps(x, **format_spec):
-    '''Dump any object `x` into SQL's representation.
+    By default, it returns ``'TRUE'`` if `b` is true, otherwise it returns
+    ``'FALSE'``.
+    '''
+    return 'TRUE' if b else 'FALSE'
 
-    :param x: any object
-    :param format_spec: the formating specification
-    :type format_spec: dict
+def delimit_identifier(s):
+    '''The function which delimits the identifier.
 
-    The examples of basic types:
+    By default, it conforms the standard to encloses the identifier, `s`, by "
+    (double quote).
 
-    >>> print dumps(None)
-    NULL
+    .. note ::
+        It is disableable. Set it ``None`` to disable the feature of delimiting
+        identifiers. But you have responsibility to ensure the secuirty if you
+        disable it.
+    '''
+    return '"%s"' % s
 
-    >>> print dumps(True), dumps(False)
-    TRUE FALSE
+def escape_identifier(s):
+    '''The function which escapes the identifier.
 
-    >>> print dumps(True, boolstyle='bit'), dumps(False, boolstyle='bit')
-    1 0
+    By default, it just replaces " (double-quote) with "" (two double-quotes).
 
-    The `boolstyle` can be `uppercase` or `bit`.
+    It also aims at avoid SQL injection. Here are some examples:
 
-    >>> print dumps(123)
-    123
+    >>> tmpl = 'select * from person where "%s" = \\'mosky\\';'
+    >>> evil_value = 'person_id" = \\'\\' or true; --'
 
-    >>> print dumps('var')
-    var
+    >>> print tmpl % evil_value
+    select * from person where "person_id" = '' or true; --" = 'mosky';
 
-    >>> print dumps('val', val=True)
-    'val'
+    >>> print tmpl % escape_identifier(evil_value)
+    select * from person where "person_id"" = '' or true; --" = 'mosky';
+    '''
+    return s.replace('"', '""')
 
-    The examples of `sequences`:
+class raw(str):
+    '''This is a subclass of built-in `str` type. The qualifier function do
+    noting when the input is an instance of this class
 
-    >>> print dumps(('a', 'b', 'c'))
-    a, b, c
-
-    >>> print dumps(('a', 'b', 'c'), parens=True)
-    (a, b, c)
-
-    >>> print dumps(('a', 'b', 'c'), val=True)
-    ('a', 'b', 'c')
-
-    Actually, you can use any `iterable` (except mapping) to build the above strings.
-
-    The examples of `mapping`:
-
-    >>> print dumps({'a': 1, 'b': 'str'})
-    a = 1, b = 'str'
-
-    >>> print dumps({'a >=': 1, 'b': ('x', 'y'), 'c': None}, condition=True)
-    c IS NULL AND b IN ('x', 'y') AND a >= 1
-
-    The examples of using ``param`` to build `prepared statement`:
-
-    >>> print dumps(('a', 'b', 'c'), val=True, param=True)
-    (%(a)s, %(b)s, %(c)s)
-
-    >>> print dumps(('a', 'b', 'c'), val=True, param=True, paramstyle='qmark')
-    (?, ?, ?)
-
-    The `paramstyle` can be `pyformat`, `qmark`, `named` or `format_spec`. The `numberic` isn't supported yet.
-
-    >>> print dumps({'a >=': 'a', 'b': 'b'}, param=True, condition=True)
-    b = %(b)s AND a >= %(a)s
-
-    The exmaples of using ``condition`` and iterable (not mapping) to build `prepared statement`:
-
-    >>> print dumps(('x', 'y >', 'z <'), condition=True)
-    x = %(x)s AND y > %(y)s AND z < %(z)s
-
-    The examples of using :py:class:`mosql.util.Empty` object, ``___`` (triple-underscore) to build `prepared statement`:
-
-    >>> print dumps({'a >=': 1, 'b': ___ }, condition=True)
-    b = %(b)s AND a >= 1
-
-    >>> print dumps({'a >=': ___ , 'b': ___ }, condition=True)
-    b = %(b)s AND a >= %(a)s
-
-    >>> print dumps((___, 'b', 'c'), val=True, autoparams=('x', 'y', 'z'))
-    (%(x)s, 'b', 'c')
+    .. warning ::
+        You have responsibility to ensure the security if you use this class.
     '''
 
-    global encoding, paramstyle, boolstyle, escape
+    def __repr__(self):
+        return 'raw(%s)' % self
 
-    if isinstance(x, unicode):
-        x = x.encode(format_spec.get('encoding', encoding))
+default = raw('DEFAULT')
 
-    param = format_spec.get('param')
-    autoparam = format_spec.get('autoparam')
+class param(str):
+    ''':func:`value` builds this type as a parameter for the prepared statement
 
-    if x is Empty and autoparam:
-        param = True
-        x = dumps(autoparam)
+    >>> value(param(''))
+    '%s'
+    >>> value(param('name'))
+    '%(name)s'
 
-    if param and isinstance(x, (str, int)):
-        _paramstyle = format_spec.get('paramstyle', paramstyle)
-        if _paramstyle == 'pyformat':
-            return '%%(%s)s' % x
-        elif _paramstyle == 'qmark':
-            return '?'
-        elif _paramstyle == 'named':
-            return ':%s' % x
-        elif _paramstyle == 'format':
-            return '%s'
-        elif _paramstyle == 'numberic':
-            return ':%d' % x
+    This is just a subclass of built-in `str` type.
+    '''
 
-    if isinstance(x, str):
-        if format_spec.get('val'):
-            return "'%s'" % format_spec.get('escape', escape)(x)
-        else:
+    def __repr__(self):
+        return 'param(%s)' % self
+
+___ = param
+
+def _is_iterable_not_str(x):
+    return not isinstance(x, basestring) and hasattr(x, '__iter__')
+
+def qualifier(f):
+    '''A decorator which makes all items in an `iterable` apply a qualifier
+    function, `f`, or simply apply the qualifier function to the input if the
+    input is not an `iterable`.
+
+    The `iterable` here means the iterable except string.
+
+    It also makes a qualifier function returns the input without changes if the
+    input is an instance of :class:`raw`.
+    '''
+
+    @wraps(f)
+    def qualifier_wrapper(x):
+        if isinstance(x, raw):
             return x
+        elif _is_iterable_not_str(x):
+            return [item if isinstance(item, raw) else f(item) for item in x]
+        else:
+            return f(x)
 
-    if isinstance(x, bool):
-        _boolstyle = format_spec.get('boolstyle', boolstyle)
-        if _boolstyle == 'uppercase':
-            return 'TRUE' if x else 'FALSE'
-        elif _boolstyle == 'bit':
-            return 1 if x else 0
+    return qualifier_wrapper
 
-    if isinstance(x, (int, float, long, datetime, date, time)):
-        return str(x)
+def _quote_str(x):
+    return "'%s'" % escape(x)
+
+def _quote_datetime(x):
+    return "'%s'" % x
+
+_type_value_map = {
+    str     : _quote_str,
+    unicode : _quote_str,
+    bool    : stringify_bool,
+    datetime: _quote_datetime,
+    date    : _quote_datetime,
+    time    : _quote_datetime,
+    raw     : lambda x: x,
+    # it should be a lazy evaluation to be patchable
+    param   : lambda x: format_param(x),
+}
+
+@qualifier
+def value(x):
+    '''It is a qualifier function for values.
+
+    >>> print value('normal string')
+    'normal string'
+
+    >>> print value(u'normal unicode')
+    'normal unicode'
+
+    >>> print value(True)
+    TRUE
+
+    >>> print value(datetime(2013, 4, 19, 14, 41, 10))
+    '2013-04-19 14:41:10'
+
+    >>> print value(date(2013, 4, 19))
+    '2013-04-19'
+
+    >>> print value(time(14, 41, 10))
+    '14:41:10'
+
+    >>> print value(raw('count(person_id) > 1'))
+    count(person_id) > 1
+
+    >>> print value(param('myparam'))
+    %(myparam)s
+    '''
 
     if x is None:
         return 'NULL'
+    else:
+        return _type_value_map.get(type(x), str)(x)
 
-    items = None
-    if hasattr(x, 'items'):
-        items = x.items()
-    # convert iterable to items if ``condition`` or ``set`` is set
-    elif hasattr(x, '__iter__') and (format_spec.get('condition') or format_spec.get('set')):
-        format_spec['param'] = True
-        items = ((v, splitop(v)[0]) for v in x)
+detect_dot = True
+'''The feature of detecting dot is disableable. Set it ``False`` to disable.'''
 
-    if items:
+@qualifier
+def identifier(s):
+    '''It is a qualifier function for identifiers.
 
-        operations = []
-        for k, v in items:
+    It uses the :func:`delimit_identifier` and :func:`escape_identifier` to
+    qualifiy the input.
 
-            # find the operator in key
-            k, op = splitop(k)
-            if op is None:
-                if not isinstance(v, basestring) and hasattr(v, '__iter__'):
-                    op = 'in'
+    It returns the input with no changes if :func:`delimit_identifier` is
+    ``None``.
+
+    >>> print identifier('column_name')
+    "column_name"
+
+    By default, it detects the dot and splits them:
+
+    >>> print identifier('table_name.column_name')
+    "table_name"."column_name"
+    '''
+
+    if delimit_identifier is None:
+        return s
+    elif detect_dot and s.find('.') != -1:
+        return '.'.join(delimit_identifier(escape_identifier(i)) for i in s.split('.'))
+    else:
+        return delimit_identifier(escape_identifier(s))
+
+@qualifier
+def paren(s):
+    '''It is a qualifier function which encloses the input with () (paren).'''
+    return '(%s)' % s
+
+def joiner(f):
+    '''A decorator which makes the input apply this function only if the input
+    is an `iterable`, otherwise it just returns the same input.
+
+    The `iterable` here means the iterable except string.
+    '''
+
+    @wraps(f)
+    def joiner_wrapper(x):
+        if _is_iterable_not_str(x):
+            return f(x)
+        else:
+            return x
+
+    return joiner_wrapper
+
+@joiner
+def concat_by_and(i):
+    '''A joiner function which concats the iterable by ``'AND'``.'''
+    return ' AND '.join(i)
+
+@joiner
+def concat_by_or(i):
+    '''A joiner function which concats the iterable by ``'OR'``.'''
+    return ' OR '.join(i)
+
+@joiner
+def concat_by_space(i):
+    '''A joiner function which concats the iterable by a space.'''
+    return ' '.join(i)
+
+@joiner
+def concat_by_comma(i):
+    '''A joiner function which concats the iterable by , (comma).'''
+    return ', '.join(i)
+
+class OperatorError(Exception):
+    '''The instance of it will be raised when :func:`build_where` detects an
+    invalid operator.
+
+    .. seealso ::
+        The operators allowed --- :attr:`allowed_operators`.'''
+
+    def __init__(self, op):
+        self.op = op
+
+    def __str__(self):
+        return 'the operator is not allowed: %r' % self.op
+
+allowed_operators = set([
+    '<', '>', '<=', '>=', '=', '<>', '!=',
+    'IS', 'IS NOT',
+    'IN', 'NOT IN',
+    'LIKE', 'NOT LIKE',
+    'SIMILAR TO', 'NOT SIMILAR TO',
+    '~', '~*', '!~', '!~*',
+])
+'''The operators which are allowed by :func:`build_where`.
+
+An :exc:`OperatorError` is raised if an operator not allowed is found.
+
+.. note ::
+    It is disableable. Set it ``None`` to disable the feature of checking the
+    operator. But you have responsibility to ensure the secuirty if you disable
+    it.
+'''
+
+def _to_pairs(x):
+
+    if hasattr(x, 'iteritems'):
+        x = x.iteritems()
+    elif hasattr(x, 'items'):
+        x = x.items()
+
+    return x
+
+@joiner
+def build_where(x):
+    '''It is a joiner function which builds the where list of SQL from a `dict`
+    or `pairs`.
+
+    If input is a `dict` or `pairs`:
+
+    >>> print build_where({'detail_id': 1, 'age >= ': 20, 'created': date(2013, 4, 16)})
+    "created" = '2013-04-16' AND "detail_id" = 1 AND "age" >= 20
+
+    >>> print build_where((('detail_id', 1), ('age >= ', 20), ('created', date(2013, 4, 16))))
+    "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
+
+    Building prepared where:
+
+    >>> print build_where({'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
+    "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
+
+    It does noting if input is a string:
+
+    >>> print build_where('"detail_id" = 1 AND "age" >= 20 AND "created" = \\'2013-04-16\\'')
+    "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
+
+    The default operator will be changed by the value.
+
+    >>> print build_where({'name': None})
+    "name" IS NULL
+
+    >>> print build_where({'person_id': ['andy', 'bob']})
+    "person_id" IN ('andy', 'bob')
+
+    It is possible to customize your operators:
+
+    >>> print build_where({'email like': '%@gmail.com%'})
+    "email" LIKE '%@gmail.com%'
+
+    >>> print build_where({raw('count(person_id) >'): 10})
+    count(person_id) > 10
+
+    .. seealso ::
+        By default, the operators are limited. Check the :attr:`allowed_operators`
+        for more information.
+    '''
+
+    ps = _to_pairs(x)
+
+    pieces = []
+
+    for k, v in ps:
+
+        # find the op
+
+        op = ''
+
+        if not isinstance(k, raw):
+
+            # split the op out
+            space_pos = k.find(' ')
+            if space_pos != -1:
+                k, op = k[:space_pos], k[space_pos+1:].strip()
+
+            if not op:
+                if _is_iterable_not_str(v):
+                    op = 'IN'
                 elif v is None:
                     op = 'IS'
                 else:
                     op = '='
+            else:
+                op = op.upper()
+                if allowed_operators is not None and op not in allowed_operators:
+                    raise OperatorError(op)
 
-            # update the format_spec for value
-            v_format_spec = format_spec.copy()
-            v_format_spec['autoparam'] = k
-            v_format_spec['val'] = True
-            v_format_spec['condition'] = False
+        # feature of autoparam
+        if isinstance(v, type) and v.__name__ == 'param':
+            v = param(k)
 
-            operations.append('%s %s %s' % (
-                dumps(k),
-                op.upper(),
-                dumps(v, **v_format_spec),
-            ))
+        # qualify the v
+        v = value(v)
+        if _is_iterable_not_str(v):
+            v = paren(concat_by_comma(v))
 
-        if format_spec.get('condition'):
-            return ' AND '.join(operations)
+        # qualify the k
+        k = identifier(k)
+
+        if op:
+            pieces.append('%s %s %s' % (k, op, v))
         else:
-            return ', '.join(operations)
+            pieces.append('%s %s' % (k, v))
 
-    if hasattr(x, '__iter__'):
+    return concat_by_and(pieces)
 
-        sep = format_spec.get('sep')
-        if sep:
-            return sep.join(dumps(v, **format_spec) for v in x)
+@joiner
+def build_set(x):
+    '''It is a joiner function which builds the set list of SQL from a `dict` or
+    pairs.
 
-        autoparams = format_spec.get('autoparams')
-        if autoparams:
-            s = ', '.join(dumps(v, autoparam=k, **format_spec) for v, k in zip(x, autoparams))
-        else:
-            s = ', '.join(dumps(v, **format_spec) for v in x)
+    If input is a `dict` or `pairs`:
 
-        if format_spec.get('val') or format_spec.get('parens'):
-            s = '(%s)' % s
-        return s
+    >>> print build_set({'a': 1, 'b': True, 'c': date(2013, 4, 16)})
+    "a"=1, "c"='2013-04-16', "b"=TRUE
 
-    return str(x)
+    >>> print build_set((('a', 1), ('b', True), ('c', date(2013, 4, 16))))
+    "a"=1, "b"=TRUE, "c"='2013-04-16'
 
-class SQLTemplate(object):
-    '''A SQL template engine.
+    Building prepared set:
 
-    :param template_groups: the template groups
-    :type template_groups: two-level nest iterable
+    >>> print build_set({'custom_param': param('myparam'), 'auto_param': param})
+    "auto_param"=%(auto_param)s, "custom_param"=%(myparam)s
 
-    Here is an example of SQL's `select ...` statement:
+    It does noting if input is a string:
 
-    >>> select_tmpl = SQLTemplate(
-    ...     # It is a template group, and
-    ...     # it only be rendered if every <field> is filled.
-    ...     ('select', '<select>'),
-    ...     # It is another template group.
-    ...     ('from', '<table>'),
-    ...     ('<join>', ),
-    ...     ('where', '<where>'),
-    ...     ('group by', '<group_by>'),
-    ...     ('having', '<having>'),
-    ...     ('order by', '<order_by>'),
-    ...     ('limit', '<limit>'),
-    ...     ('offset', '<offset>'),
-    ... )
-
-    The example of changing the formating specification by its attribute:
-
-    >>> tmpl = SQLTemplate(('key', '<value>'))
-    >>> print tmpl.format(value='data')
-    KEY data
-    >>> tmpl.param = True
-    >>> print tmpl.param
-    True
-    >>> print tmpl.format(value='data')
-    KEY %(data)s
-
-    .. seealso::
-        The all of the formating specification: :py:func:`mosql.util.dumps`.
-
-    If the formating specification isn't set, it raise a :py:exc:`KeyError` rather than an :py:exc:`AttributeError`:
-
-    >>> print tmpl.x
-    Traceback (most recent call last):
-        ...
-    KeyError: 'x'
-
-    The formating specification is stored in the attribute, ``format_spec``:
-
-    >>> print tmpl.format_spec
-    {'param': True}
-
-    If you want to know what fields it has, just print it.
-
-    >>> print select_tmpl
-    SQLTemplate(('select', '<select>'), ('from', '<table>'), ('<join>',), ('where', '<where>'), ('group by', '<group_by>'), ('having', '<having>'), ('order by', '<order_by>'), ('limit', '<limit>'), ('offset', '<offset>'))
+    >>> print build_set('"a"=1, "b"=TRUE, "c"=\\'2013-04-16\\'')
+    "a"=1, "b"=TRUE, "c"='2013-04-16'
     '''
 
-    def __init__(self, *template_groups):
-        self.template_groups = template_groups
-        # TODO: I think it is a bad idea to specifiy the format spec in this way.
-        self.format_spec = {}
+    ps = _to_pairs(x)
 
-    def __setattr__(self, key, value):
-        if hasattr(self, 'format_spec'):
-            self.format_spec[key] = value
+    pieces = []
+    for k, v in ps:
+
+        # feature of autoparam
+        if isinstance(v, type) and v.__name__ == 'param':
+            v = param(k)
+
+        pieces.append('%s=%s' % (identifier(k), value(v)))
+
+    return concat_by_comma(pieces)
+
+@joiner
+def build_on(x):
+    '''It is a joiner function which builds the simple (the operator is always
+    =) on list of SQL from a `dict` or pairs.
+
+    >>> print build_on({'person.person_id': 'detail.person_id'})
+    "person"."person_id" = "detail"."person_id"
+
+    >>> print build_on((('person.person_id', 'detail.person_id'), ))
+    "person"."person_id" = "detail"."person_id"
+    '''
+
+    ps = _to_pairs(x)
+
+    pieces = []
+    for k, v in ps:
+        pieces.append('%s = %s' % (identifier(k), identifier(v)))
+
+    return concat_by_and(pieces)
+
+# NOTE: To keep simple, the below classes shouldn't rely on the above functions
+
+class Clause(object):
+    '''It represents a clause of SQL.
+
+    :param prefix: the lead word(s) of this clause
+    :type prefix: str
+
+    :param formatters: the qualifier or joiner functions
+    :type formatters: iterable
+
+    The :func:`qualifier` functions:
+
+    .. autosummary ::
+
+        value
+        identifier
+        paren
+
+    The :func:`joiner` functions:
+
+    .. autosummary ::
+        build_where
+        build_set
+        build_on
+        concat_by_comma
+        concat_by_and
+        concat_by_space
+        concat_by_or
+
+    Here is an example of using :class:`Clause`:
+
+    >>> values = Clause('values', (value, concat_by_comma, paren))
+
+    >>> print values.format(('a', 'b', 'c'))
+    VALUES ('a', 'b', 'c')
+
+    >>> print values.format((default, 'b', 'c'))
+    VALUES (DEFAULT, 'b', 'c')
+
+    >>> print values.format((raw('r'), 'b', 'c'))
+    VALUES (r, 'b', 'c')
+    '''
+
+    def __init__(self, prefix, formatters, hidden=False):
+        self.prefix = prefix.upper()
+        self.formatters = formatters
+        self.hidden = hidden
+
+    def format(self, x):
+        '''Apply `x` to this clause template.
+
+        :rtype: str
+        '''
+
+        for formatter in self.formatters:
+            x = formatter(x)
+
+        if self.hidden:
+            return '%s' % x
         else:
-            object.__setattr__(self, key, value)
-
-    def __getattr__(self, key):
-        return object.__getattribute__(self, 'format_spec')[key]
-
-    def format(self, **fields):
-        '''Use keyword-arguments to format this template.
-
-        :param fields: the fields you want to fill
-        :type fields: dict
-        '''
-        return self.format_from_dict(fields)
-
-    def format_from_dict(self, fields):
-        '''Use dict to format this template.
-
-        :param fields: the fields you want to fill
-        :type fields: dict
-        '''
-
-        sql_components = []
-
-        fields = fields.copy()
-
-        for template_group in self.template_groups:
-
-            # starts to render a template group
-            rendered_templates = []
-            for template in template_group:
-
-                # if it need to be substituted
-                if template.startswith('<'):
-
-                    field_name = template[1:-1]
-                    field_value = fields.get(field_name, Empty)
-                    rendered = None
-
-                    # handles the special cases
-                    # TODO: it could be abstracted as a parameter of initialization
-                    # TODO: preprocess the special cases and pack them into a Raw class
-                    if field_value is Empty:
-                        if field_name == 'select':
-                            rendered = '*'
-                    else:
-                        if field_name in ('where', 'having'):
-                            rendered = dumps(field_value, condition=True, **self.format_spec)
-                        elif field_name == 'join':
-                                rendered = dumps(field_value, sep=' ', **self.format_spec)
-                        elif field_name == 'on':
-                            rendered = dumps(field_value, sep=' AND ', **self.format_spec)
-                        elif field_name == 'using':
-                            if isinstance(field_value, basestring):
-                                field_value = (field_value, )
-                            rendered = dumps(field_value, parens=True, **self.format_spec)
-                        elif field_name == 'type':
-                                rendered = dumps(field_value).upper()
-                        elif field_name == 'set':
-                            rendered = dumps(field_value, set=True, **self.format_spec)
-                        elif field_name == 'columns':
-
-                            if isinstance(field_value, basestring):
-                                rendered = dumps((field_value, ), parens=True, **self.format_spec)
-                            elif hasattr(field_value, 'items'):
-                                fields['columns'], fields['values'] = zip(*field_value.items())
-                                rendered = dumps(fields['columns'], parens=True, **self.format_spec)
-                            elif not fields.get('values') and hasattr(field_value, '__iter__'):
-                                rendered = '%s VALUES %s' % (
-                                    dumps(field_value, parens=True, **self.format_spec),
-                                    dumps(field_value, val=True, param=True, **self.format_spec)
-                                )
-                            else:
-                                rendered = dumps(field_value, parens=True, **self.format_spec)
-
-                        elif field_name == 'values':
-
-                            if isinstance(field_value, basestring):
-                                rendered = dumps((field_value, ), parens=True, **self.format_spec)
-                            # iterable but not strings
-                            elif all(hasattr(i, '__iter__') and not isinstance(i, basestring) for i in field_value):
-                                rendered = dumps((dumps(i, val=True, **self.format_spec) for i in field_value))
-                            else:
-                                rendered = dumps(field_value, val=True, autoparams=fields.get('columns'), **self.format_spec)
-                        else:
-                            # normal case
-                            rendered = dumps(field_value, **self.format_spec)
-
-                    rendered_templates.append(rendered)
-                else:
-                    rendered_templates.append(template.upper())
-
-            # all of the templates in a group must be rendered
-            if all(rendered_templates):
-                sql_components.append(' '.join(rendered_templates))
-
-        return ' '.join(sql_components)
+            return '%s %s' % (self.prefix, x)
 
     def __repr__(self):
-        return '%s(%s)' % (
-            self.__class__.__name__,
-            ', '.join(repr(t) for t in self.template_groups)
-        )
+        return 'Clause(%s, %s)' % (self.prefix, self.formatters)
+
+class Statement(object):
+    '''It represents a statement of SQL.
+
+    :param clauses: the clauses which consist this statement
+    :type clauses: :class:`Clause`
+
+    Here is an example of using :class:`Statement`:
+
+    >>> insert_into = Clause('insert into', (identifier, ))
+    >>> columns     = Clause('columns'    , (identifier, concat_by_comma, paren), hidden=True)
+    >>> values      = Clause('values'     , (value, concat_by_comma, paren))
+
+    >>> insert_into_stat = Statement((insert_into, columns, values))
+
+    >>> print insert_into_stat.format({
+    ...     'insert into': 'person',
+    ...     'columns'    : ('person_id', 'name'),
+    ...     'values'     : ('daniel', 'Diane Leonard'),
+    ... })
+    INSERT INTO "person" ("person_id", "name") VALUES ('daniel', 'Diane Leonard')
+    '''
+
+    def __init__(self, clauses):
+        self.clauses = clauses
+
+    def format(self, clause_args):
+        '''Apply the `clause_args` to each clauses.
+
+        :param clause_args: the arguments for the clauses
+        :type clause_args: dict
+
+        :rtype: str
+        '''
+
+        pieces = []
+        for clause in self.clauses:
+            arg = clause_args.get(clause.prefix.lower())
+            # NOTE: for backward compatibility
+            #if arg is not None:
+            if arg:
+                pieces.append(clause.format(arg))
+        return ' '.join(pieces)
+
+    def __repr__(self):
+        return 'Statement(%s)' % self.clauses
 
 if __name__ == '__main__':
     import doctest

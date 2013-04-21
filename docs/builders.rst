@@ -3,16 +3,22 @@
 Building SQL Statements
 =======================
 
-The Insert, Select, Update and Delete --- :py:mod:`mosql.common`
-----------------------------------------------------------------
+The Common SQL Builders --- :py:mod:`mosql.common`
+--------------------------------------------------
 
-.. automodule:: mosql.common2
+.. automodule:: mosql.common
+    :members:
+
+The Moudle Deprecated --- :py:mod:`mosql.ext`
+`````````````````````````````````````````````
+
+.. automodule:: mosql.ext
     :members:
 
 The Basic Stringification --- :py:mod:`mosql.util`
 --------------------------------------------------
 
-.. automodule:: mosql.util2
+.. automodule:: mosql.util
     :members:
     :private-members:
 

@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It contains the builders of addational SQL statements.'''
+'''It contains the builders of addational SQL statements.
+
+.. deprecated:: 0.1.6
+    Use :mod:`mosql.common` instead. It will be removed after 0.2.
+'''
 
 __all__ = ['or_', 'join', 'join_tmpl', 'natural', 'left', 'right', 'inner', 'cross']
 

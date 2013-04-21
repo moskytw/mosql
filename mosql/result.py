@@ -15,7 +15,7 @@ except ImportError:
 
 from abc import ABCMeta
 
-from . import common2 as sql
+from . import common as sql
 
 class Row(MutableMapping):
     '''A row proxy for a :py:class:`Model`.
