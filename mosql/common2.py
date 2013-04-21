@@ -98,6 +98,11 @@ def select(table, where=None, select=raw('*'), **clauses_args):
     >>> print select('person', (('person_id', 'mosky'), ))
     SELECT * FROM "person" WHERE "person_id" = 'mosky'
 
+    It detects the dot in an identifier:
+
+    >>> print select('person', select=('person.person_id', 'person.name'))
+    SELECT "person"."person_id", "person"."name" FROM "person"
+
     Building prepare statement with :class:`mosql.util.param`:
 
     >>> print select('table', {'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
@@ -125,6 +130,11 @@ def select(table, where=None, select=raw('*'), **clauses_args):
 
     >>> print select('person', {'name like': 'Mosky%', 'age >': 20})
     SELECT * FROM "person" WHERE "age" > 20 AND "name" LIKE 'Mosky%'
+
+    >>> print select('person', {"person_id = '' OR true; --": 'mosky'})
+    Traceback (most recent call last):
+        ...
+    AssertionError: the operator is not allowed: "= '' OR TRUE; --"
 
     If you want to use the functions, wrap it with :class:`mosql.util.raw`:
 
