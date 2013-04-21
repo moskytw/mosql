@@ -15,7 +15,7 @@ except ImportError:
 
 from abc import ABCMeta
 
-from . import common as sql
+from . import common2 as sql
 
 class Row(MutableMapping):
     '''A row proxy for a :py:class:`Model`.
@@ -134,8 +134,7 @@ class ModelMeta(ABCMeta):
         Model.group_by_key_func = staticmethod(lambda row: tuple(row[i] for i in group_by_idxs))
 
         if Model.join_table_names:
-            import mosql.ext
-            Model.join_caluses = ''.join(map(mosql.ext.join, Model.join_table_names))
+            Model.join_caluses = ''.join(map(sql.join, Model.join_table_names))
         else:
             Model.join_caluses = ''
 
@@ -341,7 +340,7 @@ class Model(MutableMapping):
             kargs['select'] = cls.column_names
 
         if 'join' not in kargs:
-            kargs['join'] = cls.join_caluses
+            kargs['joins'] = cls.join_caluses
 
         return cls.group(cls.run(cls.select(*args, **kargs)))
 

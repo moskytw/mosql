@@ -578,7 +578,9 @@ class Statement(object):
         pieces = []
         for clause in self.clauses:
             arg = clause_args.get(clause.prefix.lower())
-            if arg is not None:
+            # NOTE: for backward compatibility
+            #if arg is not None:
+            if arg:
                 pieces.append(clause.format(arg))
         return ' '.join(pieces)
 
