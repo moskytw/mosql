@@ -86,7 +86,9 @@ def delimit_identifier(s):
     (double quote).
 
     .. note ::
-        It is disableable. Set it ``None`` to disable the feature of delimiting identifiers.
+        It is disableable. Set it ``None`` to disable the feature of delimiting
+        identifiers. But you have responsibility to ensure the secuirty if you
+        disable it.
     '''
     return '"%s"' % s
 
@@ -110,7 +112,11 @@ def escape_identifier(s):
 
 class raw(str):
     '''This is a subclass of built-in `str` type. The qualifier function do
-    noting when the input is an instance of this class'''
+    noting when the input is an instance of this class
+
+    .. warning ::
+        You have responsibility to ensure the security if you use this class.
+    '''
 
     def __repr__(self):
         return 'raw(%s)' % self
@@ -230,9 +236,6 @@ def identifier(s):
 
     >>> print identifier('table_name.column_name')
     "table_name"."column_name"
-
-    .. note ::
-        It is disableable. Set :attr:`detect_dot` it ``None`` to disable the feature of detecting dot.
     '''
 
     if delimit_identifier is None:
@@ -309,7 +312,9 @@ allowed_operators = set([
 An :exc:`OperatorError` is raised if an operator not allowed is found.
 
 .. note ::
-    It is disableable. Set it ``None`` to disable the feature of checking the operator.
+    It is disableable. Set it ``None`` to disable the feature of checking the
+    operator. But you have responsibility to ensure the secuirty if you disable
+    it.
 '''
 
 def _to_pairs(x):

@@ -55,7 +55,7 @@ def insert(table, pairs_or_columns=None, values=None, **clauses_args):
     >>> print insert('person', values=('mosky', 'Mosky Liu'))
     INSERT INTO "person" VALUES ('mosky', 'Mosky Liu')
 
-    The :func:`update` and :func:`delete` and it are also supported ``returning``.
+    The :func:`insert`, :func:`update` and :func:`delete` supports ``returning``.
 
     >>> print insert('person', {'person_id': 'mosky', 'name': 'Mosky Liu'}, returning=raw('*'))
     INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu') RETURNING *
@@ -142,6 +142,9 @@ def select(table, where=None, select=raw('*'), **clauses_args):
 
     >>> print select('person', select=raw('count(*)'), group_by=('age', ))
     SELECT count(*) FROM "person" GROUP BY "age"
+
+    .. warning ::
+        You have responsibility to ensure the security if you use :class:`mosql.util.raw`.
 
     .. seealso ::
         How it builds the where clause --- :func:`mosql.util.build_where`
