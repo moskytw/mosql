@@ -28,7 +28,7 @@ __all__ = [
     'escape', 'format_param', 'stringify_bool',
     'delimit_identifier', 'escape_identifier',
     'raw', 'param', 'default', '___',
-    'qualifier', 'value', 'identifier', 'paren',
+    'qualifier', 'value', 'identifier', 'detect_dot', 'paren',
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'allowed_operators',
@@ -210,6 +210,9 @@ def value(x):
     else:
         return _type_value_map.get(type(x), str)(x)
 
+detect_dot = True
+'''The feature of detecting dot is disableable. Set it ``False`` to disable.'''
+
 @qualifier
 def identifier(s):
     '''It is a qualifier function for identifiers.
@@ -220,12 +223,22 @@ def identifier(s):
     It returns the input with no changes if :func:`delimit_identifier` is
     ``None``.
 
-    >>> print identifier('param')
-    "param"
+    >>> print identifier('column_name')
+    "column_name"
+
+    By default, it detects the dot and splits them:
+
+    >>> print identifier('table_name.column_name')
+    "table_name"."column_name"
+
+    .. note ::
+        It is disableable. Set :attr:`detect_dot` it ``None`` to disable the feature of detecting dot.
     '''
 
     if delimit_identifier is None:
         return s
+    elif detect_dot and s.find('.') != -1:
+        return '.'.join(delimit_identifier(escape_identifier(i)) for i in s.split('.'))
     else:
         return delimit_identifier(escape_identifier(s))
 
@@ -583,6 +596,7 @@ if __name__ == '__main__':
 
     print select('person', {'person_id': 'mosky'})
     print select('person', {raw("function(x) ="): 'mosky'})
+    print select('person', select=('person.person_id', 'person.name'), limit=3, order_by='person_id')
 
     #print select('person', {"person_id = '' OR true; --": 'mosky'})
     # -> AssertionError: the operator is not allowed: "= '' OR TRUE; --"
