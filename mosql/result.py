@@ -241,7 +241,7 @@ class Model(MutableMapping):
     '''The columns which identify a row (usually, it is the primary key.)'''
 
     group_by = tuple()
-    '''The columns which group the rows into a model. By default, it takes the value of `identify_by`.'''
+    '''The columns which group the rows into a model. By default, it takes the value of `column_names`.'''
 
     order_by = tuple()
     '''The columns which order the rows.'''

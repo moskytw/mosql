@@ -15,14 +15,14 @@ The Module Deprecated --- :py:mod:`mosql.ext`
 .. automodule:: mosql.ext
     :members:
 
-The Basic Stringification --- :py:mod:`mosql.util`
+The Basic SQL Builders --- :py:mod:`mosql.util`
 --------------------------------------------------
 
 .. automodule:: mosql.util
     :members:
     :private-members:
 
-The Specific Utils for MySQL --- :py:mod:`mosql.mysql`
+The MySQL-specific Stuff --- :py:mod:`mosql.mysql`
 ------------------------------------------------------
 
 .. automodule:: mosql.mysql

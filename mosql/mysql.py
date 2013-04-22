@@ -9,7 +9,7 @@ Usage:
 
     import mosql.mysql
 
-It will replace the function in :mod:`mosql.util` with it.
+It will replace the functions in :mod:`mosql.util` with its functions.
 '''
 
 char_escape_map = {
@@ -61,11 +61,11 @@ def format_param(s=''):
     return '%s'
 
 def delimit_identifier(s):
-    '''Enclose the identifier, `s`, by ` (back-quote).'''
+    '''It encloses the identifier, `s`, by ` (back-quote).'''
     return '`%s`' % s
 
 def escape_identifier(s):
-    '''Escape the ` (back-quote) in the identifier, `s`.'''
+    '''It escapes the ` (back-quote) in the identifier, `s`.'''
     return s.replace('`', '``')
 
 import mosql.util
