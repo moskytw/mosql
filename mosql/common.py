@@ -195,7 +195,7 @@ set    = Clause('set'   , set_list)
 
 update_stat = Statement([update, set, where, returning])
 
-def update(table, where, set, **clauses_args):
+def update(table, where=None, set=None, **clauses_args):
     '''It generates the SQL statement, ``update ...`` .
 
     The following usages generate the same SQL statement.
@@ -222,7 +222,7 @@ delete = Clause('delete from', single_identifier)
 
 delete_stat = Statement([delete, where, returning])
 
-def delete(table, where, **clauses_args):
+def delete(table, where=None, **clauses_args):
     '''It generates the SQL statement, ``delete from ...`` .
 
     The following usages generate the same SQL statement.
