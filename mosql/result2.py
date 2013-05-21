@@ -42,34 +42,9 @@ class Model(object):
 
         return cur
 
-    @classmethod
-    def arrange_cursor(cls, cursor, arrange_by, **attrs):
-        return cls.arrange(get_column_names(cursor), cursor.fetchall(), arrange_by, **attrs)
-
-    @classmethod
-    def arrange(cls, column_names, rows, arrange_by, **attrs):
-
-        name_index_map = dict((name, i) for i, name  in enumerate(column_names))
-        key_indexes = tuple(name_index_map[name] for name in arrange_by)
-        key_func = lambda row: tuple(row[i] for i in key_indexes)
-
-        for _, rows in groupby(rows, key_func):
-            model = Model(**attrs)
-            model.load_rows(column_names, list(rows))
-            yield model
-
-    @classmethod
-    def from_cursor(cls, cursor, **attrs):
-        model = Model(**attrs)
-        model.load_cursor(cursor)
-        return model
-
     def __init__(self, **attrs):
         for k, v in attrs.items():
             setattr(self, k, v)
-
-    def load_cursor(self, cursor):
-        self.load_rows(get_column_names(cursor), cursor.fetchall())
 
     def load_rows(self, column_names, rows):
 
@@ -78,6 +53,37 @@ class Model(object):
         self.columns = dict((name, [
             row[i] for row in rows
         ]) for i, name in enumerate(self.column_names))
+
+    @classmethod
+    def from_rows(self, column_names, rows, **attrs):
+        m = cls(attrs)
+        m.load_rows(column_names, rows)
+        return m
+
+    def load_cursor(self, cursor):
+        self.load_rows(get_column_names(cursor), cursor.fetchall())
+
+    @classmethod
+    def from_cursor(cls, cursor, **attrs):
+        m = cls(**attrs)
+        m.load_cursor(cursor)
+        return m
+
+    @classmethod
+    def arrange_rows(cls, column_names, rows, arrange_by, **attrs):
+
+        name_index_map = dict((name, i) for i, name  in enumerate(column_names))
+        key_indexes = tuple(name_index_map[name] for name in arrange_by)
+        key_func = lambda row: tuple(row[i] for i in key_indexes)
+
+        for _, rows in groupby(rows, key_func):
+            m = cls(**attrs)
+            m.load_rows(column_names, list(rows))
+            yield m
+
+    @classmethod
+    def arrange_cursor(cls, cursor, arrange_by, **attrs):
+        return cls.arrange_rows(get_column_names(cursor), cursor.fetchall(), arrange_by, **attrs)
 
     def column(self, column_name):
         return self.columns[column_name]
