@@ -14,11 +14,11 @@ class Model(object):
 
     @classmethod
     def getconn(cls):
-        raise NotImplementedError()
+        raise NotImplementedError('This method should return a connection.')
 
     @classmethod
     def putconn(cls, conn):
-        raise NotImplementedError()
+        raise NotImplementedError('This method should accept a connection.')
 
     def perform(self, sql_or_sqls):
 
