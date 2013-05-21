@@ -54,22 +54,30 @@ class Model(object):
         key_func = lambda row: tuple(row[i] for i in key_indexes)
 
         for _, rows in groupby(rows, key_func):
-            yield cls(column_names, list(rows), **kargs)
+            model = Model(**kargs)
+            model.load_rows(column_names, list(rows))
+            yield model
 
     @classmethod
     def from_cursor(cls, cursor, **kargs):
-        return cls(get_column_names(cursor), cursor.fetchall(), **kargs)
+        model = Model(**kargs)
+        model.load_cursor(cursor)
+        return model
 
-    def __init__(self, column_names, rows, **kargs):
+    def __init__(self, **attrs):
+        for k, v in attrs.items():
+            setattr(self, k, v)
+
+    def load_cursor(self, cur):
+        self.load_rows(get_column_names(cur), cur.fetchall())
+
+    def load_rows(self, column_names, rows):
 
         self.column_names = column_names
 
         self.columns = dict((name, [
             row[i] for row in rows
         ]) for i, name in enumerate(self.column_names))
-
-        for k, v in kargs.items():
-            setattr(self, k, v)
 
     def column(self, column_name):
         return self.columns[column_name]
