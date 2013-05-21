@@ -20,7 +20,7 @@ class Model(object):
     def putconn(cls, conn):
         raise NotImplementedError()
 
-    def execute(self, sql_or_sqls):
+    def do(self, sql_or_sqls):
 
         conn = self.getconn()
         cur = conn.cursor()
@@ -138,5 +138,5 @@ if __name__ == '__main__':
 
     m.getconn = lambda: psycopg2.connect(database='mosky')
     m.putconn = lambda conn: None
-    for row in m.execute('select * from person'):
+    for row in m.do('select * from person'):
         print row
