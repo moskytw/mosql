@@ -43,24 +43,24 @@ class Model(object):
         return cur
 
     @classmethod
-    def arrange_cursor(cls, cursor, arrange_by, **kargs):
-        return cls.arrange(get_column_names(cursor), cursor.fetchall(), arrange_by, **kargs)
+    def arrange_cursor(cls, cursor, arrange_by, **attrs):
+        return cls.arrange(get_column_names(cursor), cursor.fetchall(), arrange_by, **attrs)
 
     @classmethod
-    def arrange(cls, column_names, rows, arrange_by, **kargs):
+    def arrange(cls, column_names, rows, arrange_by, **attrs):
 
         name_index_map = dict((name, i) for i, name  in enumerate(column_names))
         key_indexes = tuple(name_index_map[name] for name in arrange_by)
         key_func = lambda row: tuple(row[i] for i in key_indexes)
 
         for _, rows in groupby(rows, key_func):
-            model = Model(**kargs)
+            model = Model(**attrs)
             model.load_rows(column_names, list(rows))
             yield model
 
     @classmethod
-    def from_cursor(cls, cursor, **kargs):
-        model = Model(**kargs)
+    def from_cursor(cls, cursor, **attrs):
+        model = Model(**attrs)
         model.load_cursor(cursor)
         return model
 
@@ -68,8 +68,8 @@ class Model(object):
         for k, v in attrs.items():
             setattr(self, k, v)
 
-    def load_cursor(self, cur):
-        self.load_rows(get_column_names(cur), cur.fetchall())
+    def load_cursor(self, cursor):
+        self.load_rows(get_column_names(cursor), cursor.fetchall())
 
     def load_rows(self, column_names, rows):
 
