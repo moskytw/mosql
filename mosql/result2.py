@@ -12,6 +12,8 @@ class Model(object):
 
     squashed = set()
 
+    # --- methods which handle connection ---
+
     @classmethod
     def getconn(cls):
         raise NotImplementedError('This method should return a connection.')
@@ -41,6 +43,8 @@ class Model(object):
         self.putconn(conn)
 
         return cur
+
+    # --- methods which load data into a model or models ---
 
     def __init__(self, **attrs):
         for k, v in attrs.items():
@@ -84,6 +88,8 @@ class Model(object):
     @classmethod
     def arrange_cursor(cls, cursor, arrange_by, **attrs):
         return cls.arrange_rows(get_column_names(cursor), cursor.fetchall(), arrange_by, **attrs)
+
+    # --- methods which help you access model ---
 
     def column(self, column_name):
         return self.columns[column_name]
