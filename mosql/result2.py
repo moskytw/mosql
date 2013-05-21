@@ -13,6 +13,36 @@ class Model(object):
     squashed = set()
 
     @classmethod
+    def getconn(cls):
+        raise NotImplementedError()
+
+    @classmethod
+    def putconn(cls, conn):
+        raise NotImplementedError()
+
+    def execute(self, sql_or_sqls):
+
+        conn = self.getconn()
+        cur = conn.cursor()
+
+        if isinstance(sql_or_sqls, basestring):
+            sqls = [sql_or_sqls]
+        else:
+            sqls = sql_or_sqls
+
+        try:
+            cur.execute('; '.join(sqls))
+        except:
+            conn.rollback()
+            raise
+        else:
+            conn.commit()
+
+        self.putconn(conn)
+
+        return cur
+
+    @classmethod
     def arrange_cursor(cls, cursor, arrange_by, **kargs):
         return cls.arrange(get_column_names(cursor), cursor.fetchall(), arrange_by, **kargs)
 
@@ -105,3 +135,8 @@ if __name__ == '__main__':
 
     cursor.close()
     conn.close()
+
+    m.getconn = lambda: psycopg2.connect(database='mosky')
+    m.putconn = lambda conn: None
+    for row in m.execute('select * from person'):
+        print row
