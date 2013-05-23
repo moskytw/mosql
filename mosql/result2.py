@@ -101,7 +101,7 @@ class Model(Mapping):
     clauses = {}
 
     @classmethod
-    def load(cls, *args, **kargs):
+    def select(cls, *args, **kargs):
         mixed_kargs = cls.clauses.copy()
         mixed_kargs.update(kargs)
         return cls.load_cur(cls.perform(build.select(*args, **mixed_kargs)))
@@ -111,6 +111,24 @@ class Model(Mapping):
         mixed_kargs = cls.clauses.copy()
         mixed_kargs.update(kargs)
         return cls.arrange_cur(cls.perform(build.select(*args, **mixed_kargs)))
+
+    @classmethod
+    def insert(cls, *args, **kargs):
+        mixed_kargs = cls.clauses.copy()
+        mixed_kargs.update(kargs)
+        return cls.load_cur(cls.perform(build.insert(*args, **mixed_kargs)))
+
+    @classmethod
+    def update(cls, *args, **kargs):
+        mixed_kargs = cls.clauses.copy()
+        mixed_kargs.update(kargs)
+        return cls.load_cur(cls.perform(build.update(*args, **mixed_kargs)))
+
+    @classmethod
+    def delete(cls, *args, **kargs):
+        mixed_kargs = cls.clauses.copy()
+        mixed_kargs.update(kargs)
+        return cls.load_cur(cls.perform(build.delete(*args, **mixed_kargs)))
 
     # --- read this model ---
 
