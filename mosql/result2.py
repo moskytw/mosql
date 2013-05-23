@@ -40,9 +40,10 @@ class Model(Mapping):
             sqls = sql_or_sqls
 
         if cls.dump_sql:
+            print '--- SQL DUMP ---'
             for sql in sqls:
                 print sql
-            print
+            print '--- END ---'
 
         try:
             cur.execute('; '.join(sqls))
