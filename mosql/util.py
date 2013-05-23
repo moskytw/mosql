@@ -123,7 +123,7 @@ class raw(str):
     '''
 
     def __repr__(self):
-        return 'raw(%s)' % self
+        return 'raw(%r)' % str(self)
 
 default = raw('DEFAULT')
 
