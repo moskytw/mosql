@@ -23,6 +23,8 @@ if __name__ == '__main__':
     from pprint import pprint
 
     d = next(Detail.arrange(where={'person_id': 'mosky'}))
+    Detail.dump_sql = True
+    Detail.dry_run = True
 
     print '# original'
     pprint(dict(d))
