@@ -197,20 +197,38 @@ class Model(Mapping):
 
         sqls = []
 
-        updates = []
+        for i, (cond, val) in enumerate(self.changes):
 
-        for cond, val in self.changes:
             if cond is None:
                 sqls.append(build.insert(pairs_or_columns=val, **self.clauses))
             elif val is None:
                 sqls.append(build.delete(where=cond, **self.clauses))
             else:
-                updates.append((hash_dict(cond), cond, val))
 
-        for _, grouped_updates in groupby(updates, lambda x: x[0]):
-            merged_val = {}
-            for cond_hash, cond, val in grouped_updates:
-                merged_val.update(val)
-            sqls.append(build.update(where=cond, set=merged_val, **self.clauses))
+                # find other update changes which cond is target_cond
+                target_cond = cond
+                cond_hash = hash_dict(target_cond)
+
+                merged_val = val.copy()
+                merged_idxs = []
+
+                for j in range(i+1, len(self.changes)):
+
+                    cond, val = self.changes[j]
+
+                    # skip not update changes
+                    if cond is None or val is None:
+                        continue
+
+                    if hash_dict(cond) == cond_hash:
+                        merged_val.update(val)
+                        merged_idxs.append(j)
+
+                for j in reversed(merged_idxs):
+                    self.changes.pop(j)
+
+                sqls.append(build.update(where=target_cond, set=merged_val, **self.clauses))
+
+        self.changes = []
 
         return self.perform(sqls)
