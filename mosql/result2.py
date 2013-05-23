@@ -181,11 +181,16 @@ class Model(Mapping):
         for col_name in self.col_names:
             self.cols[col_name].pop(row_idx)
 
-    def assume(self, row_map):
+    def append(self, row_map):
 
         row_map = row_map.copy()
 
-        for col_name in row_map:
+        if not self.col_names:
+            col_names = row_map.keys()
+        else:
+            col_names = self.col_names
+
+        for col_name in col_names:
 
             if col_name in row_map:
                 val = row_map[col_name]
@@ -196,10 +201,7 @@ class Model(Mapping):
 
             self.cols[col_name] = val
 
-        return row_map
-
-    def append(self, row_map):
-        self.changes.append((None, self.assume(row_map)))
+        self.changes.append((None, row_map))
 
     def save(self):
 
