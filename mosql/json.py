@@ -6,7 +6,7 @@
 It is compatible with :py:mod:`mosql.result` and built-in `datetime`.
 
 .. versionadded :: 0.2
-    It also supports new model.
+    It supports the new :mod:`mosql.result`.
 
 .. versionadded :: 0.1.1
 '''
