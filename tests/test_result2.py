@@ -32,6 +32,7 @@ if __name__ == '__main__':
 
     print '# setitem'
     d['val', 0] = 'modified@email.com'
+    d['detail_id', 0] = 123
     pprint(dict(d))
     print
 
