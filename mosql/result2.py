@@ -37,8 +37,9 @@ class Model(Mapping):
             sqls = sql_or_sqls
 
         if cls.dump_sql:
-            from pprint import pprint
-            pprint(sqls)
+            for sql in sqls:
+                print sql
+            print
 
         try:
             cur.execute('; '.join(sqls))
