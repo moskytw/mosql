@@ -39,9 +39,6 @@ class Model(Mapping):
         else:
             sqls = sql_or_sqls
 
-        if not sqls:
-            return
-
         if cls.dump_sql:
             print '--- SQL DUMP ---'
             for sql in sqls:
@@ -206,6 +203,9 @@ class Model(Mapping):
     def save(self):
 
         sqls = []
+
+        if not self.changes:
+            return
 
         for i, (cond, val) in enumerate(self.changes):
 
