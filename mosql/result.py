@@ -1,563 +1,39 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__all__ = ['Model', 'ModelMeta', 'Column', 'Row', 'Pool', 'Change']
+from itertools import groupby
+from collections import Mapping
+from pprint import pformat
 
-'''It aims to help you to handle the result set.'''
+from . import build
+from . import util
 
-from itertools import izip, groupby, repeat
-from collections import MutableSequence, MutableMapping
+def get_col_names(cur):
+    return [row_desc[0] for row_desc in cur.description]
 
-try:
-    from collections import OrderedDict
-except ImportError:
-    OrderedDict = dict
+def hash_dict(d):
+    return hash(frozenset(d.items()))
 
-from abc import ABCMeta
+class Model(Mapping):
 
-from . import common as sql
+    # --- connection-related ---
 
-class Row(MutableMapping):
-    '''A row proxy for a :py:class:`Model`.
+    @classmethod
+    def getconn(cls):
+        raise NotImplementedError('This method should return a connection.')
 
-    It implements :py:class:`MutableMapping`, but the setting item is the only mutable operation that is accepted.
-
-    :param model: the model behind this proxy.
-    :type model: :py:class:`Model`
-    :param row_idx: the index of fixed row.
-    :type row_idx: str
-    '''
-
-    def __init__(self, model, row_idx):
-        self.model = model
-        self.row_idx = row_idx
-
-    def __len__(self):
-        return len(self.model.column_names)
-
-    def __iter__(self):
-        for col_name in self.model.column_names:
-            yield col_name
-
-    def __getitem__(self, col_name):
-        return self.model.__getelem__(self.row_idx, col_name)
-
-    def __setitem__(self, col_name, val):
-        self.model.__setelem__(self.row_idx, col_name, val)
-
-    def __delitem__(self, col_name):
-        raise TypeError('this operation is not supported')
-
-    def __repr__(self):
-        return repr(dict(self))
-
-class Column(MutableSequence):
-    '''A column proxy for a :py:class:`Model`.
-
-    It implements :py:class:`MutableSequence`, but the setting item is the only mutable operation that is accepted.
-
-    :param model: the model behind this proxy.
-    :type model: :py:class:`Model`
-    :param col_name: the name of fixed column.
-    :type col_name: str
-    '''
-
-    def __init__(self, model, col_name):
-        self.model = model
-        self.col_name = col_name
-
-    def __len__(self):
-        return self.model.row_len
-
-    def __iter__(self):
-        for i in xrange(self.model.row_len):
-            yield self[i]
-
-    def __getitem__(self, row_idx):
-        return self.model.__getelem__(row_idx, self.col_name)
-
-    def __setitem__(self, row_idx, val):
-        self.model.__setelem__(row_idx, self.col_name, val)
-
-    def __delitem__(self, col_name):
-        raise TypeError('this operation is not supported')
-
-    def insert(self, col_name):
-        raise TypeError('this operation is not supported')
-
-    def __repr__(self):
-        return repr(list(self))
-
-class Change(object):
-    '''It records a single change on a row.
-
-    :param row_identity_column_names: the column names which can identify a row.
-    :type row_identity_column_names: tuple
-    :param row_identity_values: the values which can identify a row.
-    :type row_identity_values: tuple
-    :param row: the changed row.
-    :type row: dict
-    '''
-
-    def __init__(self, row_identity_column_names, row_identity_values, row):
-        self.row_identity_column_names = row_identity_column_names
-        self.row_identity_values = row_identity_values
-        self.row = row
-
-    def get_condition(self):
-        '''It returns the condition in a dict, or None if it has not condition.
-
-        :rtype: dict or None
-        '''
-
-        if self.row_identity_column_names is None or self.row_identity_values is None:
-            return None
-        else:
-            return dict(izip(self.row_identity_column_names, self.row_identity_values))
-
-class ModelMeta(ABCMeta):
-    '''It will pre-process the class attributes of :py:class:`Model`.'''
-
-    def __new__(meta, name, bases, attrs):
-
-        Model = super(ModelMeta, meta).__new__(meta, name, bases, attrs)
-
-        if not Model.identify_by:
-            Model.identify_by = Model.column_names
-
-        if not Model.group_by:
-            Model.group_by = Model.column_names
-
-        Model.column_offsets_map = dict((k, i) for i, k in enumerate(Model.column_names))
-
-        group_by_idxs = tuple(Model.column_offsets_map[col_name] for col_name in Model.group_by)
-        Model.group_by_key_func = staticmethod(lambda row: tuple(row[i] for i in group_by_idxs))
-
-        if Model.join_table_names:
-            Model.join_caluses = ''.join(map(sql.join, Model.join_table_names))
-        else:
-            Model.join_caluses = ''
-
-        for col_name in Model.column_names:
-            if not hasattr(Model, col_name):
-                setattr(Model, col_name,
-                    # it is a colsure
-                    (lambda x:
-                        property(
-                            lambda self: self.__getitem__(x),
-                            lambda self, v: self.__setitem__(x, v),
-                            lambda self: self.__delitem__(x)
-                        )
-                    )(col_name)
-                )
-
-        return Model
-
-class Pool(object):
-    '''An abstract class describes a protocol of connections pool used in :py:class:`Model`.
-
-    .. note::
-        If you are using `Psycopg <http://initd.org/psycopg/>`_, you can use its `Connections Pool <http://initd.org/psycopg/docs/pool.html>`_ directly.
-    '''
-
-    def getconn(self):
-        '''Get a connection.
-
-        :rtype: the `connection` which is defined in `Python DB API 2.0 : Connection Objects <http://www.python.org/dev/peps/pep-0249/#connection-objects>`_.
-        '''
-        pass
-
-    def putconn(self, conn):
-        '''Put a connection back.'''
-        pass
-
-Unknown = type('Unknown', (object, ), {
-    '__nonzero__': lambda self: False,
-    '__repr__'   : lambda self: 'Unknown',
-})()
-'''It represents a value decided by database.'''
-
-class Model(MutableMapping):
-    '''This class, which is the core of this module, provides a friendly interface to access result set and apply the changes to database.
-
-    :param result_set: a result set, usually is a grouped result set.
-    :type result_set: a cursor or tuples in a list
-
-    If you don't know how to setup a model, here is a tutorial of how to use Model -- :ref:`tutorial-of-model`.
-
-    The following methods help you to retrieve the model(s):
-
-    .. autosummary ::
-
-        Model.find
-        Model.seek
-
-    If you want to modify something, here are the methods you are looking for:
-
-    .. autosummary ::
-
-        Model.new
-        Model.assume
-        append
-        pop
-        clear
-
-    It implements :py:class:`MutableMapping`, so just treat it as *dict*. But the `__delitem__` and `update` may not work as you think, because it is a result set from database. Try to use the above methods instead.
-
-    .. versionadded :: 0.1.1
-        It also supports to modify value with the attributes (ex. ``user.emails[0]`` is equal to ``user['emails'][0]``).
-
-    I think you will want to save the changes:
-
-    .. autosummary ::
-
-        save
-
-    It is also possible to customize the SQL statements by the following methods:
-
-    .. autosummary ::
-        insert
-        select
-        update
-        delete
-
-    .. versionadded :: 0.1.1
-
-    '''
-
-    __metaclass__ = ModelMeta
-
-    pool = Pool()
-    '''The connections pool described in :py:class:`Pool`.'''
-
-    table_name = ''
-    '''The name of main table.'''
-
-    column_names = tuple()
-    '''The name of columns.'''
-    # TODO: auto find the column_names from a cursor
-
-    identify_by = tuple()
-    '''The columns which identify a row (usually, it is the primary key.)'''
-
-    group_by = tuple()
-    '''The columns which group the rows into a model. By default, it takes the value of `column_names`.'''
-
-    order_by = tuple()
-    '''The columns which order the rows.'''
-
-    join_table_names = tuple()
-    '''The tables you want to do the natural joins.'''
-    # TODO: make user can write data via model which has join other tables
-    # TODO: use another class, ex. Table, to describe the information of table
-
-    dry_run = False
-    '''It prevents the changes from being written into database.'''
+    @classmethod
+    def putconn(cls, conn):
+        raise NotImplementedError('This method should accept a connection.')
 
     dump_sql = False
-    '''Show the SQL it executed to stdout.'''
+    dry_run = False
 
     @classmethod
-    def customize(cls, **class_attrs):
-        '''It returns a subclass of Model which is customized by the attributes you provided.
+    def perform(cls, sql_or_sqls):
 
-        :param class_attrs: the customized attributes.
-        :type class_attrs: dict
-        :rtype: a subclass of Model
-
-        .. versionadded :: 0.1.1
-        '''
-        return type('%s_%s' % (cls.__name__, class_attrs.get('table_name', 'anonymous')), (cls, ), class_attrs)
-
-    @classmethod
-    def insert(cls, *args, **kargs):
-        '''It is used to generate an `insert` statement.
-
-        By default, it passes the arguments to :py:func:`mosql.common.insert`
-        with an additional argument `table_name` as the first positional argument.
-
-        .. versionadded :: 0.1.1'''
-        return sql.insert(cls.table_name, *args, **kargs)
-
-    @classmethod
-    def select(cls, *args, **kargs):
-        '''It is used to generate a `select` statement.
-
-        By default, it passes the arguments to :py:func:`mosql.common.select`
-        with an additional argument `table_name` as the first positional argument.
-
-        .. versionadded :: 0.1.1'''
-        return sql.select(cls.table_name, *args, **kargs)
-
-    @classmethod
-    def update(cls, *args, **kargs):
-        '''It is used to generate an `update` statement.
-
-        By default, it passes the arguments to :py:func:`mosql.common.update`
-        with an additional argument `table_name` as the first positional argument.
-
-        .. versionadded :: 0.1.1'''
-        return sql.update(cls.table_name, *args, **kargs)
-
-    @classmethod
-    def delete(cls, *args, **kargs):
-        '''It is used to generate a `delete` statement.
-
-        By default, it passes the arguments to :py:func:`mosql.common.delete`
-        with an additional argument `table_name` as the first positional argument.
-
-        .. versionadded :: 0.1.1'''
-        return sql.delete(cls.table_name, *args, **kargs)
-
-    @classmethod
-    def group(cls, result_set):
-        '''It groups the existent result set by :py:attr:`Model.group_by`.
-
-        :param result_set: ungrouped result set.
-        :type result_set: a cursor or tuples in a list
-        :rtype: a generator of :py:class:`Model`
-        '''
-
-        for _, grouped_result_set in groupby(result_set, cls.group_by_key_func):
-            yield cls(grouped_result_set)
-
-    @classmethod
-    def seek(cls, *args, **kargs):
-        '''It is a shortcut for doing a query with the SQL generated by :py:meth:`Model.select`, and it will group the result set.
-
-        The all of the arguments will be passed to :py:meth:`Model.select`.
-
-        :rtype: a generator of :py:class:`Model`
-
-        .. versionchanged :: 0.1.2
-            It respects the arguments from users.
-        '''
-
-        if 'order_by' not in kargs:
-            kargs['order_by'] = cls.order_by
-
-        if 'select' not in kargs:
-            kargs['select'] = cls.column_names
-
-        if 'join' not in kargs:
-            kargs['joins'] = cls.join_caluses
-
-        return cls.group(cls.run(cls.select(*args, **kargs)))
-
-    @classmethod
-    def find(cls, **where):
-        '''It finds the rows matched `where` condition in the database.
-
-        :param where: the condition of a SQL select.
-        :type where: dict
-
-        :rtype: :py:class:`Model` or Models
-
-        It return a model if you gave all of the :py:attr:`Model.group_by` columns, and there is only one model after grouping.
-
-        .. seealso ::
-            How is a dict rendered to the SQL --- :py:func:`mosql.common.select`.
-
-        .. versionchanged :: 0.1.2
-            Let :py:meth:`Model.seek` decide the ``order_by``.
-        '''
-
-        models = list(cls.seek(where=where))
-        if len(models) == 1 and all(col_name in where for col_name in cls.group_by):
-            return models[0]
-        else:
-            return models
-
-    @classmethod
-    def assume(cls, **model_dict):
-        '''If you have known some value of a model, use it to make it be a model without doing a SQL select.
-
-        :param model_dict: the part or full model.
-        :type model_dict: dict
-        :rtype: :py:class:`Model`
-        '''
-
-        cols = []
-        for col_name in cls.column_names:
-
-            x = model_dict.get(col_name, Unknown)
-
-            if col_name in cls.group_by:
-                cols.append(repeat(x))
-            elif x is Unknown:
-                cols.append(repeat(Unknown))
-            else:
-                cols.append(x)
-
-        if all(isinstance(x, repeat) for x in cols):
-            cols = [[next(x)] for x in cols]
-
-        return cls(izip(*cols))
-
-    @classmethod
-    def new(cls, **model_dict):
-        '''It works like :py:meth:`Model.assume`, but it treats the rows as new. You can use :py:meth:`Model.save` to save them.
-
-        :param model_dict: the part or full model.
-        :type model_dict: dict
-        :rtype: :py:class:`Model`
-        '''
-
-        model = cls.assume(**model_dict)
-
-        for row in model.rows():
-            model.changes[len(model.changes)] = Change(None, None, dict((k, v) for k, v in row.items() if v is not Unknown))
-
-        return model
-
-    def __init__(self, result_set):
-
-        self.row_len = 0
-        self.elems = []
-        for result in result_set:
-            self.elems.extend(result)
-            self.row_len += 1
-
-        self.proxies = {}
-        self.changes = OrderedDict()
-
-        self.grouped_row = {}
-        self.grouped_row = dict((col_name, self[col_name][0]) for col_name in self.group_by)
-
-    def __len__(self):
-        return len(self.column_names)
-
-    def __iter__(self):
-        for col_name in self.column_names:
-            yield col_name
-
-    def __getitem__(self, x):
-
-        if x in self.grouped_row:
-            return self.grouped_row[x]
-
-        if isinstance(x, int) and x < 0:
-            x += self.row_len
-
-        if x in self.proxies:
-            return self.proxies[x]
-
-        if isinstance(x, str):
-            Proxy = Column
-        else:
-            Proxy = Row
-
-        self.proxies[x] = proxy = Proxy(self, x)
-        return proxy
-
-    def __setitem__(self, grouped_col_name, val):
-
-        row_identity_values = tuple(self.grouped_row[col_name] for col_name in self.group_by)
-        if row_identity_values in self.changes:
-            self.changes[row_identity_values].row[grouped_col_name] = val
-        else:
-            self.changes[row_identity_values] = Change(self.group_by, row_identity_values, {grouped_col_name: val})
-
-        self.grouped_row[grouped_col_name] = val
-
-    def __getelem__(self, row_idx, col_name):
-        return self.elems[row_idx*len(self.column_names)+self.column_offsets_map[col_name]]
-
-    def get_row_identity_values(self, row_idx):
-        row_identity_values = tuple(self[row_idx][col_name] for col_name in self.identify_by)
-        if any(val is Unknown for val in row_identity_values):
-            raise ValueError("this row can't be identified; it has unknown value")
-        return row_identity_values
-
-    def __setelem__(self, row_idx, col_name, val):
-
-        row_identity_values = self.get_row_identity_values(row_idx)
-        if row_identity_values in self.changes:
-            self.changes[row_identity_values].row[col_name] = val
-        else:
-            self.changes[row_identity_values] = Change(self.identify_by, row_identity_values, {col_name: val})
-
-        self.elems[row_idx*len(self.column_names)+self.column_offsets_map[col_name]] = val
-
-    def __delitem__(self, col_name):
-        raise TypeError('this operation is not supported')
-
-    def append(self, **row):
-        '''It adds a row into model.
-
-        :param row: the row you want to add.
-        :type row: dict
-        '''
-
-        for col_name in self.group_by:
-            if col_name not in row:
-                row[col_name] = self.grouped_row[col_name]
-
-        self.changes[len(self.changes)] = Change(None, None, row)
-
-        for col_name in self.column_names:
-            self.elems.append(row.get(col_name, Unknown))
-        self.row_len += 1
-
-    def pop(self, row_idx=-1):
-        '''It removes a row from this model.
-
-        :rtype: list
-        '''
-
-        row_identity_values = self.get_row_identity_values(row_idx)
-        self.changes[row_identity_values] = Change(self.identify_by, row_identity_values, None)
-
-        self.row_len -= 1
-        col_len = len(self.column_names)
-        start = row_idx * col_len
-
-        row = self.elems[start:start+col_len]
-        del self.elems[start:start+col_len]
-
-        return row
-
-    def clear(self):
-        '''It removes all of the row in this model.'''
-
-        for i in xrange(self.row_len):
-            self.pop()
-
-    def rows(self):
-        '''It returns a iterable which traverses all of the rows.
-
-        :rtype: a generator of :py:class:`Row`
-        '''
-
-        for i in xrange(self.row_len):
-            yield self[i]
-
-    def save(self):
-        '''It saves the changes which cached in model.
-
-        :rtype: cursor
-        '''
-
-        sqls = []
-        for change in self.changes.values():
-            cond = change.get_condition()
-            if cond is None:
-                sqls.append(self.insert(change.row))
-            elif change.row is None:
-                sqls.append(self.delete(cond))
-            else:
-                sqls.append(self.update(cond, change.row))
-        self.changes.clear()
-        return self.run(sqls)
-
-    @classmethod
-    def run(cls, sql_or_sqls):
-        '''It runs a SQL or SQLs with the :py:attr:`Model.pool` you specified.
-
-        :param sql_or_sqls: a string SQL or iterable SQLs.
-        :type sql_or_sqls: str or list
-
-        :rtype: cursor'''
+        conn = cls.getconn()
+        cur = conn.cursor()
 
         if isinstance(sql_or_sqls, basestring):
             sqls = [sql_or_sqls]
@@ -565,27 +41,255 @@ class Model(MutableMapping):
             sqls = sql_or_sqls
 
         if cls.dump_sql:
-            from pprint import pprint
-            pprint(sqls)
+            print '--- SQL DUMP ---'
+            for sql in sqls:
+                print sql
+            print '--- END ---'
 
-        conn = cls.pool.getconn()
-        cur = conn.cursor()
-
-        if not cls.dry_run:
-            try:
-                cur.execute('; '.join(sqls))
-            except:
+        try:
+            cur.execute('; '.join(sqls))
+        except:
+            conn.rollback()
+            raise
+        else:
+            if cls.dry_run:
                 conn.rollback()
-                raise
             else:
                 conn.commit()
 
-        cls.pool.putconn(conn)
+        cls.putconn(conn)
 
         return cur
 
-    def __repr__(self):
-        return repr(dict(self))
+    # --- translate result set to a model or models ---
 
-if __name__ == '__main__':
-    pass
+    col_names = tuple()
+
+    @classmethod
+    def load_rows(cls, col_names, rows):
+
+        m = cls()
+        m.col_names = col_names
+
+        m.cols = dict((name, [
+            row[i] for row in rows
+        ]) for i, name in enumerate(m.col_names))
+
+        return m
+
+    @classmethod
+    def load_cur(cls, cur):
+        if cur.description is None:
+            return None
+        else:
+            return cls.load_rows(get_col_names(cur), cur.fetchall())
+
+    arrange_by = tuple()
+
+    @classmethod
+    def arrange_rows(cls, col_names, rows):
+
+        name_index_map = dict((name, i) for i, name  in enumerate(col_names))
+        key_indexes = tuple(name_index_map[name] for name in cls.arrange_by)
+        key_func = lambda row: tuple(row[i] for i in key_indexes)
+
+        for _, rows in groupby(rows, key_func):
+            yield cls.load_rows(col_names, list(rows))
+
+    @classmethod
+    def arrange_cur(cls, cur):
+        return cls.arrange_rows(get_col_names(cur), cur.fetchall())
+
+    # --- shortcuts of Python data structure -> SQL -> result set -> model ---
+
+    clauses = {}
+
+    @classmethod
+    def select(cls, *args, **kargs):
+        mixed_kargs = cls.clauses.copy()
+        mixed_kargs.update(kargs)
+        return cls.load_cur(cls.perform(build.select(*args, **mixed_kargs)))
+
+    @classmethod
+    def arrange(cls, *args, **kargs):
+        mixed_kargs = cls.clauses.copy()
+        mixed_kargs.update(kargs)
+        return cls.arrange_cur(cls.perform(build.select(*args, **mixed_kargs)))
+
+    @classmethod
+    def insert(cls, *args, **kargs):
+        mixed_kargs = cls.clauses.copy()
+        mixed_kargs.update(kargs)
+        return cls.load_cur(cls.perform(build.insert(*args, **mixed_kargs)))
+
+    @classmethod
+    def update(cls, *args, **kargs):
+        mixed_kargs = cls.clauses.copy()
+        mixed_kargs.update(kargs)
+        return cls.load_cur(cls.perform(build.update(*args, **mixed_kargs)))
+
+    @classmethod
+    def delete(cls, *args, **kargs):
+        mixed_kargs = cls.clauses.copy()
+        mixed_kargs.update(kargs)
+        return cls.load_cur(cls.perform(build.delete(*args, **mixed_kargs)))
+
+    # --- read this model ---
+
+    squashed = set()
+
+    def col(self, col_name):
+        return self.cols[col_name]
+
+    def __iter__(self):
+        return (name for name in self.col_names)
+
+    def __len__(self):
+        return len(self.col_names)
+
+    def row(self, row_idx):
+        return [self.cols[col_name][row_idx] for col_name in self.col_names]
+
+    def __getitem__(self, col_row):
+
+        if isinstance(col_row, basestring):
+            col_name = col_row
+            if col_name in self.squashed:
+                col = self.cols[col_name]
+                if col:
+                    return col[0]
+                else:
+                    return None
+            else:
+                return self.cols[col_name]
+        else:
+            col_name, row_idx = col_row
+            return self.cols[col_name][row_idx]
+
+    def __getattr__(self, key):
+
+        if key in self.cols:
+            return self[key]
+        else:
+            raise AttributeError('attribute %r is not found' % key)
+
+    def __setattr__(self, key, val):
+
+        try:
+            cols = object.__getattribute__(self, 'cols')
+        except AttributeError:
+            cols = None
+
+        if cols and key in cols:
+            self[key] = val
+        else:
+            object.__setattr__(self, key, val)
+
+    # --- modifiy this model --- 
+
+    ident_by = None
+
+    def __init__(self):
+        self.changes = []
+        self.cols = {}
+
+    def ident(self, row_idx):
+
+        ident_by = self.ident_by
+        if ident_by is None:
+            ident_by = self.col_names
+
+        ident = {}
+        for col_name in ident_by:
+            val = self.cols[col_name][row_idx]
+            if val is util.default:
+                raise ValueError("value of column %r is not decided yet." % col_name)
+            ident[col_name] = val
+
+        return ident
+
+    def __setitem__(self, col_row, val):
+
+        if isinstance(col_row, basestring):
+            col_name = col_row
+            for i in range(len(self.cols[col_name])):
+                self[col_name, i] = val
+        else:
+            col_name, row_idx = col_row
+            self.changes.append((self.ident(row_idx), {col_name: val}))
+            self.cols[col_name][row_idx] = val
+
+    def pop(self, row_idx=-1):
+
+        self.changes.append((self.ident(row_idx), None))
+
+        for col_name in self.col_names:
+            self.cols[col_name].pop(row_idx)
+
+    def append(self, row_map):
+
+        row_map = row_map.copy()
+
+        if not self.col_names:
+            col_names = row_map.keys()
+        else:
+            col_names = self.col_names
+
+        for col_name in col_names:
+
+            if col_name in row_map:
+                val = row_map[col_name]
+            elif col_name in self.squashed:
+                val = row_map[col_name] = self.cols[col_name][0]
+            else:
+                val = row_map[col_name] = util.default
+
+            self.cols[col_name] = val
+
+        self.changes.append((None, row_map))
+
+    def save(self):
+
+        sqls = []
+
+        if not self.changes:
+            return
+
+        for i, (cond, val) in enumerate(self.changes):
+
+            if cond is None:
+                sqls.append(build.insert(set=val, **self.clauses))
+            elif val is None:
+                sqls.append(build.delete(where=cond, **self.clauses))
+            else:
+
+                # find other update changes which cond is target_cond
+                target_cond = cond
+                cond_hash = hash_dict(target_cond)
+
+                merged_val = val.copy()
+                merged_idxs = []
+
+                for j in range(i+1, len(self.changes)):
+
+                    cond, val = self.changes[j]
+
+                    # skip not update changes
+                    if cond is None or val is None:
+                        continue
+
+                    if hash_dict(cond) == cond_hash:
+                        merged_val.update(val)
+                        merged_idxs.append(j)
+
+                for j in reversed(merged_idxs):
+                    self.changes.pop(j)
+
+                sqls.append(build.update(where=target_cond, set=merged_val, **self.clauses))
+
+        self.changes = []
+
+        return self.perform(sqls)
+
+    def __repr__(self):
+        return pformat(dict(self))

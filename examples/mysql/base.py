@@ -3,7 +3,7 @@
 
 import MySQLdb
 
-from mosql.result2 import Model
+from mosql.result import Model
 import mosql.mysql # a patch for MySQL's non-standard syntax
 
 class MySQL(Model):

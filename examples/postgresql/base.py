@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import psycopg2
-from mosql.result2 import Model
+from mosql.result import Model
 
 class PostgreSQL(Model):
 
