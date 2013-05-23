@@ -11,6 +11,8 @@ class PostgreSQL(Model):
 class Person(PostgreSQL):
     clauses = dict(table='person')
     arrange_by = ('person_id', )
+    squashed = ('person_id', 'name')
+    ident_by = arrange_by
 
 class Detail(PostgreSQL):
     clauses = dict(table='detail')
@@ -20,36 +22,38 @@ class Detail(PostgreSQL):
 
 if __name__ == '__main__':
 
-    from pprint import pprint
-
-    d = next(Detail.arrange(where={'person_id': 'mosky', 'key': 'email'}))
-    Detail.dump_sql = True
-    Detail.dry_run = True
-
-    print '# original'
-    pprint(dict(d))
+    print '# select all'
+    person = Person.select()
+    print person
+    print person.cols
     print
 
-    print '# setitem'
-    d['val', 0] = 'hi@mosky.tw'
-    d['val', 0] = '1@mosky.tw'
-    d['val', 1] = 'hello@mosky.tw'
-    d['val', 0] = 'no.1@mosky.tw'
-    d['val', 1] = 'second@mosky.tw'
-    d['val', 0] = 'first@mosky.tw'
-    pprint(dict(d))
+    print '# select with a condition'
+    person = Person.select(where={'person_id': 'mosky'})
+    print person
+    print person.cols
     print
 
-    print '# append'
-    d.append({'val': 'new1@mosky.tw'})
-    d.append({'val': 'new2@mosky.tw'})
-    pprint(dict(d))
+    print '# powerful arrange'
+    for person in Person.arrange():
+        print person
     print
 
-    print '# pop it'
-    d.pop(0)
-    pprint(dict(d))
+    print '# rename mosky'
+
+    mosky = Person.select(where={'person_id': 'mosky'})
+    mosky['name'] = 'Mosky Liu (renamed 1)'
+    mosky['name'] = 'Mosky Liu (renamed 2)'
+    mosky['name'] = 'Mosky Liu (renamed)'
+    mosky.save()
+
+    mosky = Person.select(where={'person_id': 'mosky'})
+    print mosky['name']
     print
 
-    print '# save it'
-    print d.save()
+    from mosql.util import all
+
+    print '# rename mosky back'
+    mosky = Person.update(where={'person_id': 'mosky'}, set={'name': 'Mosky Liu'}, returning=all)
+    print mosky
+    print
