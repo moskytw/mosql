@@ -3,6 +3,9 @@
 
 '''It contains the common SQL builders.
 
+.. versionchanged:: 0.2
+    It is renamed from ``common``.
+
 .. versionchanged:: 0.1.6
     It is rewritten for using new :mod:`mosql.util`, but it is compatible with
     old version.
