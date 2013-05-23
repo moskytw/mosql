@@ -6,12 +6,73 @@
 MoSQL --- More than SQL
 =======================
 
-MoSQL is a lightweight Python library which assists programmer to use SQL.
+It lets you use the common Python data structures to build SQLs, and provides a
+convenient model of result set.
 
-It has two major parts:
+::
 
-1. :ref:`an-easy-to-use-model` for the result set.
-2. :ref:`the-sql-builders` which build the SQL strings by the common data types in Python.
+    >>> from mosql import build
+    >>> build.select('author', {'email like': '%mosky%@%'})
+    SELECT * FROM "author" WHERE "email" LIKE '%mosky%@%'
+
+It is very easy to build a query by Python's data structures and
+MoSQL's :mod:`mosql.build`.
+
+It also provides :class:`~mosql.result.Model` for result set, which let you
+use the same way to make queries to database.
+
+The Model of Result Set
+-----------------------
+
+Here is a SQL to the database:
+
+::
+
+    mosky=> select * from detail where person_id in ('mosky', 'andy') order by person_id, key;
+     detail_id | person_id |   key   |           val            
+    -----------+-----------+---------+--------------------------
+             5 | andy      | email   | andy@gmail.com
+             3 | mosky     | address | It is my first address.
+             4 | mosky     | address | It is my second address.
+             1 | mosky     | email   | mosky.tw@gmail.com
+             2 | mosky     | email   | mosky.liu@pinkoi.com
+            10 | mosky     | email   | mosky@ubuntu-tw.org
+    (6 rows)
+
+Then, use MoSQL's :class:`~mosql.result.Model` to do so:
+
+::
+
+    >>> from detail import Detail
+    >>> for detail in Detail.arrange(where={'person_id': ('mosky', 'andy')}, order_by=('person_id', 'key')):
+    ...     print detail
+    ... 
+    {'detail_id': [5],
+     'key': 'email',
+     'person_id': 'andy',
+     'val': ['andy@gmail.com']}
+    {'detail_id': [3, 4],
+     'key': 'address',
+     'person_id': 'mosky',
+     'val': ['It is my first address.', 'It is my second address.']}
+    {'detail_id': [1, 2, 10],
+     'key': 'email',
+     'person_id': 'mosky',
+     'val': ['mosky.tw@gmail.com', 'mosky.liu@pinkoi.com', 'mosky@ubuntu-tw.org']}
+
+There are almost same, right?
+
+Here I use :meth:`~mosql.result.Model.arrange` for taking advantages from model
+written well, so the reuslt seems nice. There is also a plain
+:meth:`~mosql.result.Model.select` you can use.
+
+As you see, MoSQL is
+
+1. Faster --- It just translates the data structure to SQL.
+2. Easy-to-learn --- It keeps all of the keyword of SQL.
+3. Convenient --- It provides some useful features, such as :meth:`~mosql.result.Model.arrange`.
+
+It is just "More than SQL".
 
 .. raw:: html
 
@@ -47,67 +108,9 @@ It has two major parts:
         </div>
     </div>
 
-.. _an-easy-to-use-model:
+.. seealso ::
 
-An Easy-to-Use Model
---------------------
-
-I show you an example with this result set:
-
-::
-
-    db=> select * from detail where person_id='mosky';
-     detail_id | person_id |   key   |   val            
-    -----------+-----------+---------+---------
-             4 | mosky     | address | address
-             3 | mosky     | address | ...
-            10 | mosky     | email   | email
-             6 | mosky     | email   | ...
-             1 | mosky     | email   | ...
-    (5 rows)
-
-The :py:class:`mosql.result.Model` act as a proxy of the result set. After `configuring </result.html#tutorial-of-model>`_, it provides a nice inferface to access the rows.
-
-::
-
-    >>> from my_models import Detail
-    >>> for detail in Detail.find(person_id='mosky')):
-    ...     print detail
-    {'person_id': 'mosky', 'detail_id': [3, 4], 'val': ['address', '...'], 'key': 'address'}
-    {'person_id': 'mosky', 'detail_id': [1, 6, 10], 'val': ['email', '...', '...'], 'key': 'email'}
-
-For simplicity, the Model, which is a *dict-like* object, is rendered as a dict, and the :py:class:`mosql.result.Column`, which is a *list-like* object, is rendered as a list.
-
-As you see, some of the columns aren't rendered as lists, because they are the columns grouped. It is the feature :py:class:`~mosql.result.Model` provides. It is more convenient than using SQL's ``group by``.
-
-If you want to modify this model, just treat them as a dict or a list. The model will record your changes and let you save the changes at any time.
-
-::
-
-    >>> detail = Detail.find(person_id='mosky', key='email')
-    >>> detail['val'][0] = 'I changed my email.'
-    >>> # detail.val[0] = 'I changed my email.' # It also works in 0.1.1 .
-    >>> detail.save()
-
-:ref:`tutorial-of-model` describes more details about how to use the Model.
-
-.. _the-sql-builders:
-
-The SQL Builders
-----------------
-
-The above model is based on these SQL builders. For an example:
-
-::
-
-    >>> from mosql import build
-    >>> build.select('person', {'age >': 18})
-    SELECT * FROM "person" WHERE "age" > 18
-
-It converts the common data types in Python into the SQL statements. 
-
-You can find more exmaples in :py:mod:`mosql.build`. If the common builders aren't enough in your case, it is possible to customize the builder by :py:mod:`mosql.util`.
-
+    There is more explaination of the model --- :class:`mosql.result`.
 
 Installation
 ------------
