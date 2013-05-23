@@ -3,19 +3,13 @@
 Building SQL Statements
 =======================
 
-The Common SQL Builders --- :py:mod:`mosql.common`
+The Common SQL Builders --- :py:mod:`mosql.build`
 --------------------------------------------------
 
-.. automodule:: mosql.common
+.. automodule:: mosql.build
     :members:
 
-The Module Deprecated --- :py:mod:`mosql.ext`
-`````````````````````````````````````````````
-
-.. automodule:: mosql.ext
-    :members:
-
-The Basic SQL Builders --- :py:mod:`mosql.util`
+The Basic of SQL Builders --- :py:mod:`mosql.util`
 --------------------------------------------------
 
 .. automodule:: mosql.util

@@ -100,13 +100,13 @@ The above model is based on these SQL builders. For an example:
 
 ::
 
-    >>> from mosql.common import select
-    >>> select('person', {'age >': 18})
-    'SELECT * FROM person WHERE age > 18'
+    >>> from mosql import build
+    >>> build.select('person', {'age >': 18})
+    SELECT * FROM "person" WHERE "age" > 18
 
 It converts the common data types in Python into the SQL statements. 
 
-You can find more exmaples in :py:mod:`mosql.common`. If the common builders aren't enough in your case, it is possible to customize the builder by :py:mod:`mosql.util`.
+You can find more exmaples in :py:mod:`mosql.build`. If the common builders aren't enough in your case, it is possible to customize the builder by :py:mod:`mosql.util`.
 
 
 Installation
