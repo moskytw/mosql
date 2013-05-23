@@ -166,6 +166,25 @@ class Model(Mapping):
             col_name, row_idx = col_row
             return self.cols[col_name][row_idx]
 
+    def __getattr__(self, key):
+
+        if key in self.cols:
+            return self[key]
+        else:
+            raise AttributeError('attribute %r is not found' % key)
+
+    def __setattr__(self, key, val):
+
+        try:
+            cols = object.__getattribute__(self, 'cols')
+        except AttributeError:
+            cols = None
+
+        if cols and key in cols:
+            self[key] = val
+        else:
+            object.__setattr__(self, key, val)
+
     # --- modifiy this model --- 
 
     ident_by = None
