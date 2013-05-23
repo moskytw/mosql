@@ -153,9 +153,15 @@ class Model(Mapping):
         return ident
 
     def __setitem__(self, col_row, val):
-        col_name, row_idx = col_row
-        self.changes.append((self.ident(row_idx), {col_name: val}))
-        self.cols[col_name][row_idx] = val
+
+        if isinstance(col_row, basestring):
+            col_name = col_row
+            self.changes.append(({col_name: self[col_name]}, {col_name: val}))
+            self.cols[col_name] = [val for i in range(len(self.cols[col_name]))]
+        else:
+            col_name, row_idx = col_row
+            self.changes.append((self.ident(row_idx), {col_name: val}))
+            self.cols[col_name][row_idx] = val
 
     def pop(self, row_idx=-1):
 
