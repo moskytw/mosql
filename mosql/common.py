@@ -43,7 +43,7 @@ returning = Clause('returning'  , identifier_list)
 
 insert_into_stat = Statement([insert, columns, values, returning])
 
-def insert(table, pairs_or_columns=None, values=None, **clauses_args):
+def insert(table, set=None, values=None, **clauses_args):
     '''It generates the SQL statement, ``insert into ...``.
 
     The following usages generate the same SQL statement:
@@ -71,13 +71,13 @@ def insert(table, pairs_or_columns=None, values=None, **clauses_args):
     clauses_args['insert into'] = table
 
     if values is None:
-        if hasattr(pairs_or_columns, 'items'):
-            pairs = pairs_or_columns.items()
+        if hasattr(set, 'items'):
+            pairs = set.items()
         else:
-            pairs = pairs_or_columns
+            pairs = set
         clauses_args['columns'], clauses_args['values'] = zip(*pairs)
     else:
-        clauses_args['columns'] = pairs_or_columns
+        clauses_args['columns'] = set
         clauses_args['values']  = values
 
     return insert_into_stat.format(clauses_args)

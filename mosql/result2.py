@@ -231,7 +231,7 @@ class Model(Mapping):
         for i, (cond, val) in enumerate(self.changes):
 
             if cond is None:
-                sqls.append(build.insert(pairs_or_columns=val, **self.clauses))
+                sqls.append(build.insert(set=val, **self.clauses))
             elif val is None:
                 sqls.append(build.delete(where=cond, **self.clauses))
             else:
