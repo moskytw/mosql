@@ -37,12 +37,12 @@ if __name__ == '__main__':
 
     mosky = Person.select(where={'person_id': 'mosky'})
     mosky['name'] = 'Mosky Liu (renamed 1)'
-    mosky['name'] = 'Mosky Liu (renamed 2)'
-    mosky['name'] = 'Mosky Liu (renamed)'
+    mosky.name = 'Mosky Liu (renamed 2)'
+    mosky.name = 'Mosky Liu (renamed)'
     mosky.save()
 
     mosky = Person.select(where={'person_id': 'mosky'})
-    print mosky['name']
+    print mosky.name
     print
 
     from mosql.util import all

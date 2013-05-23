@@ -27,7 +27,7 @@ if __name__ == '__main__':
     mosky_detail.save()
 
     mosky_detail = Detail.select(where={'person_id': 'mosky', 'key': 'email'})
-    print mosky_detail['val']
+    print mosky_detail.val
     print mosky_detail['val', 0]
     print
 
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     mosky_detail.save()
 
     mosky_detail = Detail.select(where={'person_id': 'mosky', 'key': 'email'})
-    print mosky_detail['val']
+    print mosky_detail.val
     print
 
     print '# pop'
@@ -46,5 +46,5 @@ if __name__ == '__main__':
     mosky_detail.save()
 
     mosky_detail = Detail.select(where={'person_id': 'mosky', 'key': 'email'})
-    print mosky_detail['val']
+    print mosky_detail.val
     print
