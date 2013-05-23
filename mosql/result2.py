@@ -160,8 +160,8 @@ class Model(Mapping):
 
         if isinstance(col_row, basestring):
             col_name = col_row
-            self.changes.append(({col_name: self[col_name]}, {col_name: val}))
-            self.cols[col_name] = [val for i in range(len(self.cols[col_name]))]
+            for i in range(len(self.cols[col_name])):
+                self[col_name, i] = val
         else:
             col_name, row_idx = col_row
             self.changes.append((self.ident(row_idx), {col_name: val}))
