@@ -2,17 +2,17 @@
 # -*- coding: utf-8 -*-
 
 from itertools import groupby
+from collections import Mapping
 
-from . import common as sql
+from . import common as build
+from . import util
 
-def get_column_names(cursor):
-    return [row_desc[0] for row_desc in cursor.description]
+def get_col_names(cur):
+    return [row_desc[0] for row_desc in cur.description]
 
-class Model(object):
+class Model(Mapping):
 
-    squashed = set()
-
-    # --- methods which handle connection ---
+    # --- define how to communicate with db ---
 
     @classmethod
     def getconn(cls):
@@ -22,15 +22,22 @@ class Model(object):
     def putconn(cls, conn):
         raise NotImplementedError('This method should accept a connection.')
 
-    def perform(self, sql_or_sqls):
+    dump_sql = False
 
-        conn = self.getconn()
+    @classmethod
+    def perform(cls, sql_or_sqls):
+
+        conn = cls.getconn()
         cur = conn.cursor()
 
         if isinstance(sql_or_sqls, basestring):
             sqls = [sql_or_sqls]
         else:
             sqls = sql_or_sqls
+
+        if cls.dump_sql:
+            from pprint import pprint
+            pprint(sqls)
 
         try:
             cur.execute('; '.join(sqls))
@@ -40,123 +47,148 @@ class Model(object):
         else:
             conn.commit()
 
-        self.putconn(conn)
+        cls.putconn(conn)
 
         return cur
 
-    # --- methods which load data into a model or models ---
+    # --- load the result from db ---
 
-    def __init__(self, **attrs):
-        for k, v in attrs.items():
-            setattr(self, k, v)
+    col_names = tuple()
 
-    def load_rows(self, column_names, rows):
+    @classmethod
+    def load_rows(cls, col_names, rows):
 
-        self.column_names = column_names
+        m = cls()
+        m.col_names = col_names
 
-        self.columns = dict((name, [
+        m.cols = dict((name, [
             row[i] for row in rows
-        ]) for i, name in enumerate(self.column_names))
+        ]) for i, name in enumerate(m.col_names))
 
-    @classmethod
-    def from_rows(self, column_names, rows, **attrs):
-        m = cls(attrs)
-        m.load_rows(column_names, rows)
-        return m
-
-    def load_cursor(self, cursor):
-        self.load_rows(get_column_names(cursor), cursor.fetchall())
-
-    @classmethod
-    def from_cursor(cls, cursor, **attrs):
-        m = cls(**attrs)
-        m.load_cursor(cursor)
         return m
 
     @classmethod
-    def arrange_rows(cls, column_names, rows, arrange_by, **attrs):
+    def load_cur(cls, cur):
+        return cls.load_rows(get_col_names(cur), cur.fetchall())
 
-        name_index_map = dict((name, i) for i, name  in enumerate(column_names))
-        key_indexes = tuple(name_index_map[name] for name in arrange_by)
+    arrange_by = tuple()
+
+    @classmethod
+    def arrange_rows(cls, col_names, rows):
+
+        name_index_map = dict((name, i) for i, name  in enumerate(col_names))
+        key_indexes = tuple(name_index_map[name] for name in cls.arrange_by)
         key_func = lambda row: tuple(row[i] for i in key_indexes)
 
         for _, rows in groupby(rows, key_func):
-            m = cls(**attrs)
-            m.load_rows(column_names, list(rows))
-            yield m
+            yield cls.load_rows(col_names, list(rows))
 
     @classmethod
-    def arrange_cursor(cls, cursor, arrange_by, **attrs):
-        return cls.arrange_rows(get_column_names(cursor), cursor.fetchall(), arrange_by, **attrs)
+    def arrange_cur(cls, cur):
+        return cls.arrange_rows(get_col_names(cur), cur.fetchall())
 
-    # --- methods which help you access model ---
+    # -- shortcuts --
 
-    def column(self, column_name):
-        return self.columns[column_name]
+    clauses = {}
+
+    @classmethod
+    def load(cls, *args, **kargs):
+        mixed_kargs = cls.clauses.copy()
+        mixed_kargs.update(kargs)
+        return cls.load_cur(cls.perform(build.select(*args, **mixed_kargs)))
+
+    @classmethod
+    def arrange(cls, *args, **kargs):
+        mixed_kargs = cls.clauses.copy()
+        mixed_kargs.update(kargs)
+        return cls.arrange_cur(cls.perform(build.select(*args, **mixed_kargs)))
+
+    # --- access this model ---
+
+    squashed = set()
+
+    def col(self, col_name):
+        return self.cols[col_name]
 
     def __iter__(self):
-        return (name for name in self.column_names)
+        return (name for name in self.col_names)
 
-    def row(self, row_index):
-        return [self.columns[column_name][row_index] for column_name in self]
+    def __len__(self):
+        return len(self.col_names)
 
-    def __getitem__(self, column_name):
-        if column_name in self.squashed:
-            return self.columns[column_name][0]
+    def row(self, row_idx):
+        return [self.cols[col_name][row_idx] for col_name in self.col_names]
+
+    def __getitem__(self, col_name):
+        if col_name in self.squashed:
+            return self.cols[col_name][0]
         else:
-            return self.columns[column_name]
+            return self.cols[col_name]
 
-    def __setitem__(self, column_name, value):
-        pass
+    # --- modifiy this model --- 
 
-    def __repr__(self):
-        return repr(dict((k, self[k]) for k in self))
+    ident_by = None
 
-if __name__ == '__main__':
+    def __init__(self):
+        self.changes = []
 
-    import psycopg2
+    def ident(self, row_idx):
 
-    conn = psycopg2.connect(database='mosky')
-    cursor = conn.cursor()
-    cursor.execute('select * from person')
+        ident_by = self.ident_by
+        if ident_by is None:
+            ident_by = self.col_names
 
-    m = Model.from_cursor(cursor)
-    print m
-    print m.column_names
-    print m.columns
-    print m['person_id']
-    print m['name']
-    print m.column('person_id')
-    print m.row(0)
-    print
+        ident = {}
+        for col_name in ident_by:
+            val = self[col_name][row_idx]
+            if val is util.default:
+                raise ValueError("value of column %r is not decided yet." % col_name)
+            ident[col_name] = val
 
-    from pprint import pprint
+        return ident
 
-    cursor.execute('select * from person')
-    ms = list(
-        Model.arrange_cursor(
-            cursor,
-            arrange_by = ('person_id', ),
-            squashed   = set(['person_id', 'name'])
-        )
-    )
-    pprint(ms)
-    print
+    def __setitem__(self, col_row, val):
+        col_name, row_idx = col_row
+        self.changes.append((self.ident(row_idx), {col_name: val}))
+        self.cols[col_name][row_idx] = val
 
-    m = ms[0]
-    print m
-    print m.column_names
-    print m.columns
-    print m['person_id']
-    print m['name']
-    print m.column('person_id')
-    print m.row(0)
-    print
+    def pop(self, row_idx=-1):
 
-    cursor.close()
-    conn.close()
+        self.changes.append((self.ident(row_idx), None))
 
-    m.getconn = lambda: psycopg2.connect(database='mosky')
-    m.putconn = lambda conn: None
-    for row in m.perform('select * from person'):
-        print row
+        for col_name in self.col_names:
+            self.cols[col_name].pop(row_idx)
+
+    def assume(self, row_map):
+
+        row_map = row_map.copy()
+
+        for col_name in self.col_names:
+
+            if col_name in row_map:
+                val = row_map[col_name]
+            elif col_name in self.squashed:
+                val = row_map[col_name] = self.cols[col_name][0]
+            else:
+                val = row_map[col_name] = util.default
+
+            self.cols[col_name].append(val)
+
+        return row_map
+
+    def append(self, row_map):
+        self.changes.append((None, self.assume(row_map)))
+
+    def save(self):
+
+        sqls = []
+
+        for cond, val in self.changes:
+            if cond is None:
+                sqls.append(build.insert(pairs_or_columns=val, **self.clauses))
+            elif val is None:
+                sqls.append(build.delete(where=cond, **self.clauses))
+            else:
+                sqls.append(build.update(where=cond, set=val, **self.clauses))
+
+        return self.perform(sqls)
