@@ -5,6 +5,9 @@
 
 It is compatible with :py:mod:`mosql.result` and built-in `datetime`.
 
+.. versionadded :: 0.2
+    It also supports new model.
+
 .. versionadded :: 0.1.1
 '''
 
@@ -22,6 +25,7 @@ from datetime import datetime, date
 from functools import partial
 
 from .result import Model, Row, Column
+from .result2 import Model as Model2
 
 class ModelJSONEncoder(json.JSONEncoder):
     '''It is compatible with :py:mod:`mosql.result` and built-in `datetime`.'''
@@ -33,6 +37,8 @@ class ModelJSONEncoder(json.JSONEncoder):
         except TypeError, e:
             if isinstance(obj, (datetime, date)):
                 return obj.isoformat()
+            elif isinstance(obj, Model2):
+                return dict(obj)
             elif isinstance(obj, Model):
                 return dict(obj)
             elif isinstance(obj, Column):
