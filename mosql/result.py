@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+'''It provides useful :class:`Model` which let you commuicate with database smoothly.
+
+.. versionchanged:: 0.2
+    It is totally rewritten and it is *not* compatible with old version.
+'''
+
+__all__ = ['Model']
+
 from itertools import groupby
 from collections import Mapping
 from pprint import pformat
@@ -15,22 +23,32 @@ def hash_dict(d):
     return hash(frozenset(d.items()))
 
 class Model(Mapping):
+    '''The base model of result set.'''
 
     # --- connection-related ---
 
     @classmethod
     def getconn(cls):
+        '''It should return a connection.'''
         raise NotImplementedError('This method should return a connection.')
 
     @classmethod
     def putconn(cls, conn):
+        '''It should accept a connection.'''
         raise NotImplementedError('This method should accept a connection.')
 
     dump_sql = False
+    '''Set it True to make :meth:`Model.perform` dump the SQLs before it
+    performs them.'''
+
     dry_run = False
+    '''Set it True to make :meth:`Model.perform` rollback the changes after it
+    performs them.'''
 
     @classmethod
     def perform(cls, sql_or_sqls):
+        '''It executes SQL (str) or SQLs (seq) and return a cursor. :cls:`Model`
+        uses it to perform every SQL.'''
 
         conn = cls.getconn()
         cur = conn.cursor()
@@ -85,6 +103,8 @@ class Model(Mapping):
             return cls.load_rows(get_col_names(cur), cur.fetchall())
 
     arrange_by = tuple()
+    '''It defines how :meth:`Model.arrange` arrange result set. It should be
+    column names in a tuple.'''
 
     @classmethod
     def arrange_rows(cls, col_names, rows):
@@ -106,30 +126,35 @@ class Model(Mapping):
 
     @classmethod
     def select(cls, *args, **kargs):
+        '''It performs a select query and load result set into a model.'''
         mixed_kargs = cls.clauses.copy()
         mixed_kargs.update(kargs)
         return cls.load_cur(cls.perform(build.select(*args, **mixed_kargs)))
 
     @classmethod
     def arrange(cls, *args, **kargs):
+        '''It performs a select query and arrange the result set into models.'''
         mixed_kargs = cls.clauses.copy()
         mixed_kargs.update(kargs)
         return cls.arrange_cur(cls.perform(build.select(*args, **mixed_kargs)))
 
     @classmethod
     def insert(cls, *args, **kargs):
+        '''It performs an insert query and load result set into a model (if any).'''
         mixed_kargs = cls.clauses.copy()
         mixed_kargs.update(kargs)
         return cls.load_cur(cls.perform(build.insert(*args, **mixed_kargs)))
 
     @classmethod
     def update(cls, *args, **kargs):
+        '''It performs an update query and load result set into a model (if any).'''
         mixed_kargs = cls.clauses.copy()
         mixed_kargs.update(kargs)
         return cls.load_cur(cls.perform(build.update(*args, **mixed_kargs)))
 
     @classmethod
     def delete(cls, *args, **kargs):
+        '''It performs a delete query and load result set into a model (if any).'''
         mixed_kargs = cls.clauses.copy()
         mixed_kargs.update(kargs)
         return cls.load_cur(cls.perform(build.delete(*args, **mixed_kargs)))
@@ -137,8 +162,11 @@ class Model(Mapping):
     # --- read this model ---
 
     squashed = set()
+    '''It defines which column should be squashed. It is better to use a set to
+    enumerate the column names.'''
 
     def col(self, col_name):
+        '''It returns the column you specified in this model.'''
         return self.cols[col_name]
 
     def __iter__(self):
@@ -148,6 +176,7 @@ class Model(Mapping):
         return len(self.col_names)
 
     def row(self, row_idx):
+        '''It returns the row you specified in this model.'''
         return [self.cols[col_name][row_idx] for col_name in self.col_names]
 
     def __getitem__(self, col_row):
@@ -188,6 +217,8 @@ class Model(Mapping):
     # --- modifiy this model --- 
 
     ident_by = None
+    '''It defines how to identify a row. It should be column names in a tuple.
+    By default, it use all of the columns.'''
 
     def __init__(self):
         self.changes = []
@@ -220,6 +251,7 @@ class Model(Mapping):
             self.cols[col_name][row_idx] = val
 
     def pop(self, row_idx=-1):
+        '''It pops the row you specified in this model.'''
 
         self.changes.append((self.ident(row_idx), None))
 
@@ -227,6 +259,7 @@ class Model(Mapping):
             self.cols[col_name].pop(row_idx)
 
     def append(self, row_map):
+        '''It appends a row (dict) into model.'''
 
         row_map = row_map.copy()
 
@@ -249,6 +282,7 @@ class Model(Mapping):
         self.changes.append((None, row_map))
 
     def save(self):
+        '''It saves changes.'''
 
         sqls = []
 
