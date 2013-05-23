@@ -30,7 +30,7 @@ If you need you own SQL statements, the following classes may help you.
 __all__ = [
     'escape', 'format_param', 'stringify_bool',
     'delimit_identifier', 'escape_identifier',
-    'raw', 'param', 'default', '___',
+    'raw', 'param', 'default', '___', 'all',
     'qualifier', 'paren', 'value',
     'OptionError', 'allowed_options', 'identifier',
     'joiner',
@@ -126,6 +126,7 @@ class raw(str):
         return 'raw(%r)' % str(self)
 
 default = raw('DEFAULT')
+all = raw('*')
 
 class param(str):
     ''':func:`value` builds this type as a parameter for the prepared statement
