@@ -12,7 +12,7 @@ def get_col_names(cur):
 
 class Model(Mapping):
 
-    # --- define how to communicate with db ---
+    # --- connection-related ---
 
     @classmethod
     def getconn(cls):
@@ -51,7 +51,7 @@ class Model(Mapping):
 
         return cur
 
-    # --- load the result from db ---
+    # --- translate result set to a model or models ---
 
     col_names = tuple()
 
@@ -87,7 +87,7 @@ class Model(Mapping):
     def arrange_cur(cls, cur):
         return cls.arrange_rows(get_col_names(cur), cur.fetchall())
 
-    # -- shortcuts --
+    # --- shortcuts of Python data structure -> SQL -> result set -> model ---
 
     clauses = {}
 
@@ -103,7 +103,7 @@ class Model(Mapping):
         mixed_kargs.update(kargs)
         return cls.arrange_cur(cls.perform(build.select(*args, **mixed_kargs)))
 
-    # --- access this model ---
+    # --- read this model ---
 
     squashed = set()
 
