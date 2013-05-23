@@ -3,6 +3,7 @@
 
 from itertools import groupby
 from collections import Mapping
+from pprint import pformat
 
 from . import common as build
 from . import util
@@ -270,3 +271,6 @@ class Model(Mapping):
         self.changes = []
 
         return self.perform(sqls)
+
+    def __repr__(self):
+        return pformat(dict(self))
