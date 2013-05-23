@@ -2,6 +2,14 @@
 The Changes
 ===========
 
+v0.2
+----
+
+1. :mod:`mosql.result` is totally rewritten, and does **not** provide the
+   backward-compatibility. See the doc for more info.
+2. :mod:`mosql.common` is renamed as :mod:`mosql.build`.
+3. :mod:`mosql.ext` is removed.
+
 v0.1.6
 ------
 
