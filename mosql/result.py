@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It provides useful :class:`Model` which let you commuicate with database smoothly.
+'''It provides useful :class:`Model` which let you commuicate with database
+smoothly.
 
 .. versionchanged:: 0.2
-    It is totally rewritten, and it does **not** provide the backward-compatibility.
+
+    It is totally rewritten, and it does **not** provide the
+    backward-compatibility.
 '''
 
 __all__ = ['Model']
@@ -42,7 +45,8 @@ class Model(Mapping):
        result set into models.
     3. The :attr:`Model.squashed` lets it squash the columns which have
        duplicate values in rows.
-    4. The last one, :attr:`Model.ident_by`, makes the :meth:`save` more efficiently.
+    4. The last one, :attr:`Model.ident_by`, makes the :meth:`save` more
+       efficiently.
 
     Then, make some queries to database:
 
@@ -75,7 +79,8 @@ class Model(Mapping):
 
     When you finish your editing, use :meth:`save` to save the changes.
 
-    You also have :meth:`pop` and :meth:`append` to maintain the rows in your model instance.
+    You also have :meth:`pop` and :meth:`append` to maintain the rows in your
+    model instance.
 
     It's all.
     '''
