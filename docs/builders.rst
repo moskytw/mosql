@@ -1,7 +1,7 @@
 .. _builders:
 
-Building SQL Statements
-=======================
+Build the SQL Statements
+========================
 
 The Common SQL Builders --- :py:mod:`mosql.build`
 --------------------------------------------------
