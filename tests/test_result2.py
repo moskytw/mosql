@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     from pprint import pprint
 
-    d = next(Detail.arrange(where={'person_id': 'mosky'}))
+    d = next(Detail.arrange(where={'person_id': 'mosky', 'key': 'email'}))
     Detail.dump_sql = True
     Detail.dry_run = True
 
@@ -31,13 +31,18 @@ if __name__ == '__main__':
     print
 
     print '# setitem'
-    d['val', 0] = 'modified@email.com'
-    d['detail_id', 0] = 123
+    d['val', 0] = 'hi@mosky.tw'
+    d['val', 0] = '1@mosky.tw'
+    d['val', 1] = 'hello@mosky.tw'
+    d['val', 0] = 'no.1@mosky.tw'
+    d['val', 1] = 'second@mosky.tw'
+    d['val', 0] = 'first@mosky.tw'
     pprint(dict(d))
     print
 
     print '# append'
-    d.append({'val': 'new@email.com'})
+    d.append({'val': 'new1@mosky.tw'})
+    d.append({'val': 'new2@mosky.tw'})
     pprint(dict(d))
     print
 
