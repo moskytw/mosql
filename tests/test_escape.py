@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# this row must be existent
-#cur.execute("insert into person values ('dara', 'Dara Scully')")
-
 # test PostgreSQL
 import psycopg2 as db
 from mosql.util import escape
@@ -14,6 +11,19 @@ conn = db.connect(database='mosky')
 #from mosql.mysql import escape
 #from mosql.mysql import fast_escape as escape
 #conn = db.connect(user='root', db='mosky')
+
+# -- preparation --
+
+cur = conn.cursor()
+
+cur.execute("select * from person where person_id='dara'")
+if cur.rowcount == 0:
+    cur.execute("insert into person values ('dara', 'Dara Scully')")
+    cur.commit()
+
+cur.close()
+
+# --- end of preparation ---
 
 # --- main ---
 
