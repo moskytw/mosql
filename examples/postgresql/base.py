@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import psycopg2
+import psycopg2.pool
 from mosql.result import Model
+
+pool = psycopg2.pool.SimpleConnectionPool(1, 5, database='mosky')
 
 class PostgreSQL(Model):
 
-    @staticmethod
-    def getconn():
-        return psycopg2.connect(database='mosky')
-
-    @staticmethod
-    def putconn(conn):
-        pass
+    getconn = pool.getconn
+    putconn = pool.putconn

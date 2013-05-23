@@ -8,10 +8,12 @@ import mosql.mysql # a patch for MySQL's non-standard syntax
 
 class MySQL(Model):
 
-    @staticmethod
-    def getconn():
-        return MySQLdb.connect(user='root', db='mosky')
+    @classmethod
+    def getconn(cls):
+        if not hasattr(cls, '_conn'):
+            cls._conn = MySQLdb.connect(user='root', db='mosky')
+        return cls._conn
 
-    @staticmethod
-    def putconn(conn):
+    @classmethod
+    def putconn(cls, conn):
         pass
