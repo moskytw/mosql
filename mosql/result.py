@@ -35,11 +35,12 @@ class Model(Mapping):
         Model.getconn
         Model.putconn
 
-    Second, you may want to adjust the attributes :attr:`clauses`,
-    :attr:`arrange_by`, :attr:`squashed` or :attr:`ident_by`.
+    Second, you may want to adjust the attributes :attr:`table`,
+    :attr:`clauses`, :attr:`arrange_by`, :attr:`squashed` or :attr:`ident_by`.
 
-    1. The :attr:`Model.clauses` lets you customize the queries, ex. table name,
-       order by, join statement, ... .
+    1. The :attr:`Model.table` is the name of table.
+    1. The :attr:`Model.clauses` lets you customize the queries, ex. order by,
+       join statement, ... .
     2. The :attr:`Model.arrange_by` is need for :meth:`arrange` which arranges
        result set into models.
     3. The :attr:`Model.squashed` lets it squash the columns which have
@@ -186,6 +187,9 @@ class Model(Mapping):
 
     # --- shortcuts of Python data structure -> SQL -> result set -> model ---
 
+    table = ''
+    '''It is used as the first argument of SQL builder.'''
+
     clauses = {}
     '''The additional clauses arguments for :mod:`mosql.build`. For an example:
 
@@ -193,7 +197,8 @@ class Model(Mapping):
 
         class Order(Model):
             ...
-            clauses = dict(table='order')
+            table = 'order'
+            clauses = dict(order_by=('created'))
             ...
     '''
 
@@ -202,35 +207,35 @@ class Model(Mapping):
         '''It performs a select query and load result set into a model.'''
         mixed_kargs = cls.clauses.copy()
         mixed_kargs.update(kargs)
-        return cls.load_cur(cls.perform(build.select(*args, **mixed_kargs)))
+        return cls.load_cur(cls.perform(build.select(cls.table, *args, **mixed_kargs)))
 
     @classmethod
     def arrange(cls, *args, **kargs):
         '''It performs a select query and arrange the result set into models.'''
         mixed_kargs = cls.clauses.copy()
         mixed_kargs.update(kargs)
-        return cls.arrange_cur(cls.perform(build.select(*args, **mixed_kargs)))
+        return cls.arrange_cur(cls.perform(build.select(cls.table, *args, **mixed_kargs)))
 
     @classmethod
     def insert(cls, *args, **kargs):
         '''It performs an insert query and load result set into a model (if any).'''
         mixed_kargs = cls.clauses.copy()
         mixed_kargs.update(kargs)
-        return cls.load_cur(cls.perform(build.insert(*args, **mixed_kargs)))
+        return cls.load_cur(cls.perform(build.insert(cls.table, *args, **mixed_kargs)))
 
     @classmethod
     def update(cls, *args, **kargs):
         '''It performs an update query and load result set into a model (if any).'''
         mixed_kargs = cls.clauses.copy()
         mixed_kargs.update(kargs)
-        return cls.load_cur(cls.perform(build.update(*args, **mixed_kargs)))
+        return cls.load_cur(cls.perform(build.update(cls.table, *args, **mixed_kargs)))
 
     @classmethod
     def delete(cls, *args, **kargs):
         '''It performs a delete query and load result set into a model (if any).'''
         mixed_kargs = cls.clauses.copy()
         mixed_kargs.update(kargs)
-        return cls.load_cur(cls.perform(build.delete(*args, **mixed_kargs)))
+        return cls.load_cur(cls.perform(build.delete(cls.table, *args, **mixed_kargs)))
 
     # --- read this model ---
 
@@ -365,9 +370,9 @@ class Model(Mapping):
         for i, (cond, val) in enumerate(self.changes):
 
             if cond is None:
-                sqls.append(build.insert(set=val, **self.clauses))
+                sqls.append(build.insert(self.table, set=val, **self.clauses))
             elif val is None:
-                sqls.append(build.delete(where=cond, **self.clauses))
+                sqls.append(build.delete(self.table, where=cond, **self.clauses))
             else:
 
                 # find other update changes which cond is target_cond
@@ -392,7 +397,7 @@ class Model(Mapping):
                 for j in reversed(merged_idxs):
                     self.changes.pop(j)
 
-                sqls.append(build.update(where=target_cond, set=merged_val, **self.clauses))
+                sqls.append(build.update(self.table, where=target_cond, set=merged_val, **self.clauses))
 
         self.changes = []
 

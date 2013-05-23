@@ -4,7 +4,7 @@
 from base import MySQL
 
 class Person(MySQL):
-    clauses = dict(table='person')
+    table = 'person'
     arrange_by = ('person_id', )
     squashed = ('person_id', 'name')
     ident_by = arrange_by
@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
 
     print '# select with a condition'
-    person = Person.select(where={'person_id': 'mosky'})
+    person = Person.select({'person_id': 'mosky'})
     print 'squashed:', person
     print 'actually:', person.cols
     print
@@ -32,14 +32,14 @@ if __name__ == '__main__':
 
 
     print '# arrange with a condition'
-    for person in Person.arrange(where={'person_id': ('mosky', 'andy')}):
+    for person in Person.arrange({'person_id': ('mosky', 'andy')}):
         print person
     print
 
 
     print '# rename mosky'
 
-    mosky = Person.select(where={'person_id': 'mosky'})
+    mosky = Person.select({'person_id': 'mosky'})
     # model expands the change for columns squashed
     mosky.name = 'Mosky Liu (renamed 1)'
     # setitem or setattr are also accepted
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     mosky.save()
     Person.dump_sql = False
 
-    mosky = Person.select(where={'person_id': 'mosky'})
+    mosky = Person.select({'person_id': 'mosky'})
     print mosky.name
     print
 
@@ -59,9 +59,9 @@ if __name__ == '__main__':
 
     print '# rename mosky back'
     # MySQL doesn't support returning
-    #mosky = Person.update(where={'person_id': 'mosky'}, set={'name': 'Mosky Liu'}, returning=all)
-    Person.update(where={'person_id': 'mosky'}, set={'name': 'Mosky Liu'})
-    mosky = Person.select(where={'person_id': 'mosky'})
+    #mosky = Person.update({'person_id': 'mosky'}, set={'name': 'Mosky Liu'}, returning=all)
+    Person.update({'person_id': 'mosky'}, set={'name': 'Mosky Liu'})
+    mosky = Person.select({'person_id': 'mosky'})
     print mosky
     print
 
