@@ -9,6 +9,9 @@ MoSQL --- More than SQL
 It lets you use the common Python data structures to build SQLs, and provides a
 convenient model of result set.
 
+NOTE: v0.2 is a new branch and it does **not** provide backward-compatibility for
+v0.1.x.
+
 ::
 
     >>> from mosql import build
