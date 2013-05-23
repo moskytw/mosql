@@ -4,7 +4,7 @@
 '''It provides useful :class:`Model` which let you commuicate with database smoothly.
 
 .. versionchanged:: 0.2
-    It is totally rewritten and it is *not* compatible with old version.
+    It is totally rewritten, and it does **not** provide the backward-compatibility.
 '''
 
 __all__ = ['Model']
@@ -23,7 +23,62 @@ def hash_dict(d):
     return hash(frozenset(d.items()))
 
 class Model(Mapping):
-    '''The base model of result set.'''
+    '''The base model of result set.
+
+    First, for creating connection, you need to override the two methods
+    below:
+
+    .. autosummary ::
+
+        Model.getconn
+        Model.putconn
+
+    Second, you may want to adjust the attributes :attr:`clauses`,
+    :attr:`arrange_by`, :attr:`squashed` or :attr:`ident_by`.
+
+    1. The :attr:`Model.clauses` lets you customize the queries, ex. table name,
+       order by, join statement, ... .
+    2. The :attr:`Model.arrange_by` is need for :meth:`arrange` which arranges
+       result set into models.
+    3. The :attr:`Model.squashed` lets it squash the columns which have
+       duplicate values in rows.
+    4. The last one, :attr:`Model.ident_by`, makes the :meth:`save` more efficiently.
+
+    Then, make some queries to database:
+
+    .. autosummary ::
+
+        Model.select
+        Model.insert
+        Model.update
+        Model.delete
+        Model.arrange
+
+    The :meth:`arrange` is like :meth:`select`, but it uses the
+    :attr:`arrange_by` to arrange the result set.
+
+    If you want to know what arguments you can use, see :mod:`mosql.build`.
+
+    After select, there is a model instance. You can modifiy a model instance by
+    below statements:
+
+    ::
+
+        m[squashed_col_name] = val
+        m.squashed_col_name = val
+        m[col_name, row_idx] = val
+
+        # The following statements modifiy something, but the model can't record
+        # the changes. It may be support in new version.
+        m[col_name][row_idx] = val
+        m.col_name[row_idx] = val
+
+    When you finish your editing, use :meth:`save` to save the changes.
+
+    You also have :meth:`pop` and :meth:`append` to maintain the rows in your model instance.
+
+    It's all.
+    '''
 
     # --- connection-related ---
 
@@ -123,6 +178,15 @@ class Model(Mapping):
     # --- shortcuts of Python data structure -> SQL -> result set -> model ---
 
     clauses = {}
+    '''The additional clauses arguments for :mod:`mosql.build`. For an example:
+
+    ::
+
+        class Order(Model):
+            ...
+            clauses = dict(table='order')
+            ...
+    '''
 
     @classmethod
     def select(cls, *args, **kargs):
