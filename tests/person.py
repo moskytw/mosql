@@ -23,12 +23,12 @@ if __name__ == '__main__':
     print person.cols
     print
 
-    print '# powerful arrange'
+    print '# arrange entire table'
     for person in Person.arrange():
         print person
     print
 
-    print '# powerful arrange with a condition'
+    print '# arrange with a condition'
     for person in Person.arrange(where={'person_id': ('mosky', 'andy')}):
         print person
     print
