@@ -154,7 +154,11 @@ class Model(Mapping):
         if isinstance(col_row, basestring):
             col_name = col_row
             if col_name in self.squashed:
-                return self.cols[col_name][0]
+                col = self.cols[col_name]
+                if col:
+                    return col[0]
+                else:
+                    return None
             else:
                 return self.cols[col_name]
         else:
