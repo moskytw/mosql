@@ -146,6 +146,7 @@ class Model(Mapping):
 
     def __init__(self):
         self.changes = []
+        self.cols = {}
 
     def ident(self, row_idx):
 
@@ -184,7 +185,7 @@ class Model(Mapping):
 
         row_map = row_map.copy()
 
-        for col_name in self.col_names:
+        for col_name in row_map:
 
             if col_name in row_map:
                 val = row_map[col_name]
@@ -193,7 +194,7 @@ class Model(Mapping):
             else:
                 val = row_map[col_name] = util.default
 
-            self.cols[col_name].append(val)
+            self.cols[col_name] = val
 
         return row_map
 
