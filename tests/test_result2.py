@@ -44,4 +44,4 @@ if __name__ == '__main__':
     print
 
     print '# save it'
-    d.save()
+    print d.save()
