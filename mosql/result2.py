@@ -78,7 +78,10 @@ class Model(Mapping):
 
     @classmethod
     def load_cur(cls, cur):
-        return cls.load_rows(get_col_names(cur), cur.fetchall())
+        if cur.description is None:
+            return None
+        else:
+            return cls.load_rows(get_col_names(cur), cur.fetchall())
 
     arrange_by = tuple()
 
