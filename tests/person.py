@@ -51,3 +51,9 @@ if __name__ == '__main__':
     mosky = Person.update(where={'person_id': 'mosky'}, set={'name': 'Mosky Liu'}, returning=all)
     print mosky
     print
+
+    import mosql.json as json
+
+    print '# json'
+    print json.dumps(mosky)
+    print
