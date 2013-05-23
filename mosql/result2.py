@@ -10,6 +10,9 @@ from . import util
 def get_col_names(cur):
     return [row_desc[0] for row_desc in cur.description]
 
+def hash_dict(d):
+    return hash(frozenset(d.items()))
+
 class Model(Mapping):
 
     # --- connection-related ---
@@ -194,12 +197,20 @@ class Model(Mapping):
 
         sqls = []
 
+        updates = []
+
         for cond, val in self.changes:
             if cond is None:
                 sqls.append(build.insert(pairs_or_columns=val, **self.clauses))
             elif val is None:
                 sqls.append(build.delete(where=cond, **self.clauses))
             else:
-                sqls.append(build.update(where=cond, set=val, **self.clauses))
+                updates.append((hash_dict(cond), cond, val))
+
+        for _, grouped_updates in groupby(updates, lambda x: x[0]):
+            merged_val = {}
+            for cond_hash, cond, val in grouped_updates:
+                merged_val.update(val)
+            sqls.append(build.update(where=cond, set=merged_val, **self.clauses))
 
         return self.perform(sqls)
