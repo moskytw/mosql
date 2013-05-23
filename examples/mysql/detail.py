@@ -11,8 +11,6 @@ class Detail(MySQL):
 
 if __name__ == '__main__':
 
-    from pprint import pprint
-
     print '# arrange entire table'
     for detail in Detail.arrange():
         print detail
