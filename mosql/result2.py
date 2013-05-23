@@ -23,6 +23,7 @@ class Model(Mapping):
         raise NotImplementedError('This method should accept a connection.')
 
     dump_sql = False
+    dry_run = False
 
     @classmethod
     def perform(cls, sql_or_sqls):
@@ -45,7 +46,10 @@ class Model(Mapping):
             conn.rollback()
             raise
         else:
-            conn.commit()
+            if cls.dry_run:
+                conn.rollback()
+            else:
+                conn.commit()
 
         cls.putconn(conn)
 
