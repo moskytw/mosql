@@ -1,5 +1,3 @@
-.. _builders:
-
 Build the SQL Statements
 ========================
 
