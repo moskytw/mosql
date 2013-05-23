@@ -39,6 +39,9 @@ class Model(Mapping):
         else:
             sqls = sql_or_sqls
 
+        if not sqls:
+            return
+
         if cls.dump_sql:
             print '--- SQL DUMP ---'
             for sql in sqls:
