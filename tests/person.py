@@ -13,37 +13,47 @@ if __name__ == '__main__':
 
     print '# select all'
     person = Person.select()
-    print person
-    print person.cols
+    print 'squashed:', person
+    print 'actually:', person.cols
     print
+
 
     print '# select with a condition'
     person = Person.select(where={'person_id': 'mosky'})
-    print person
-    print person.cols
+    print 'squashed:', person
+    print 'actually:', person.cols
     print
+
 
     print '# arrange entire table'
     for person in Person.arrange():
         print person
     print
 
+
     print '# arrange with a condition'
     for person in Person.arrange(where={'person_id': ('mosky', 'andy')}):
         print person
     print
 
+
     print '# rename mosky'
 
     mosky = Person.select(where={'person_id': 'mosky'})
-    mosky['name'] = 'Mosky Liu (renamed 1)'
-    mosky.name = 'Mosky Liu (renamed 2)'
+    # model expands the change for columns squashed
+    mosky.name = 'Mosky Liu (renamed 1)'
+    # setitem or setattr are also accepted
+    mosky['name'] = 'Mosky Liu (renamed 2)'
     mosky.name = 'Mosky Liu (renamed)'
+    # model will merged the updates when save
+    Person.dump_sql = True
     mosky.save()
+    Person.dump_sql = False
 
     mosky = Person.select(where={'person_id': 'mosky'})
     print mosky.name
     print
+
 
     from mosql.util import all
 
@@ -51,6 +61,7 @@ if __name__ == '__main__':
     mosky = Person.update(where={'person_id': 'mosky'}, set={'name': 'Mosky Liu'}, returning=all)
     print mosky
     print
+
 
     import mosql.json as json
 
