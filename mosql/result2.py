@@ -5,7 +5,7 @@ from itertools import groupby
 from collections import Mapping
 from pprint import pformat
 
-from . import common as build
+from . import build
 from . import util
 
 def get_col_names(cur):
