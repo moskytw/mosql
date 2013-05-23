@@ -70,7 +70,8 @@ As you see, MoSQL is
 
 1. Faster --- It just translates the data structure to SQL.
 2. Easy-to-learn --- It keeps all of the keyword of SQL.
-3. Convenient --- It provides some useful features, such as :meth:`~mosql.result.Model.arrange`.
+3. Convenient --- It provides some useful features, such as
+   :meth:`~mosql.result.Model.arrange`.
 
 It is just "More than SQL".
 
