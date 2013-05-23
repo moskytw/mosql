@@ -5,7 +5,6 @@
 smoothly.
 
 .. versionchanged:: 0.2
-
     It is totally rewritten, and it does **not** provide the
     backward-compatibility.
 '''
