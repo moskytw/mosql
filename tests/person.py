@@ -28,6 +28,11 @@ if __name__ == '__main__':
         print person
     print
 
+    print '# powerful arrange with a condition'
+    for person in Person.arrange(where={'person_id': ('mosky', 'andy')}):
+        print person
+    print
+
     print '# rename mosky'
 
     mosky = Person.select(where={'person_id': 'mosky'})
