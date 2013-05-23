@@ -128,11 +128,17 @@ class Model(Mapping):
     def row(self, row_idx):
         return [self.cols[col_name][row_idx] for col_name in self.col_names]
 
-    def __getitem__(self, col_name):
-        if col_name in self.squashed:
-            return self.cols[col_name][0]
+    def __getitem__(self, col_row):
+
+        if isinstance(col_row, basestring):
+            col_name = col_row
+            if col_name in self.squashed:
+                return self.cols[col_name][0]
+            else:
+                return self.cols[col_name]
         else:
-            return self.cols[col_name]
+            col_name, row_idx = col_row
+            return self.cols[col_name][row_idx]
 
     # --- modifiy this model --- 
 
