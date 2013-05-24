@@ -9,7 +9,7 @@ v0.2
    backward-compatibility. See the doc for more info.
 2. :mod:`mosql.common` is renamed as :mod:`mosql.build`.
 3. :mod:`mosql.ext` is removed.
-4. :mod:`mosql.build` supports "on duplicate key update" now.
+4. :func:`mosql.build.insert` supports "on duplicate key update" now.
 5. :mod:`mosql.select` uses `*` if `select` user passed in is ``None``.
 6. MoSQL passed all of the injection tests from `sqlmap <http://sqlmap.org/>`_
    on value and identifier with PostgreSQL and MySQL.
