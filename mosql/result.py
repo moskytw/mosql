@@ -70,8 +70,8 @@ class Model(Mapping):
     :attr:`clauses`, :attr:`arrange_by`, :attr:`squashed` or :attr:`ident_by`.
 
     1. The :attr:`Model.table` is the name of table.
-    2. The :attr:`Model.clauses` lets you customize the queries, ex. order by,
-       join statement, ... .
+    2. The :attr:`Model.clauses` lets you customize the default clauses of this
+       model, ex. order by, join statement, ... .
     3. The :attr:`Model.arrange_by` is need for :meth:`arrange` which arranges
        result set into models.
     4. The :attr:`Model.squashed` defines the columns you want to squash.
@@ -123,8 +123,6 @@ class Model(Mapping):
 
     You also have :meth:`pop` and :meth:`append` to maintain the rows in your
     model instance.
-
-    It's all.
     '''
 
     # --- connection-related ---

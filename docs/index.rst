@@ -19,7 +19,7 @@ v0.1.x.
     SELECT * FROM "author" WHERE "email" LIKE '%mosky%@%'
 
 It is very easy to build a query by Python's data structures and
-MoSQL's :mod:`mosql.build`.
+:mod:`mosql.build`.
 
 .. seealso ::
 
@@ -46,7 +46,7 @@ Here is a SQL and the result set:
             10 | mosky     | email   | mosky@ubuntu-tw.org
     (6 rows)
 
-Then, use :class:`mosql.result.Model` to do so: (The detail.py is in the `/examples <https://github.com/moskytw/mosql/tree/dev/examples>`_.)
+Then, use :class:`mosql.result.Model` to do so: (The `detail.py` is in the `examples <https://github.com/moskytw/mosql/tree/dev/examples>`_.)
 
 ::
 
@@ -69,9 +69,10 @@ Then, use :class:`mosql.result.Model` to do so: (The detail.py is in the `/examp
 
 There are almost same, right?
 
-Here I use :meth:`~mosql.result.Model.arrange` for taking advantages from model
-written well, so the reuslt is grouped. There is also a plain
-:meth:`~mosql.result.Model.select` you can use.
+Here I use :meth:`~mosql.result.Model.arrange` for taking advantages from the
+model configured, so the result sets are grouped into three model instances, but
+the plain methods, such as :meth:`~mosql.result.Model.select`, are also
+available.
 
 As you see, MoSQL is
 
