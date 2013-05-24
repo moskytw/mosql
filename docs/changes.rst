@@ -2,6 +2,11 @@
 The Changes
 ===========
 
+v0.2.1
+------
+
+1. fixed a bug after appending row
+
 v0.2
 ----
 
