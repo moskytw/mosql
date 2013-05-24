@@ -28,6 +28,40 @@ It is very easy to build a query by Python's data structures and
 It also provides :class:`mosql.result.Model` for result set, and you can use the
 same way to make queries to database.
 
+.. raw:: html
+
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/zh_TW/all.js#xfbml=1";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+
+
+    <style>
+    #social-btns div {
+        float: left;
+    }
+    #social-btns:after {
+        content: ".";
+        display: block;
+        font-size: 0;
+        clear: both;
+    }
+    </style>
+
+    <div id='social-btns'>
+        <div>
+            <iframe src="http://ghbtns.com/github-btn.html?user=moskytw&repo=mosql&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="85" height="20"></iframe>
+        </div>
+
+        <div>
+            <div class="fb-like" data-href="http://mosql.mosky.tw" data-send="true" data-layout="button_count" data-width="450" data-show-faces="true"></div>
+        </div>
+    </div>
+
 The Model of Result Set
 -----------------------
 
@@ -84,40 +118,6 @@ As you see, MoSQL is
    :meth:`~mosql.result.Model.arrange`.
 
 It is just "More than SQL".
-
-.. raw:: html
-
-    <div id="fb-root"></div>
-    <script>(function(d, s, id) {
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "//connect.facebook.net/zh_TW/all.js#xfbml=1";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));</script>
-
-
-    <style>
-    #social-btns div {
-        float: left;
-    }
-    #social-btns:after {
-        content: ".";
-        display: block;
-        font-size: 0;
-        clear: both;
-    }
-    </style>
-
-    <div id='social-btns'>
-        <div>
-            <iframe src="http://ghbtns.com/github-btn.html?user=moskytw&repo=mosql&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="85" height="20"></iframe>
-        </div>
-
-        <div>
-            <div class="fb-like" data-href="http://mosql.mosky.tw" data-send="true" data-layout="button_count" data-width="450" data-show-faces="true"></div>
-        </div>
-    </div>
 
 .. seealso ::
 
