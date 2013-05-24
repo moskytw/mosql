@@ -4,7 +4,9 @@
 import MySQLdb
 
 from mosql.result import Model
-import mosql.mysql # a patch for MySQL's non-standard syntax
+
+# Patch for MySQL, because MySQL uses non-standard syntax by default.
+import mosql.mysql
 
 try:
     import sqlalchemy.pool
