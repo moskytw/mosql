@@ -39,13 +39,13 @@ class Model(Mapping):
     :attr:`clauses`, :attr:`arrange_by`, :attr:`squash_by` or :attr:`ident_by`.
 
     1. The :attr:`Model.table` is the name of table.
-    1. The :attr:`Model.clauses` lets you customize the queries, ex. order by,
+    2. The :attr:`Model.clauses` lets you customize the queries, ex. order by,
        join statement, ... .
-    2. The :attr:`Model.arrange_by` is need for :meth:`arrange` which arranges
+    3. The :attr:`Model.arrange_by` is need for :meth:`arrange` which arranges
        result set into models.
-    3. The :attr:`Model.squash_by` lets it squash the columns which have
+    4. The :attr:`Model.squash_by` lets it squash the columns which have
        duplicate values in rows.
-    4. The last one, :attr:`Model.ident_by`, makes the :meth:`save` more
+    5. The last one, :attr:`Model.ident_by`, makes the :meth:`save` more
        efficiently.
 
     Then, make some queries to database:
