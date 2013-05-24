@@ -56,10 +56,10 @@ if __name__ == '__main__':
     print
 
 
-    from mosql.util import all
+    from mosql.util import star
 
     print '# rename mosky back'
-    mosky = Person.update({'person_id': 'mosky'}, set={'name': 'Mosky Liu'}, returning=all)
+    mosky = Person.update({'person_id': 'mosky'}, set={'name': 'Mosky Liu'}, returning=star)
     print mosky
     print
 

@@ -56,11 +56,11 @@ if __name__ == '__main__':
     print
 
 
-    from mosql.util import all
+    from mosql.util import star
 
     print '# rename mosky back'
     # MySQL doesn't support returning
-    #mosky = Person.update({'person_id': 'mosky'}, set={'name': 'Mosky Liu'}, returning=all)
+    #mosky = Person.update({'person_id': 'mosky'}, set={'name': 'Mosky Liu'}, returning=star)
     Person.update({'person_id': 'mosky'}, set={'name': 'Mosky Liu'})
     mosky = Person.select({'person_id': 'mosky'})
     print mosky
