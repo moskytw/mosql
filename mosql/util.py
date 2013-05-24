@@ -591,18 +591,6 @@ class Clause(object):
     def __repr__(self):
         return 'Clause(%s, %s)' % (self.prefix, self.formatters)
 
-def try_to_hash_clause_args(args):
-
-    def try_to_freeze(args):
-        for k, v in args.items():
-            if hasattr(v, 'items'):
-                v = tuple(v.items())
-            elif isinstance(v, list):
-                v = tuple(v)
-            yield (k, v)
-
-    return tuple(try_to_freeze(args))
-
 class Statement(object):
     '''It represents a statement of SQL.
 
@@ -627,7 +615,6 @@ class Statement(object):
 
     def __init__(self, clauses):
         self.clauses = clauses
-        self.cached = {}
 
     def format(self, clause_args):
         '''Apply the `clause_args` to each clauses.
@@ -638,27 +625,14 @@ class Statement(object):
         :rtype: str
         '''
 
-        hv = try_to_hash_clause_args(clause_args)
-        try:
-            return self.cached[hv]
-        except (KeyError, TypeError), e:
-            pass
-
         pieces = []
         for clause in self.clauses:
             arg = clause_args.get(clause.prefix.lower())
             # NOTE: for backward compatibility
-            #if arg is not None: if arg:
+            #if arg is not None:
             if arg:
                 pieces.append(clause.format(arg))
-
-        result = ' '.join(pieces)
-        try:
-            self.cached[hv] = result
-        except TypeError:
-            pass
-
-        return result
+        return ' '.join(pieces)
 
     def __repr__(self):
         return 'Statement(%s)' % self.clauses
