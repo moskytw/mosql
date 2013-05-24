@@ -109,7 +109,7 @@ offset   = Clause('offset'  , single_value)
 
 select_stat = Statement([select, from_, joins, where, group_by, having, order_by, limit, offset])
 
-def select(table, where=None, select=raw('*'), **clauses_args):
+def select(table, where=None, select=None, **clauses_args):
     '''It generates the SQL statement, ``select ...`` .
 
     .. versionchanged:: 0.1.6
@@ -189,7 +189,7 @@ def select(table, where=None, select=raw('*'), **clauses_args):
 
     clauses_args['from']   = table
     clauses_args['where']  = where
-    clauses_args['select'] = select
+    clauses_args['select'] = star if select is None else select
 
     if 'order_by' in clauses_args:
         clauses_args['order by'] = clauses_args['order_by']
