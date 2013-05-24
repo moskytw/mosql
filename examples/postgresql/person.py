@@ -40,11 +40,14 @@ if __name__ == '__main__':
     print '# rename mosky'
 
     mosky = Person.select({'person_id': 'mosky'})
+
     # model expands the change for columns squash_by
     mosky.name = 'Mosky Liu (renamed 1)'
+
     # setitem or setattr are also accepted
     mosky['name'] = 'Mosky Liu (renamed 2)'
     mosky.name = 'Mosky Liu (renamed)'
+
     # model will merged the updates when save
     Person.dump_sql = True
     mosky.save()
