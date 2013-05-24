@@ -12,7 +12,7 @@ smoothly.
 __all__ = ['Model']
 
 from itertools import groupby
-from collections import Mapping
+from collections import Mapping, Sequence
 from pprint import pformat
 
 from . import build
@@ -23,6 +23,30 @@ def get_col_names(cur):
 
 def hash_dict(d):
     return hash(frozenset(d.items()))
+
+class ColumnProxy(Sequence):
+
+    def __init__(self, model, col_name):
+        self.model = model
+        self.col_name = col_name
+
+    def __len__(self):
+        return self.model.cols[self.col_name].__len__()
+
+    def __iter__(self):
+        return self.model.cols[self.col_name].__iter__()
+
+    def __contains__(self, elem):
+        return self.model.cols[self.col_name].__contains__(elem)
+
+    def __getitem__(self, idx):
+        return self.model.cols[self.col_name][idx]
+
+    def __setitem__(self, idx, val):
+        self.model.set(self.col_name, idx, val)
+
+    def __repr__(self):
+        return pformat(list(self))
 
 class Model(Mapping):
     '''The base model of result set.
@@ -74,12 +98,6 @@ class Model(Mapping):
 
     ::
 
-        m[squash_by_col_name] = val
-        m.squash_by_col_name = val
-        m[col_name, row_idx] = val
-
-        # The following statements modifiy something, but the model can't record
-        # the changes. It may be support in new version.
         m[col_name][row_idx] = val
         m.col_name[row_idx] = val
 
@@ -247,6 +265,11 @@ class Model(Mapping):
     '''It defines which column should be squash_by. It is better to use a set to
     enumerate the column names.'''
 
+    def __init__(self):
+        self.changes = []
+        self.cols = {}
+        self.proxies = {}
+
     def col(self, col_name):
         '''It returns the column you specified in this model.'''
         return self.cols[col_name]
@@ -261,21 +284,15 @@ class Model(Mapping):
         '''It returns the row you specified in this model.'''
         return [self.cols[col_name][row_idx] for col_name in self.col_names]
 
-    def __getitem__(self, col_row):
+    def __getitem__(self, col_name):
 
-        if isinstance(col_row, basestring):
-            col_name = col_row
-            if col_name in self.squash_by:
-                col = self.cols[col_name]
-                if col:
-                    return col[0]
-                else:
-                    return None
-            else:
-                return self.cols[col_name]
+        if col_name in self.squash_by:
+            return self.cols.get(col_name, [None])[0]
+        elif col_name in self.proxies:
+            return self.proxies[col_name]
         else:
-            col_name, row_idx = col_row
-            return self.cols[col_name][row_idx]
+            self.proxies[col_name] = proxy = ColumnProxy(self, col_name)
+            return proxy
 
     def __getattr__(self, key):
 
@@ -302,10 +319,6 @@ class Model(Mapping):
     '''It defines how to identify a row. It should be column names in a tuple.
     By default, it use all of the columns.'''
 
-    def __init__(self):
-        self.changes = []
-        self.cols = {}
-
     def ident(self, row_idx):
 
         ident_by = self.ident_by
@@ -321,19 +334,17 @@ class Model(Mapping):
 
         return ident
 
-    def __setitem__(self, col_row, val):
+    def __setitem__(self, col_name, val):
 
-        if isinstance(col_row, basestring):
-            col_name = col_row
-            if col_name in self.squash_by:
-                for i in range(len(self.cols[col_name])):
-                    self[col_name, i] = val
-            else:
-                raise TypeError("column %r is not squashed." % col_name)
+        if col_name in self.squash_by:
+            for i in range(len(self.cols[col_name])):
+                self.set(col_name, i, val)
         else:
-            col_name, row_idx = col_row
-            self.changes.append((self.ident(row_idx), {col_name: val}))
-            self.cols[col_name][row_idx] = val
+            raise TypeError("column %r is not squashed." % col_name)
+
+    def set(self, col_name, row_idx, val):
+        self.changes.append((self.ident(row_idx), {col_name: val}))
+        self.cols[col_name][row_idx] = val
 
     def pop(self, row_idx=-1):
         '''It pops the row you specified in this model.'''
