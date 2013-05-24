@@ -6,7 +6,7 @@ from base import MySQL
 class Detail(MySQL):
     table = 'detail'
     arrange_by = ('person_id', 'key')
-    squashed = arrange_by
+    squash_by = arrange_by
     ident_by = ('detail_id', )
 
 if __name__ == '__main__':

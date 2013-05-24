@@ -6,7 +6,7 @@ from base import PostgreSQL
 class Person(PostgreSQL):
     table = 'person'
     arrange_by = ('person_id', )
-    squashed = ('person_id', 'name')
+    squash_by = ('person_id', 'name')
     ident_by = arrange_by
 
 if __name__ == '__main__':
@@ -40,7 +40,7 @@ if __name__ == '__main__':
     print '# rename mosky'
 
     mosky = Person.select({'person_id': 'mosky'})
-    # model expands the change for columns squashed
+    # model expands the change for columns squash_by
     mosky.name = 'Mosky Liu (renamed 1)'
     # setitem or setattr are also accepted
     mosky['name'] = 'Mosky Liu (renamed 2)'

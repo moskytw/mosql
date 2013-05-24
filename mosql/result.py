@@ -36,14 +36,14 @@ class Model(Mapping):
         Model.putconn
 
     Second, you may want to adjust the attributes :attr:`table`,
-    :attr:`clauses`, :attr:`arrange_by`, :attr:`squashed` or :attr:`ident_by`.
+    :attr:`clauses`, :attr:`arrange_by`, :attr:`squash_by` or :attr:`ident_by`.
 
     1. The :attr:`Model.table` is the name of table.
     1. The :attr:`Model.clauses` lets you customize the queries, ex. order by,
        join statement, ... .
     2. The :attr:`Model.arrange_by` is need for :meth:`arrange` which arranges
        result set into models.
-    3. The :attr:`Model.squashed` lets it squash the columns which have
+    3. The :attr:`Model.squash_by` lets it squash the columns which have
        duplicate values in rows.
     4. The last one, :attr:`Model.ident_by`, makes the :meth:`save` more
        efficiently.
@@ -68,8 +68,8 @@ class Model(Mapping):
 
     ::
 
-        m[squashed_col_name] = val
-        m.squashed_col_name = val
+        m[squash_by_col_name] = val
+        m.squash_by_col_name = val
         m[col_name, row_idx] = val
 
         # The following statements modifiy something, but the model can't record
@@ -239,8 +239,8 @@ class Model(Mapping):
 
     # --- read this model ---
 
-    squashed = set()
-    '''It defines which column should be squashed. It is better to use a set to
+    squash_by = set()
+    '''It defines which column should be squash_by. It is better to use a set to
     enumerate the column names.'''
 
     def col(self, col_name):
@@ -261,7 +261,7 @@ class Model(Mapping):
 
         if isinstance(col_row, basestring):
             col_name = col_row
-            if col_name in self.squashed:
+            if col_name in self.squash_by:
                 col = self.cols[col_name]
                 if col:
                     return col[0]
@@ -350,7 +350,7 @@ class Model(Mapping):
 
             if col_name in row_map:
                 val = row_map[col_name]
-            elif col_name in self.squashed:
+            elif col_name in self.squash_by:
                 val = row_map[col_name] = self.cols[col_name][0]
             else:
                 val = row_map[col_name] = util.default

@@ -8,7 +8,7 @@ class PersonDetail(PostgreSQL):
     table = 'detail'
     clauses = dict(joins=build.join('person'))
     arrange_by = ('person_id', 'key')
-    squashed = ('person_id', 'key', 'name')
+    squash_by = ('person_id', 'key', 'name')
 
 if __name__ == '__main__':
     
