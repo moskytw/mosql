@@ -39,7 +39,8 @@ if __name__ == '__main__':
 
     print '# rename mosky'
 
-    mosky = Person.select({'person_id': 'mosky'})
+    # where is almost same as select
+    mosky = Person.where(person_id='mosky')
 
     # model expands the change for columns squash_by
     mosky.name = '<ttypo>'

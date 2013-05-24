@@ -28,7 +28,8 @@ if __name__ == '__main__':
     mosky_detail.save()
 
     # re-select to check the data is really saved to database
-    mosky_detail = Detail.select({'person_id': 'mosky', 'key': 'email'})
+    # the method, where, is also useful
+    mosky_detail = Detail.where(person_id='mosky', key='email')
     print 'mails     :', mosky_detail.val
     print 'first mail:', mosky_detail.val[0]
 

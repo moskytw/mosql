@@ -59,6 +59,7 @@ class Model(Mapping):
         Model.getconn
         Model.putconn
 
+
     .. seealso ::
 
          Here are `examples
@@ -90,6 +91,14 @@ class Model(Mapping):
 
     The :meth:`arrange` is like :meth:`select`, but it uses the
     :attr:`arrange_by` to arrange the result set.
+
+    The following two methods treat all of the keyword arguments as `where`. It
+    makes statements simpler.
+
+    .. autosummary ::
+
+        Model.where
+        Model.find
 
     If you want to know what arguments you can use, see :mod:`mosql.build`.
 
@@ -240,9 +249,19 @@ class Model(Mapping):
         return cls._query(cls.load_cur, build.select, *args, **kargs)
 
     @classmethod
+    def where(cls, **where):
+        '''It uses keyword arguments as `where` and passes to :meth:`select`.'''
+        return cls.select(where=where)
+
+    @classmethod
     def arrange(cls, *args, **kargs):
         '''It performs a select query and arrange the result set into models.'''
         return cls._query(cls.arrange_cur, build.select, *args, **kargs)
+
+    @classmethod
+    def find(cls, **where):
+        '''It uses keyword arguments as `where` and passes to :meth:`arrange`.'''
+        return self.arrange(where=where)
 
     @classmethod
     def insert(cls, *args, **kargs):
