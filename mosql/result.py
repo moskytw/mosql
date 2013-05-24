@@ -210,8 +210,8 @@ class Model(Mapping):
     def arrange_rows(cls, col_names, rows):
 
         name_index_map = dict((name, i) for i, name  in enumerate(col_names))
-        key_indexes = tuple(name_index_map[name] for name in cls.arrange_by)
-        key_func = lambda row: tuple(row[i] for i in key_indexes)
+        key_indexes = tuple(name_index_map.get(name) for name in cls.arrange_by)
+        key_func = lambda row: tuple(row[i] if i is not None else None for i in key_indexes)
 
         for _, rows in groupby(rows, key_func):
             yield cls.load_rows(col_names, list(rows))
