@@ -10,3 +10,4 @@ class PostgreSQL(Model):
 
     getconn = pool.getconn
     putconn = pool.putconn
+
