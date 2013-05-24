@@ -20,6 +20,7 @@ if __name__ == '__main__':
     print '# modified an email'
 
     mosky_detail = Detail.select({'person_id': 'mosky', 'key': 'email'})
+    backup = mosky_detail.val[0]
 
     # you have to use this form to make model remeber the changes
     mosky_detail['val', 0] = 'this email is modified 1'
@@ -27,10 +28,14 @@ if __name__ == '__main__':
     mosky_detail['val', 0] = 'this email is modified'
     mosky_detail.save()
 
-    # re-select to ensure the data modified is saved to db
+    # re-select to check the data is really saved to database
     mosky_detail = Detail.select({'person_id': 'mosky', 'key': 'email'})
-    print 'mails:     ', mosky_detail.val
+    print 'mails     :', mosky_detail.val
     print 'first mail:', mosky_detail.val[0]
+
+    mosky_detail['val', 0] = backup
+    mosky_detail.save()
+    print 'restored  :', mosky_detail.val[0]
 
     print
 
