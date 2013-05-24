@@ -21,7 +21,11 @@ v0.1.x.
 It is very easy to build a query by Python's data structures and
 MoSQL's :mod:`mosql.build`.
 
-It also provides :class:`~mosql.result.Model` for result set, which let you
+.. seealso ::
+
+    There is more explaination of the builders --- :class:`mosql.build`.
+
+It also provides :class:`mosql.result.Model` for result set, which let you
 use the same way to make queries to database.
 
 The Model of Result Set
@@ -42,12 +46,12 @@ Here is a SQL to the database:
             10 | mosky     | email   | mosky@ubuntu-tw.org
     (6 rows)
 
-Then, use MoSQL's :class:`~mosql.result.Model` to do so:
+Then, use :class:`mosql.result.Model` to do so: (The detail.py is in the `/examples <https://github.com/moskytw/mosql/tree/dev/examples>`_.)
 
 ::
 
     >>> from detail import Detail
-    >>> for detail in Detail.arrange(where={'person_id': ('mosky', 'andy')}, order_by=('person_id', 'key')):
+    >>> for detail in Detail.arrange({'person_id': ('mosky', 'andy')}):
     ...     print detail
     ... 
     {'detail_id': [5],
@@ -66,14 +70,16 @@ Then, use MoSQL's :class:`~mosql.result.Model` to do so:
 There are almost same, right?
 
 Here I use :meth:`~mosql.result.Model.arrange` for taking advantages from model
-written well, so the reuslt seems nice. There is also a plain
+written well, so the reuslt is grouped. There is also a plain
 :meth:`~mosql.result.Model.select` you can use.
 
 As you see, MoSQL is
 
-1. Faster --- It just translates the data structure to SQL.
-2. Easy-to-learn --- It keeps all of the keyword of SQL.
-3. Convenient --- It provides some useful features, such as
+1. Easy-to-learn --- No magic syntax. Everything is just plain data structure
+   and SQL keywords.
+2. Faster        --- It just builds the SQLs from Python's data structure and
+   then send it via the connector.
+3. Convenient    --- It makes result set more easy to use, such as
    :meth:`~mosql.result.Model.arrange`.
 
 It is just "More than SQL".
