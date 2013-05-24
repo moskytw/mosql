@@ -324,8 +324,11 @@ class Model(Mapping):
 
         if isinstance(col_row, basestring):
             col_name = col_row
-            for i in range(len(self.cols[col_name])):
-                self[col_name, i] = val
+            if col_name in self.squash_by:
+                for i in range(len(self.cols[col_name])):
+                    self[col_name, i] = val
+            else:
+                raise TypeError("column %r is not squashed." % col_name)
         else:
             col_name, row_idx = col_row
             self.changes.append((self.ident(row_idx), {col_name: val}))
