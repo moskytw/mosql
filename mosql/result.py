@@ -203,39 +203,42 @@ class Model(Mapping):
     '''
 
     @classmethod
+    def _query(cls, cur_handler, sql_builder, *args, **kargs):
+
+        clauses = getattr(cls, 'clauses', None)
+        if clauses:
+            mixed_kargs = clauses.copy()
+            if kargs:
+                mixed_kargs.update(kargs)
+        else:
+            mixed_kargs = kargs
+
+        return cur_handler(cls.perform(sql_builder(cls.table, *args, **mixed_kargs)))
+
+    @classmethod
     def select(cls, *args, **kargs):
         '''It performs a select query and load result set into a model.'''
-        mixed_kargs = cls.clauses.copy()
-        mixed_kargs.update(kargs)
-        return cls.load_cur(cls.perform(build.select(cls.table, *args, **mixed_kargs)))
+        return cls._query(cls.load_cur, build.select, *args, **kargs)
 
     @classmethod
     def arrange(cls, *args, **kargs):
         '''It performs a select query and arrange the result set into models.'''
-        mixed_kargs = cls.clauses.copy()
-        mixed_kargs.update(kargs)
-        return cls.arrange_cur(cls.perform(build.select(cls.table, *args, **mixed_kargs)))
+        return cls._query(cls.arrange_cur, build.select, *args, **kargs)
 
     @classmethod
     def insert(cls, *args, **kargs):
         '''It performs an insert query and load result set into a model (if any).'''
-        mixed_kargs = cls.clauses.copy()
-        mixed_kargs.update(kargs)
-        return cls.load_cur(cls.perform(build.insert(cls.table, *args, **mixed_kargs)))
+        return cls._query(cls.load_cur, build.insert, *args, **kargs)
 
     @classmethod
     def update(cls, *args, **kargs):
         '''It performs an update query and load result set into a model (if any).'''
-        mixed_kargs = cls.clauses.copy()
-        mixed_kargs.update(kargs)
-        return cls.load_cur(cls.perform(build.update(cls.table, *args, **mixed_kargs)))
+        return cls._query(cls.load_cur, build.update, *args, **kargs)
 
     @classmethod
     def delete(cls, *args, **kargs):
         '''It performs a delete query and load result set into a model (if any).'''
-        mixed_kargs = cls.clauses.copy()
-        mixed_kargs.update(kargs)
-        return cls.load_cur(cls.perform(build.delete(cls.table, *args, **mixed_kargs)))
+        return cls._query(cls.load_cur, build.delete, *args, **kargs)
 
     # --- read this model ---
 
