@@ -325,9 +325,10 @@ class Model(Mapping):
         try:
             cols = object.__getattribute__(self, 'cols')
         except AttributeError:
-            cols = None
+            object.__setattr__(self, key, val)
+            return
 
-        if cols and key in cols:
+        if key in cols:
             self[key] = val
         else:
             object.__setattr__(self, key, val)
