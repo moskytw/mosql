@@ -35,6 +35,12 @@ class Model(Mapping):
         Model.getconn
         Model.putconn
 
+    .. seealso ::
+
+         Here are `examples
+         <https://github.com/moskytw/mosql/tree/dev/examples>`_ which show how
+         to use MoSQL with MySQL or PostgreSQL.
+
     Second, you may want to adjust the attributes :attr:`table`,
     :attr:`clauses`, :attr:`arrange_by`, :attr:`squash_by` or :attr:`ident_by`.
 
@@ -83,11 +89,6 @@ class Model(Mapping):
     model instance.
 
     It's all.
-
-    .. seealso ::
-
-        `Here <https://github.com/moskytw/mosql/tree/dev/examples>`_ are
-        examples which show how to use MoSQL with MySQL or PostgreSQL.
     '''
 
     # --- connection-related ---
