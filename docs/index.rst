@@ -6,7 +6,7 @@
 MoSQL --- More than SQL
 =======================
 
-It lets you use the common Python data structures to build SQLs, and provides a
+It lets you use the common Python's data structures to build SQLs, and provides a
 convenient model of result set.
 
 NOTE: v0.2 is a new branch and it does **not** provide backward-compatibility for
@@ -25,13 +25,13 @@ MoSQL's :mod:`mosql.build`.
 
     There is more explaination of the builders --- :class:`mosql.build`.
 
-It also provides :class:`mosql.result.Model` for result set, which let you
-use the same way to make queries to database.
+It also provides :class:`mosql.result.Model` for result set, and you can use the
+same way to make queries to database.
 
 The Model of Result Set
 -----------------------
 
-Here is a SQL to the database:
+Here is a SQL and the result set:
 
 ::
 
@@ -76,7 +76,7 @@ written well, so the reuslt is grouped. There is also a plain
 As you see, MoSQL is
 
 1. Easy-to-learn --- No magic syntax. Everything is just plain data structure
-   and SQL keywords.
+   or SQL keyword.
 2. Faster        --- It just builds the SQLs from Python's data structure and
    then send it via the connector.
 3. Convenient    --- It makes result set more easy to use, such as

@@ -67,15 +67,14 @@ class Model(Mapping):
          to use MoSQL with MySQL or PostgreSQL.
 
     Second, you may want to adjust the attributes :attr:`table`,
-    :attr:`clauses`, :attr:`arrange_by`, :attr:`squash_by` or :attr:`ident_by`.
+    :attr:`clauses`, :attr:`arrange_by`, :attr:`squashed` or :attr:`ident_by`.
 
     1. The :attr:`Model.table` is the name of table.
     2. The :attr:`Model.clauses` lets you customize the queries, ex. order by,
        join statement, ... .
     3. The :attr:`Model.arrange_by` is need for :meth:`arrange` which arranges
        result set into models.
-    4. The :attr:`Model.squash_by` lets it squash the columns which have
-       duplicate values in rows.
+    4. The :attr:`Model.squashed` defines the columns you want to squash.
     5. The last one, :attr:`Model.ident_by`, makes the :meth:`save` more
        efficiently.
 
@@ -280,9 +279,9 @@ class Model(Mapping):
 
     # --- read this model ---
 
-    squash_by = set()
-    '''It defines which column should be squash_by. It is better to use a set to
-    enumerate the column names.'''
+    squashed = set()
+    '''It defines which columns should be squashed. It is better to use a set to
+    enumerate the names of columns.'''
 
     def __init__(self):
         self.changes = []
@@ -305,7 +304,7 @@ class Model(Mapping):
 
     def __getitem__(self, col_name):
 
-        if col_name in self.squash_by:
+        if col_name in self.squashed:
             return self.cols.get(col_name, [None])[0]
         elif col_name in self.proxies:
             return self.proxies[col_name]
@@ -356,7 +355,7 @@ class Model(Mapping):
 
     def __setitem__(self, col_name, val):
 
-        if col_name in self.squash_by:
+        if col_name in self.squashed:
             for i in range(len(self.cols[col_name])):
                 self.set(col_name, i, val)
         else:
@@ -388,7 +387,7 @@ class Model(Mapping):
 
             if col_name in row_map:
                 val = row_map[col_name]
-            elif col_name in self.squash_by:
+            elif col_name in self.squashed:
                 val = row_map[col_name] = self.cols[col_name][0]
             else:
                 val = row_map[col_name] = util.default

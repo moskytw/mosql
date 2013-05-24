@@ -6,7 +6,7 @@ from base import MySQL
 class Person(MySQL):
     table      = 'person'
     arrange_by = ('person_id', )
-    squash_by  = set(['person_id', 'name'])
+    squashed   = set(['person_id', 'name'])
     ident_by   = arrange_by
 
 if __name__ == '__main__':
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     # where is almost same as select
     mosky = Person.where(person_id='mosky')
 
-    # model expands the change for columns squash_by
+    # model expands the change for columns squashed
     mosky.name = '<ttypo>'
     mosky['name'] = '<renamed>'
 

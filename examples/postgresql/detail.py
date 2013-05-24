@@ -7,7 +7,7 @@ class Detail(PostgreSQL):
     table      = 'detail'
     arrange_by = ('person_id', 'key')
     clauses    = dict(order_by=arrange_by)
-    squash_by  = set(arrange_by)
+    squashed   = set(arrange_by)
     ident_by   = ('detail_id', )
 
 if __name__ == '__main__':
