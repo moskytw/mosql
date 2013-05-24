@@ -101,13 +101,23 @@ class Model(Mapping):
 
     If you want to know what arguments you can use, see :mod:`mosql.build`.
 
-    After select, there is a model instance. You can modifiy a model instance by
-    below statements:
+    After select, there is a model instance. You can access the data in a model
+    instance by the below statements:
 
     ::
 
+        m[col_name][row_idx]
+        m.col_name[row_idx]
+
+        m[col_name]
+        m.col_name
+
         m[col_name][row_idx] = val
         m.col_name[row_idx] = val
+
+        # if this column is squashed
+        m[col_name] = val
+        m.col_name = val
 
     When you finish your editing, use :meth:`save` to save the changes.
 
