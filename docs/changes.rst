@@ -9,6 +9,7 @@ v0.2
    backward-compatibility. See the doc for more info.
 2. :mod:`mosql.common` is renamed as :mod:`mosql.build`.
 3. :mod:`mosql.ext` is removed.
+4. :mod:`mosql.build` supports "on duplicate key update" now.
 
 v0.1.6
 ------
