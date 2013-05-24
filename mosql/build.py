@@ -43,8 +43,9 @@ insert  = Clause('insert into', single_identifier)
 columns = Clause('columns'    , column_list, hidden=True)
 values  = Clause('values'     , (value, concat_by_comma, paren))
 returning = Clause('returning'  , identifier_list)
+on_duplicate_key_update = Clause('on duplicate key update', set_list)
 
-insert_into_stat = Statement([insert, columns, values, returning])
+insert_into_stat = Statement([insert, columns, values, returning, on_duplicate_key_update])
 
 def insert(table, set=None, values=None, **clauses_args):
     '''It generates the SQL statement, ``insert into ...``.
@@ -69,6 +70,11 @@ def insert(table, set=None, values=None, **clauses_args):
 
     >>> print insert('person', {'person_id': 'mosky', 'name': 'Mosky Liu'}, returning=raw('*'))
     INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu') RETURNING *
+
+    The MySQL-specific "on duplicate key update" is also supported:
+
+    >>> print insert('person', values=('mosky', 'Mosky Liu'), on_duplicate_key_update={'name': 'Mosky Liu'})
+    INSERT INTO "person" VALUES ('mosky', 'Mosky Liu') ON DUPLICATE KEY UPDATE "name"='Mosky Liu'
     '''
 
     clauses_args['insert into'] = table
@@ -82,6 +88,10 @@ def insert(table, set=None, values=None, **clauses_args):
     else:
         clauses_args['columns'] = set
         clauses_args['values']  = values
+
+    if 'on_duplicate_key_update' in clauses_args:
+        clauses_args['on duplicate key update'] = clauses_args['on_duplicate_key_update']
+        del clauses_args['on_duplicate_key_update']
 
     return insert_into_stat.format(clauses_args)
 
