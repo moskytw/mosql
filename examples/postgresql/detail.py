@@ -4,10 +4,10 @@
 from base import PostgreSQL
 
 class Detail(PostgreSQL):
-    table = 'detail'
+    table      = 'detail'
     arrange_by = ('person_id', 'key')
-    squash_by = arrange_by
-    ident_by = ('detail_id', )
+    squash_by  = set(arrange_by)
+    ident_by   = ('detail_id', )
 
 if __name__ == '__main__':
 

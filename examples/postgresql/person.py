@@ -4,10 +4,10 @@
 from base import PostgreSQL
 
 class Person(PostgreSQL):
-    table = 'person'
+    table      = 'person'
     arrange_by = ('person_id', )
-    squash_by = ('person_id', 'name')
-    ident_by = arrange_by
+    squash_by  = set(['person_id', 'name'])
+    ident_by   = arrange_by
 
 if __name__ == '__main__':
 
