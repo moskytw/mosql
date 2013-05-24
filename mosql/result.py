@@ -268,7 +268,7 @@ class Model(Mapping):
     @classmethod
     def find(cls, **where):
         '''It uses keyword arguments as `where` and passes to :meth:`arrange`.'''
-        return self.arrange(where=where)
+        return cls.arrange(where=where)
 
     @classmethod
     def insert(cls, *args, **kargs):
