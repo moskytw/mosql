@@ -400,7 +400,7 @@ class Model(Mapping):
             else:
                 val = row_map[col_name] = util.default
 
-            self.cols[col_name] = val
+            self.cols[col_name].append(val)
 
         self.changes.append((None, row_map))
 
