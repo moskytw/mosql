@@ -3,69 +3,86 @@ The full version of this documentation is at `mosql.mosky.tw <http://mosql.mosky
 MoSQL --- More than SQL
 =======================
 
-MoSQL is a lightweight Python library which assists programmer to use SQL.
+It lets you use the common Python's data structures to build SQLs, and provides a
+convenient model of result set.
 
-It has two major parts:
+The talk, "MoSQL: More than SQL, but Less than ORM", at PyCon TW 2013:
 
-1. `An Easy-to-Use Model`_ for the result set.
-2. `The SQL Builders`_ which build the SQL strings by the common data types in Python.
-
-An Easy-to-Use Model
---------------------
-
-I show you an example with this result set:
+NOTE: v0.2 is a new branch and it does **not** provide backward-compatibility for
+v0.1.x.
 
 ::
 
-    db=> select * from detail where person_id='mosky';
-     detail_id | person_id |   key   |   val            
-    -----------+-----------+---------+---------
-             4 | mosky     | address | address
-             3 | mosky     | address | ...
-            10 | mosky     | email   | email
-             6 | mosky     | email   | ...
-             1 | mosky     | email   | ...
-    (5 rows)
+    >>> from mosql import build
+    >>> build.select('author', {'email like': '%mosky%@%'})
+    SELECT * FROM "author" WHERE "email" LIKE '%mosky%@%'
 
-The `mosql.result.Model <http://mosql.mosky.tw/result.html#mosql.result.Model>`_ act as a proxy of the result set. After `configuring <http://mosql.mosky.tw/result.html#tutorial-of-model>`_, it provides a nice inferface to access the rows.
+It is very easy to build a query by Python's data structures and
+`mosql.build <http://mosql.mosky.tw/builders.html#module-mosql.build>`_.
+
+There is more explaination of the builders --- `mosql.build <http://mosql.mosky.tw/builders.html#module-mosql.build>`_.
+
+It also provides `mosql.result.Model <http://mosql.mosky.tw/result.html#mosql.result.Model>`_ for result set, and you can use the
+same way to make queries to database.
+
+The Model of Result Set
+-----------------------
+
+Here is a SQL and the result set:
 
 ::
 
-    >>> from my_models import Detail
-    >>> for detail in Detail.find(person_id='mosky')):
+    mosky=> select * from detail where person_id in ('mosky', 'andy') order by person_id, key;
+     detail_id | person_id |   key   |           val            
+    -----------+-----------+---------+--------------------------
+             5 | andy      | email   | andy@gmail.com
+             3 | mosky     | address | It is my first address.
+             4 | mosky     | address | It is my second address.
+             1 | mosky     | email   | mosky.tw@gmail.com
+             2 | mosky     | email   | mosky.liu@pinkoi.com
+            10 | mosky     | email   | mosky@ubuntu-tw.org
+    (6 rows)
+
+Then, use `mosql.result.Model <http://mosql.mosky.tw/result.html#mosql.result.Model>`_ to do so: (The `detail.py` is in the `examples <https://github.com/moskytw/mosql/tree/dev/examples>`_.)
+
+::
+
+    >>> from detail import Detail
+    >>> for detail in Detail.arrange({'person_id': ('mosky', 'andy')}):
     ...     print detail
-    {'person_id': 'mosky', 'detail_id': [3, 4], 'val': ['address', '...'], 'key': 'address'}
-    {'person_id': 'mosky', 'detail_id': [1, 6, 10], 'val': ['email', '...', '...'], 'key': 'email'}
+    ... 
+    {'detail_id': [5],
+     'key': 'email',
+     'person_id': 'andy',
+     'val': ['andy@gmail.com']}
+    {'detail_id': [3, 4],
+     'key': 'address',
+     'person_id': 'mosky',
+     'val': ['It is my first address.', 'It is my second address.']}
+    {'detail_id': [1, 2, 10],
+     'key': 'email',
+     'person_id': 'mosky',
+     'val': ['mosky.tw@gmail.com', 'mosky.liu@pinkoi.com', 'mosky@ubuntu-tw.org']}
 
-For simplicity, the Model, which is a *dict-like* object, is rendered as a dict, and the `mosql.result.Column <http://mosql.mosky.tw/result.html#mosql.result.Column>`_, which is a *list-like* object, is rendered as a list.
+There are almost same, right?
 
-As you see, some of the columns aren't rendered as lists, because they are the columns grouped. It is the feature `Model <http://mosql.mosky.tw/result.html#mosql.result.Model>`_ provides. It is more convenient than using SQL's ``group by``.
+Here I use `arrange <http://mosql.mosky.tw/result.html#mosql.result.Model.arrange>`_ for taking advantages from the
+model configured, so the result sets are grouped into three model instances, but
+the plain methods, such as `select <http://mosql.mosky.tw/result.html#mosql.result.Model.select>`_, are also
+available.
 
-If you want to modify this model, just treat them as a dict or a list. The model will record your changes and let you save the changes at any time.
+As you see, MoSQL is
 
-::
+1. Easy-to-learn --- No magic syntax. Everything is just plain data structure
+   or SQL keyword.
+2. Faster        --- It just builds the SQLs from Python's data structure and
+   then send it via the connector.
+3. Convenient    --- It makes result set more easy to use, such as
+   `arrange <http://mosql.mosky.tw/result.html#mosql.result.Model.arrange>`_.
 
-    >>> detail = Detail.find(person_id='mosky', key='email')
-    >>> detail['val'][0] = 'I changed my email.'
-    >>> # detail.val[0] = 'I changed my email.' # It also works in 0.1.1 .
-    >>> detail.save()
+It is just "More than SQL".
 
-`Start with MoSQL’s model <http://mosql.mosky.tw/result.html#tutorial-of-model>`_ describes more details about how to use the Model.
-
-The SQL Builders
-----------------
-
-The above model is based on these SQL builders. For an example:
-
-::
-
-    >>> from mosql.common import select
-    >>> select('person', {'age >': 18})
-    'SELECT * FROM person WHERE age > 18'
-
-It converts the common data types in Python into the SQL statements. 
-
-You can find more exmaples in `mosql.common <http://mosql.mosky.tw/builders.html#module-mosql.common>`_. If the common builders aren't enough in your case, it is possible to customize the builder by `mosql.util <http://mosql.mosky.tw/builders.html#module-mosql.util>`_.
+There is more explaination of the model --- `mosql.result <http://mosql.mosky.tw/result.html#module-mosql.result>`_.
 
 Installation
 ------------
