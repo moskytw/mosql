@@ -5,8 +5,11 @@ import MySQLdb
 
 from mosql.result import Model
 
-# Patch for MySQL, because MySQL uses non-standard syntax by default.
+# atch for MySQL, because MySQL uses non-standard syntax by default.
 import mosql.mysql
+
+# if you want to use the native escape function
+#import mosql.MySQLdb_escape
 
 try:
     import sqlalchemy.pool
