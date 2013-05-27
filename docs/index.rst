@@ -19,24 +19,17 @@ The talk, "MoSQL: More than SQL, but Less than ORM", at PyCon TW 2013:
         src="//speakerdeck.com/assets/embed.js"></script>
     </div>
 
-NOTE: v0.2 is a new branch and it does **not** provide backward-compatibility for
-v0.1.x.
+The main features:
 
-::
+1. Easy-to-learn --- No magic syntax. Everything is just plain data structure or
+   SQL keyword.
+2. Convenient    --- It makes result set more easy to use.
+3. Secure        --- It prevents the SQL injection from both identifier and
+   value.
+4. Faster        --- It just builds the SQLs from Python's data structure and
+   then send it via the connector.
 
-    >>> from mosql import build
-    >>> build.select('author', {'email like': '%mosky%@%'})
-    SELECT * FROM "author" WHERE "email" LIKE '%mosky%@%'
-
-It is very easy to build a query by Python's data structures and
-:mod:`mosql.build`.
-
-.. seealso ::
-
-    There is more explaination of the builders --- :class:`mosql.build`.
-
-It also provides :class:`mosql.result.Model` for result set, and you can use the
-same way to make queries to database.
+It is just "More than SQL".
 
 .. raw:: html
 
@@ -71,6 +64,28 @@ same way to make queries to database.
             <div class="fb-like" data-href="http://mosql.mosky.tw" data-send="true" data-layout="button_count" data-width="450" data-show-faces="true"></div>
         </div>
     </div>
+
+NOTE: The versions after v0.2 is a new branch and it does **not** provide backward-compatibility for
+v0.1.x.
+
+The SQL Builders
+----------------
+
+::
+
+    >>> from mosql import build
+    >>> build.select('author', {'email like': '%mosky%@%'})
+    SELECT * FROM "author" WHERE "email" LIKE '%mosky%@%'
+
+It is very easy to build a query by Python's data structures and
+:mod:`mosql.build`.
+
+.. seealso ::
+
+    There is more explanation of the builders --- :class:`mosql.build`.
+
+It also provides :class:`mosql.result.Model` for result set, and you can use the
+same way to make queries to database.
 
 The Model of Result Set
 -----------------------
@@ -118,20 +133,9 @@ model configured, so the result sets are grouped into three model instances, but
 the plain methods, such as :meth:`~mosql.result.Model.select`, are also
 available.
 
-As you see, MoSQL is
-
-1. Easy-to-learn --- No magic syntax. Everything is just plain data structure
-   or SQL keyword.
-2. Faster        --- It just builds the SQLs from Python's data structure and
-   then send it via the connector.
-3. Convenient    --- It makes result set more easy to use, such as
-   :meth:`~mosql.result.Model.arrange`.
-
-It is just "More than SQL".
-
 .. seealso ::
 
-    There is more explaination of the model --- :class:`mosql.result`.
+    There is more explanation of the model --- :class:`mosql.result`.
 
 Installation
 ------------
