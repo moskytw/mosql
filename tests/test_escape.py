@@ -20,7 +20,7 @@ cur = conn.cursor()
 cur.execute("select * from person where person_id='dara'")
 if cur.rowcount == 0:
     cur.execute("insert into person values ('dara', 'Dara Scully')")
-    cur.commit()
+    conn.commit()
 
 cur.close()
 
