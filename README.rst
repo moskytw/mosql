@@ -6,10 +6,23 @@ MoSQL --- More than SQL
 It lets you use the common Python's data structures to build SQLs, and provides a
 convenient model of result set.
 
-The talk, "MoSQL: More than SQL, but Less than ORM", at PyCon TW 2013:
+The main features:
 
-NOTE: v0.2 is a new branch and it does **not** provide backward-compatibility for
+1. Easy-to-learn --- No magic syntax. Everything is just plain data structure or
+   SQL keyword.
+2. Convenient    --- It makes result set more easy to use.
+3. Secure        --- It prevents the SQL injection from both identifier and
+   value.
+4. Faster        --- It just builds the SQLs from Python's data structure and
+   then send it via the connector.
+
+It is just "More than SQL".
+
+NOTE: The versions after v0.2 is a new branch and it does **not** provide backward-compatibility for
 v0.1.x.
+
+The SQL Builders
+----------------
 
 ::
 
@@ -20,7 +33,7 @@ v0.1.x.
 It is very easy to build a query by Python's data structures and
 `mosql.build <http://mosql.mosky.tw/builders.html#module-mosql.build>`_.
 
-There is more explaination of the builders --- `mosql.build <http://mosql.mosky.tw/builders.html#module-mosql.build>`_.
+There is more explanation of the builders --- `mosql.build <http://mosql.mosky.tw/builders.html#module-mosql.build>`_.
 
 It also provides `mosql.result.Model <http://mosql.mosky.tw/result.html#mosql.result.Model>`_ for result set, and you can use the
 same way to make queries to database.
@@ -71,18 +84,7 @@ model configured, so the result sets are grouped into three model instances, but
 the plain methods, such as `select <http://mosql.mosky.tw/result.html#mosql.result.Model.select>`_, are also
 available.
 
-As you see, MoSQL is
-
-1. Easy-to-learn --- No magic syntax. Everything is just plain data structure
-   or SQL keyword.
-2. Faster        --- It just builds the SQLs from Python's data structure and
-   then send it via the connector.
-3. Convenient    --- It makes result set more easy to use, such as
-   `arrange <http://mosql.mosky.tw/result.html#mosql.result.Model.arrange>`_.
-
-It is just "More than SQL".
-
-There is more explaination of the model --- `mosql.result <http://mosql.mosky.tw/result.html#module-mosql.result>`_.
+There is more explanation of the model --- `mosql.result <http://mosql.mosky.tw/result.html#module-mosql.result>`_.
 
 Installation
 ------------
