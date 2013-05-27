@@ -91,7 +91,7 @@ def delimit_identifier(s):
 
     .. note ::
         It is disableable. Set it ``None`` to disable the feature of delimiting
-        identifiers. But you have responsibility to ensure the secuirty if you
+        identifiers. But you have responsibility to ensure the security if you
         disable it.
     '''
     return '"%s"' % s
@@ -241,7 +241,7 @@ An :exc:`OptionError` is raised if an option not allowed is found.
 
 .. note ::
     It is disableable. Set it ``None`` to disable the feature of checking the
-    option. But you have responsibility to ensure the secuirty if you disable
+    option. But you have responsibility to ensure the security if you disable
     it.
 '''
 
@@ -363,7 +363,7 @@ An :exc:`OperatorError` is raised if an operator not allowed is found.
 
 .. note ::
     It is disableable. Set it ``None`` to disable the feature of checking the
-    operator. But you have responsibility to ensure the secuirty if you disable
+    operator. But you have responsibility to ensure the security if you disable
     it.
 '''
 
