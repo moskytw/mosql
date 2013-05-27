@@ -5,17 +5,18 @@ import MySQLdb
 
 from mosql.result import Model
 
-# patch for MySQL, because MySQL uses non-standard syntax by default.
+# The patch for MySQL, because MySQL uses non-standard syntax by default.
 import mosql.mysql
-
-# if you want to use the native escape function
-#import mosql.MySQLdb_escape
 
 try:
     import sqlalchemy.pool
     MySQLdb = sqlalchemy.pool.manage(MySQLdb, pool_size=5)
 except ImportError:
     pass
+
+# You need to use native escape function, if you don't use utf-8 for connection.
+#import mosql.MySQLdb_escape
+#mosql.MySQLdb_escape.conn = MySQLdb.connect(user='root', db='mosky', charset='big5')
 
 class MySQL(Model):
 
