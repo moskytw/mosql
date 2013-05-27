@@ -8,7 +8,7 @@ from mosql.result import Model
 #import mosql.psycopg2_escape
 #mosql.psycopg2_escape.conn = psycopg2.connect(database='mosky', client_encoding='big5')
 
-# The `client_encoding`='utf-8'`` is just ensure we connect db with safe encoding.
+# The `client_encoding`='utf-8'`` just ensures we connect db with safe encoding.
 # If ``show client_encoding;` shows ``utf-8``,
 # you can ignore this.
 pool = psycopg2.pool.SimpleConnectionPool(1, 5, database='mosky', client_encoding='utf-8')

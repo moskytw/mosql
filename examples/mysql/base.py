@@ -22,7 +22,7 @@ class MySQL(Model):
 
     @classmethod
     def getconn(cls):
-        # The ``charset='utf8'`` is just ensure we connect db with safe encoding
+        # The ``charset='utf8'`` just ensures we connect db with safe encoding
         # If ``show variables where variable_name = 'character_set_connection';`` shows ``utf-8``,
         # you can ignore this.
         # The ``use_unicode=False`` is just for the consistency with another example.
