@@ -319,7 +319,10 @@ class Model(Mapping):
     def __getitem__(self, col_name):
 
         if col_name in self.squashed:
-            return self.cols.get(col_name, [None])[0]
+            try:
+                return self.cols[col_name][0]
+            except IndexError:
+                return None
         elif col_name in self.proxies:
             return self.proxies[col_name]
         else:
