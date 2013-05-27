@@ -5,7 +5,7 @@ import MySQLdb
 
 from mosql.result import Model
 
-# atch for MySQL, because MySQL uses non-standard syntax by default.
+# patch for MySQL, because MySQL uses non-standard syntax by default.
 import mosql.mysql
 
 # if you want to use the native escape function
