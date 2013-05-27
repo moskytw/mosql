@@ -58,6 +58,12 @@ def escape(s):
 
     >>> print tmpl % escape(evil_value)
     select * from person where person_id = '\'' or true; -- ';
+
+    .. warning ::
+        If you don't use utf-8 for your connection, such as big5, gbk, please
+        use native escape function to ensure the security. See
+        :mod:`mosql.psycopg2_escape` or :mod:`mosql.MySQLdb_escape` for more
+        information.
     '''
     return s.replace("'", "''")
 
