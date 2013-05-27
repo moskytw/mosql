@@ -5,7 +5,7 @@ The Changes
 v0.2.1
 ------
 
-1. fixed a bug after appending row.
+1. fixed a bug of :meth:`mosql.result.Model.append`.
 
 v0.2
 ----
