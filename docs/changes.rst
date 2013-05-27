@@ -2,6 +2,12 @@
 The Changes
 ===========
 
+v0.3
+----
+
+1. improved the memory usage of :meth:`mosql.result.Model.arrange`.
+2. support to use native escape functions (via :mod:`mosql.psycopg2_escape` or :mod:`mosql.MySQLdb_escape`)
+
 v0.2.1
 ------
 
