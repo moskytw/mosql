@@ -189,10 +189,6 @@ class Model(Mapping):
         m = cls()
         m.col_names = col_names
 
-        #m.cols = dict((name, [
-        #    row[i] for row in rows
-        #]) for i, name in enumerate(m.col_names))
-
         m.cols = dict((col_name, []) for col_name in m.col_names)
 
         for row in rows:
