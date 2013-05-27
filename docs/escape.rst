@@ -2,8 +2,11 @@ The Native Escape Functions
 ===========================
 
 If you don't use utf-8 for your connection, you need to use the native escape
-function for security. But it is still better to change your connection encoding
-to utf-8 rather than use it.
+function for security.
+
+But it is still better to change your connection encoding to utf-8 rather than
+use it, because the native escape function only works for value, so attacker
+can inject malicious code in the identifiers.
 
 .. seealso ::
 
