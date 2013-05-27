@@ -189,9 +189,15 @@ class Model(Mapping):
         m = cls()
         m.col_names = col_names
 
-        m.cols = dict((name, [
-            row[i] for row in rows
-        ]) for i, name in enumerate(m.col_names))
+        #m.cols = dict((name, [
+        #    row[i] for row in rows
+        #]) for i, name in enumerate(m.col_names))
+
+        m.cols = dict((col_name, []) for col_name in m.col_names)
+
+        for row in rows:
+            for col_name, col_val in zip(m.col_names, row):
+                m.cols[col_name].append(col_val)
 
         return m
 
@@ -200,7 +206,7 @@ class Model(Mapping):
         if cur.description is None:
             return None
         else:
-            return cls.load_rows(get_col_names(cur), cur.fetchall())
+            return cls.load_rows(get_col_names(cur), cur)
 
     arrange_by = tuple()
     '''It defines how :meth:`Model.arrange` arrange result set. It should be
@@ -218,7 +224,7 @@ class Model(Mapping):
 
     @classmethod
     def arrange_cur(cls, cur):
-        return cls.arrange_rows(get_col_names(cur), cur.fetchall())
+        return cls.arrange_rows(get_col_names(cur), cur)
 
     # --- shortcuts of Python data structure -> SQL -> result set -> model ---
 

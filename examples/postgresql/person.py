@@ -69,3 +69,16 @@ if __name__ == '__main__':
     print '# json'
     print json.dumps(mosky)
     print
+
+    print '# mem test'
+
+    def gen_rows():
+        yield ['a', 'i am a']
+        print 'mock cursor: yielded the first row'
+        yield ['b', 'i am b']
+        print 'mock cursor: yielded the second row'
+        yield ['c', 'i am c']
+        print 'mock cursor: yielded the thrid row'
+
+    ps = Person.arrange_rows(['person_id', 'name'], gen_rows())
+    print next(ps)
