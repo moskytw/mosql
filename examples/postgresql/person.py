@@ -73,11 +73,11 @@ if __name__ == '__main__':
     print '# mem test'
 
     def gen_rows():
-        yield ['a', 'i am a']
+        yield ['andy', 'Andy First']
         print 'mock cursor: yielded the first row'
-        yield ['b', 'i am b']
+        yield ['bob', 'Bob Second']
         print 'mock cursor: yielded the second row'
-        yield ['c', 'i am c']
+        yield ['cindy', 'Cindy Third']
         print 'mock cursor: yielded the thrid row'
 
     ps = Person.arrange_rows(['person_id', 'name'], gen_rows())
