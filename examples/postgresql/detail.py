@@ -59,3 +59,10 @@ if __name__ == '__main__':
 
     mosky_detail = Detail.select({'person_id': 'mosky', 'key': 'email'})
     print 'mails:', mosky_detail.val
+
+    print
+
+
+    print '# show detail_id and email'
+    for i, detail_id in enumerate(mosky_detail.detail_id):
+        print detail_id, mosky_detail.val[i]
