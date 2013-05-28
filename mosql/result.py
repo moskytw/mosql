@@ -137,6 +137,11 @@ class Model(Mapping):
         '''It should accept a connection.'''
         raise NotImplementedError('This method should accept a connection.')
 
+    @classmethod
+    def getcursor(cls, conn):
+        '''It lets you customize your cursor.'''
+        return conn.cursor()
+
     dump_sql = False
     '''Set it True to make :meth:`Model.perform` dump the SQLs before it
     performs them.'''
@@ -151,7 +156,7 @@ class Model(Mapping):
         uses it to perform every SQL.'''
 
         conn = cls.getconn()
-        cur = conn.cursor()
+        cur = cls.getcursor(conn)
 
         if isinstance(sql_or_sqls, basestring):
             sqls = [sql_or_sqls]
