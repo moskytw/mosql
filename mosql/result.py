@@ -139,7 +139,12 @@ class Model(Mapping):
 
     @classmethod
     def getcursor(cls, conn):
-        '''It lets you customize your cursor.'''
+        '''It lets you customize your cursor. By default, it return a cursor by the following code:
+
+        ::
+
+            return conn.cursor()
+        '''
         return conn.cursor()
 
     dump_sql = False
