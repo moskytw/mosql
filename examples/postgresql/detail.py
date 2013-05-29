@@ -40,10 +40,12 @@ if __name__ == '__main__':
     print
 
     print "# Re-Select the Mosky's Emails"
+    print
     print Detail.where(person_id='mosky', key='email')
     print
 
     print '# Add the Email Just Removed Back, and Re-Select'
+    print
     mosky_emails.append(removal_email)
     mosky_emails.save()
     print Detail.where(person_id='mosky', key='email')
