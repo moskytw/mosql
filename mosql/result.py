@@ -346,17 +346,19 @@ class Model(Mapping):
         '''It returns the row you specified in this model.'''
         return [self.cols[col_name][row_idx] for col_name in self.col_names]
 
-    def __getitem__(self, col_name):
 
-        if col_name in self.squashed:
+    def __getitem__(self, name_or_idx):
+
+        if isinstance(name_or_idx, basestring) and name_or_idx in self.squashed:
             try:
-                return self.cols[col_name][0]
+                return self.cols[name_or_idx][0]
             except IndexError:
                 return None
-        elif col_name in self.proxies:
-            return self.proxies[col_name]
+        elif name_or_idx in self.proxies:
+            return self.proxies[name_or_idx]
         else:
-            self.proxies[col_name] = proxy = ColProxy(self, col_name)
+            Proxy = ColProxy if isinstance(name_or_idx, basestring) else RowProxy
+            self.proxies[name_or_idx] = proxy = Proxy(self, name_or_idx)
             return proxy
 
     def __getattr__(self, key):
