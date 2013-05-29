@@ -64,5 +64,6 @@ if __name__ == '__main__':
 
 
     print '# show detail_id and email'
-    for i, detail_id in enumerate(mosky_detail.detail_id):
-        print detail_id, mosky_detail.val[i]
+    for row in mosky_detail.rows():
+        print row
+        print row.detail_id, row.val
