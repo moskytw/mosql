@@ -50,6 +50,9 @@ class ColProxy(Sequence):
 
 class RowProxy(Mapping):
 
+    # It makes __setattr__ work.
+    model = None
+
     def __init__(self, model, row_idx):
         self.model = model
         self.row_idx = row_idx
@@ -78,13 +81,7 @@ class RowProxy(Mapping):
 
     def __setattr__(self, key, val):
 
-        try:
-            model = object.__getattribute__(self, 'model')
-        except AttributeError:
-            object.__setattr__(self, key, val)
-            return
-
-        if key in model.cols:
+        if self.model and key in self.model.cols:
             self[key] = val
         else:
             object.__setattr__(self, key, val)
