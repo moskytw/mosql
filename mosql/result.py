@@ -24,7 +24,7 @@ def get_col_names(cur):
 def hash_dict(d):
     return hash(frozenset(d.items()))
 
-class ColumnProxy(Sequence):
+class ColProxy(Sequence):
 
     def __init__(self, model, col_name):
         self.model = model
@@ -356,7 +356,7 @@ class Model(Mapping):
         elif col_name in self.proxies:
             return self.proxies[col_name]
         else:
-            self.proxies[col_name] = proxy = ColumnProxy(self, col_name)
+            self.proxies[col_name] = proxy = ColProxy(self, col_name)
             return proxy
 
     def __getattr__(self, key):
