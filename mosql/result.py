@@ -198,8 +198,8 @@ class Model(Mapping):
 
     @classmethod
     def perform(cls, sql_or_sqls):
-        '''It executes SQL (str) or SQLs (seq) and return a cursor. :cls:`Model`
-        uses it to perform every SQL.'''
+        '''It executes SQL (str) or SQLs (seq) and return a cursor.
+        :class:`Model` uses it to perform every SQL.'''
 
         conn = cls.getconn()
         cur = cls.getcur(conn)
