@@ -235,6 +235,12 @@ class Model(Mapping):
 
     # --- translate result set to a model or models ---
 
+    def __init__(self):
+        self.changes = []
+        self.cols = {}
+        self.row_len = 0
+        self.proxies = {}
+
     col_names = tuple()
 
     @classmethod
@@ -344,16 +350,6 @@ class Model(Mapping):
 
     # --- read this model ---
 
-    squashed = set()
-    '''It defines which columns should be squashed. It is better to use a set to
-    enumerate the names of columns.'''
-
-    def __init__(self):
-        self.changes = []
-        self.cols = {}
-        self.row_len = 0
-        self.proxies = {}
-
     def col(self, col_name):
         '''It returns the column you specified in this model.'''
         return self.cols[col_name]
@@ -379,6 +375,10 @@ class Model(Mapping):
             Proxy = ColProxy if isinstance(name_or_idx, basestring) else RowProxy
             self.proxies[name_or_idx] = proxy = Proxy(self, name_or_idx)
             return proxy
+
+    squashed = set()
+    '''It defines which columns should be squashed. It is better to use a set to
+    enumerate the names of columns.'''
 
     def __getitem__(self, name_or_idx):
 
