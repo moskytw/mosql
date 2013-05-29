@@ -2,7 +2,7 @@ Handle the Result Set
 =====================
 
 The Model of Result Set --- :py:mod:`moqsl.result`
--------------------------------------------------
+--------------------------------------------------
 
 .. automodule:: mosql.result
     :members:
