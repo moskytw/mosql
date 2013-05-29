@@ -197,6 +197,8 @@ class Model(Mapping):
         ::
 
             return conn.cursor()
+
+        .. versionadded :: 0.4
         '''
         return conn.cursor()
 
