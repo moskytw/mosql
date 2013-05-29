@@ -374,9 +374,12 @@ class Model(Mapping):
     '''It defines which columns should be squashed. It is better to use a set to
     enumerate the names of columns.'''
 
+    squash_all = False
+
     def __getitem__(self, name_or_idx):
 
-        if isinstance(name_or_idx, basestring) and name_or_idx in self.squashed:
+        if isinstance(name_or_idx, basestring) and \
+           (self.squash_all or name_or_idx in self.squashed):
             try:
                 return self.cols[name_or_idx][0]
             except IndexError:
@@ -421,7 +424,7 @@ class Model(Mapping):
 
     def __setitem__(self, col_name, val):
 
-        if col_name in self.squashed:
+        if self.squash_all or col_name in self.squashed:
             for i in range(len(self.cols[col_name])):
                 self.set(col_name, i, val)
         else:
