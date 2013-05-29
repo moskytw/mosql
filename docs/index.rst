@@ -21,8 +21,7 @@ The talk, "MoSQL: More than SQL, but Less than ORM", at PyCon TW 2013:
 
 The main features:
 
-1. Easy-to-learn --- No magic syntax. Everything is just plain data structure or
-   SQL keyword.
+1. Easy-to-learn --- Everything is just plain data structure or SQL keyword.
 2. Convenient    --- It makes result set more easy to use.
 3. Secure        --- It prevents the SQL injection from both identifier and
    value.
