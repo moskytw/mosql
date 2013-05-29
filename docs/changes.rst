@@ -2,6 +2,15 @@
 The Changes
 ===========
 
+v0.4
+----
+1. improved the code of :class:`mosql.result.Model`
+2. added :attr:`mosql.result.Model.squash_all`
+3. added :meth:`mosql.result.Model.rows`
+4. support to use the index of row to access :class:`mosql.result.Model`
+5. added :meth:`mosql.result.Model.getcur`
+6. make :meth:`mosql.result.Model.pop` return the row poped now
+
 v0.3
 ----
 
