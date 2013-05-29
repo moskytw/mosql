@@ -4,84 +4,79 @@
 from base import MySQL
 
 class Person(MySQL):
+
+    # You need the name of table, of course.
     table      = 'person'
+
+    # Squash some columns?
+    squash_all = True
+    # The above is equals to listing all of the columns:
+    #squashed = set(['person_id', 'name'])
+
+    # `arrange` uses `arrange_by,
+    # and `arrange` is useful for selecting multi-model
     arrange_by = ('person_id', )
-    squashed   = set(['person_id', 'name'])
+
+    # It decides the columns which will be use to prepare the conditions.
     ident_by   = arrange_by
+
+    # the other clauses you want to put in queries
+    clauses    = dict(order_by=arrange_by)
 
 if __name__ == '__main__':
 
-    print '# select all'
-    person = Person.select()
-    print 'squashed:', person
-    print 'actually:', person.cols
+    # if you want to see the SQLs it generates
+    #Person.dump_sql = True
+
+    print '# The Model of Mosky'
     print
-
-
-    print '# select with a condition'
-    person = Person.select({'person_id': 'mosky'})
-    print 'squashed:', person
-    print 'actually:', person.cols
-    print
-
-
-    print '# arrange entire table'
-    for person in Person.arrange():
-        print person
-    print
-
-
-    print '# arrange with a condition'
-    for person in Person.arrange({'person_id': ('mosky', 'andy')}):
-        print person
-    print
-
-
-    print '# rename mosky'
-
-    # where is almost same as select
-    mosky = Person.where(person_id='mosky')
-
-    # model expands the change for columns squashed
-    mosky.name = '<ttypo>'
-    mosky['name'] = '<renamed>'
-
-    # model will merged the updates when save
-    Person.dump_sql = True
-    mosky.save()
-    Person.dump_sql = False
-
-    mosky = Person.select({'person_id': 'mosky'})
-    print mosky.name
-    print
-
-
-    from mosql.util import star
-
-    print '# rename mosky back'
-    # MySQL doesn't support returning
-    #mosky = Person.update({'person_id': 'mosky'}, set={'name': 'Mosky Liu'}, returning=star)
-    Person.update({'person_id': 'mosky'}, set={'name': 'Mosky Liu'})
     mosky = Person.select({'person_id': 'mosky'})
     print mosky
     print
 
-
-    import mosql.json as json
-
-    print '# json'
-    print json.dumps(mosky)
+    print '# Access the Model, and Re-Select'
+    print
+    print mosky.person_id
+    print mosky['name']
     print
 
-    print '# mem test'
+    print '# Rename Mosky, and Re-Select'
+    print
+    mosky.name = 'Yiyu Lui'
+    # The previous one has some typo.
+    mosky.name = 'Yiyu Liu'
+    # The two changes will be merge into only an update.
+    mosky.save()
+    # Re-selecting is not necessary. I just wanna show you the db is really
+    # changed.
+    # `where` is a shortcut of `select`
+    print Person.where(person_id='mosky')
+    print
 
-    def gen_rows():
-        yield ['andy', 'Andy First']
-        print 'mock cursor: yielded the first row'
-        yield ['bob', 'Bob Second']
-        print 'mock cursor: yielded the second row'
-        yield ['cindy', 'Cindy Third']
-        print 'mock cursor: yielded the thrid row'
+    print '# Rename Her Back'
+    print
+    mosky['name'] = 'Mosky Liu'
+    mosky.save()
+    print Person.where(person_id='mosky')
+    print
 
-    ps = Person.arrange_rows(['person_id', 'name'], gen_rows())
-    print next(ps)
+    print '# Arrange Rows into Models'
+    print
+    for person in Person.arrange({'person_id': ('mosky', 'andy')}):
+        print person
+    # or use ``Person.find(person_id=('mosky', 'andy'))`` in for-loop
+    print
+
+    print '# Insert a New Person'
+    print
+    d = {'person_id': 'new'}
+    Person.insert(d, on_duplicate_key_update=d)
+    new_person = Person.where(person_id='new')
+    print new_person
+    print
+
+    print '# Delete the New Person'
+    print
+    new_person = Person.delete({'person_id': 'new'})
+    print new_person
+    print
