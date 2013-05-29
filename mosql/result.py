@@ -451,7 +451,11 @@ class Model(Mapping):
         self.cols[col_name][row_idx] = val
 
     def pop(self, row_idx=-1):
-        '''It pops the row you specified in this model.'''
+        '''It pops the row you specified in this model.
+
+        .. versionchanged :: v0.4
+            It returns the row poped in a dict.
+        '''
 
         self.changes.append((self.ident(row_idx), None))
 
