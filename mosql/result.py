@@ -391,6 +391,10 @@ class Model(Mapping):
     enumerate the names of columns.'''
 
     squash_all = False
+    '''If you want to squash all of columns, set it True.
+
+    .. versionadded :: 0.4
+    '''
 
     def __getitem__(self, name_or_idx):
 
