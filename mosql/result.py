@@ -235,6 +235,9 @@ class Model(Mapping):
 
     # --- translate result set to a model or models ---
 
+    # It makes __setattr__ work.
+    cols = None
+
     def __init__(self):
         self.changes = []
         self.cols = {}
@@ -393,13 +396,7 @@ class Model(Mapping):
 
     def __setattr__(self, key, val):
 
-        try:
-            cols = object.__getattribute__(self, 'cols')
-        except AttributeError:
-            object.__setattr__(self, key, val)
-            return
-
-        if key in cols:
+        if self.cols and key in self.cols:
             self[key] = val
         else:
             object.__setattr__(self, key, val)
