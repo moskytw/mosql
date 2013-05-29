@@ -69,6 +69,26 @@ class RowProxy(Mapping):
     def __setitem__(self, col_name, val):
         self.model.set(col_name, self.row_idx, val)
 
+    def __getattr__(self, key):
+
+        if key in self.model.cols:
+            return self[key]
+        else:
+            raise AttributeError('attribute %r is not found' % key)
+
+    def __setattr__(self, key, val):
+
+        try:
+            model = object.__getattribute__(self, 'model')
+        except AttributeError:
+            object.__setattr__(self, key, val)
+            return
+
+        if key in model.cols:
+            self[key] = val
+        else:
+            object.__setattr__(self, key, val)
+
     def __repr__(self):
         return pformat(dict(self))
 
