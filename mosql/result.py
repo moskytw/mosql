@@ -147,27 +147,27 @@ class Model(Mapping):
 
     ::
 
-        m[col_name][row_idx]
+        m['col_name'][row_idx]
         m.col_name[row_idx]
 
-        m[row_idx][col_name]
+        m[row_idx]['col_name']
         m[row_idx].col_name
 
-        m[col_name]
+        m['col_name']
         m.col_name
 
-        m[col_name][row_idx] = val
+        m['col_name'][row_idx] = val
         m.col_name[row_idx] = val
 
-        m[row_idx][col_name] = val
+        m[row_idx]['col_name'] = val
         m[row_idx].col_name = val
 
         # if this column is squashed
-        m[col_name] = val
+        m['col_name'] = val
         m.col_name = val
 
     .. versionchanged :: 0.4
-        Added this format, ``m[row_idx][col_name]``.
+        Added this format, ``m[row_idx]['col_name']``.
 
     The :meth:`Model.rows()` also works well:
 
