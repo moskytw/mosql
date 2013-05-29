@@ -160,6 +160,18 @@ class Model(Mapping):
         m[col_name] = val
         m.col_name = val
 
+    The :meth:`Model.rows()` also works well:
+
+    ::
+
+        for row in m.rows():
+            print row.col_name
+            print row['col_name']
+            row.col_name = val
+            row['col_name'] = val
+
+    .. versionadded:: 0.4
+
     When you finish your editing, use :meth:`save` to save the changes.
 
     You also have :meth:`pop` and :meth:`append` to maintain the rows in your
@@ -357,7 +369,10 @@ class Model(Mapping):
         return len(self.cols)
 
     def rows(self):
-        '''It returns a generator of proxies of rows.'''
+        '''It returns a generator of proxies of rows.
+
+        .. versionadded:: 0.4
+        '''
         return (self[i] for i in xrange(self.row_len))
 
     def proxy(self, name_or_idx):
