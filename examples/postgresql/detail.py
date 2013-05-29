@@ -12,58 +12,60 @@ class Detail(PostgreSQL):
 
 if __name__ == '__main__':
 
-    print '# arrange entire table'
-    for detail in Detail.arrange():
-        print detail
+    # if you want to see the SQLs it generates
+    #Detail.dump_sql = True
+
+    print "# The Model of Mosky's Emails"
+    print
+    mosky_emails = Detail.where(person_id='mosky', key='email')
+    print mosky_emails
     print
 
-
-    print '# modified an email'
-
-    mosky_detail = Detail.select({'person_id': 'mosky', 'key': 'email'})
-    backup = mosky_detail.val[0]
-
-    mosky_detail['val'][0] = '<ttypo>'
-    mosky_detail.val[0] = '<this email is modified>'
-    mosky_detail.save()
-
-    # re-select to check the data is really saved to database
-    # the method, where, is also useful
-    mosky_detail = Detail.where(person_id='mosky', key='email')
-    print 'mails     :', mosky_detail.val
-    print 'first mail:', mosky_detail.val[0]
-
-    mosky_detail.val[0] = backup
-    mosky_detail.save()
-    print 'restored  :', mosky_detail.val[0]
-
+    print "# Show the Mosky's Emails"
+    print
+    print mosky_emails.val
     print
 
-
-    print '# append'
-
-    mosky_detail = Detail.select({'person_id': 'mosky', 'key': 'email'})
-    mosky_detail.append({'val': '<it is the new email>'})
-    mosky_detail.save()
-
-    mosky_detail = Detail.select({'person_id': 'mosky', 'key': 'email'})
-    print 'mails:', mosky_detail.val
-
+    print '# Show the Rows'
     print
-
-
-    print '# pop the last row'
-    mosky_detail = Detail.select({'person_id': 'mosky', 'key': 'email'})
-    mosky_detail.pop()
-    mosky_detail.save()
-
-    mosky_detail = Detail.select({'person_id': 'mosky', 'key': 'email'})
-    print 'mails:', mosky_detail.val
-
-    print
-
-
-    print '# show detail_id and email'
-    for row in mosky_detail.rows():
+    for row in mosky_emails.rows():
         print row
-        print row.detail_id, row.val
+    print
+
+    print '# Remove the First Email, and Show the Row Removed'
+    print
+    removal_email = mosky_emails.pop(0)
+    mosky_emails.save()
+    print removal_email
+    print
+
+    print "# Re-Select the Mosky's Emails"
+    print Detail.where(person_id='mosky', key='email')
+    print
+
+    print '# Add the Email We Just Removed back, and Re-Select'
+    mosky_emails.append(removal_email)
+    mosky_emails.save()
+    print Detail.where(person_id='mosky', key='email')
+    print
+
+    print '# Add a New Email for Andy, and Remove it'
+    print
+    andy_emails = Detail.where(person_id='andy', key='email')
+    # The squashed columns are auto filled, and the other columns you ignored
+    # are filled SQL's DEFAULT.
+    andy_emails.append({'val': 'andy@hiscompany.com'})
+    andy_emails.save()
+    print andy_emails
+    print
+
+    # But because the `detail_id` is unknown, so you can't remove it.
+    #andy_emails.pop() # -> ValueError
+
+    # You need to re-select.
+    # TODO: support using returning to fetch the updated value
+    andy_emails = Detail.where(person_id='andy', key='email')
+    andy_emails.pop()
+    andy_emails.save()
+    print andy_emails
+    print
