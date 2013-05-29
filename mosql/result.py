@@ -138,7 +138,7 @@ class Model(Mapping):
         raise NotImplementedError('This method should accept a connection.')
 
     @classmethod
-    def getcursor(cls, conn):
+    def getcur(cls, conn):
         '''It lets you customize your cursor. By default, it return a cursor by the following code:
 
         ::
@@ -161,7 +161,7 @@ class Model(Mapping):
         uses it to perform every SQL.'''
 
         conn = cls.getconn()
-        cur = cls.getcursor(conn)
+        cur = cls.getcur(conn)
 
         if isinstance(sql_or_sqls, basestring):
             sqls = [sql_or_sqls]
