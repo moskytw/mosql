@@ -361,7 +361,6 @@ class Model(Mapping):
         return (self[i] for i in xrange(self.row_len))
 
     def proxy(self, name_or_idx):
-        '''It returns a col or row proxy of this model.'''
 
         if name_or_idx in self.proxies:
             return self.proxies[name_or_idx]
