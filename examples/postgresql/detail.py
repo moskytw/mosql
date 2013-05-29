@@ -6,9 +6,9 @@ from base import PostgreSQL
 class Detail(PostgreSQL):
     table      = 'detail'
     arrange_by = ('person_id', 'key')
-    clauses    = dict(order_by=arrange_by)
     squashed   = set(arrange_by)
     ident_by   = ('detail_id', )
+    clauses    = dict(order_by=arrange_by+ident_by)
 
 if __name__ == '__main__':
 
@@ -52,9 +52,9 @@ if __name__ == '__main__':
     print
 
 
-    print '# pop 0'
+    print '# pop the last row'
     mosky_detail = Detail.select({'person_id': 'mosky', 'key': 'email'})
-    mosky_detail.pop(0)
+    mosky_detail.pop()
     mosky_detail.save()
 
     mosky_detail = Detail.select({'person_id': 'mosky', 'key': 'email'})
