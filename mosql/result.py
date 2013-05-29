@@ -357,9 +357,11 @@ class Model(Mapping):
         return len(self.col_names)
 
     def rows(self):
+        '''It returns a generator of proxies of rows.'''
         return (self[i] for i in xrange(self.row_len))
 
     def proxy(self, name_or_idx):
+        '''It returns a col or row proxy of this model.'''
 
         if name_or_idx in self.proxies:
             return self.proxies[name_or_idx]
