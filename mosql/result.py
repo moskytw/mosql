@@ -228,6 +228,7 @@ class Model(Mapping):
         for row in rows:
             for col_name, col_val in zip(m.col_names, row):
                 m.cols[col_name].append(col_val)
+            m.row_len += 1
 
         return m
 
@@ -330,6 +331,7 @@ class Model(Mapping):
     def __init__(self):
         self.changes = []
         self.cols = {}
+        self.row_len = 0
         self.proxies = {}
 
     def col(self, col_name):
@@ -346,6 +348,8 @@ class Model(Mapping):
         '''It returns the row you specified in this model.'''
         return [self.cols[col_name][row_idx] for col_name in self.col_names]
 
+    def rows(self):
+        return (self[i] for i in xrange(self.row_len))
 
     def __getitem__(self, name_or_idx):
 
@@ -422,6 +426,8 @@ class Model(Mapping):
         for col_name in self.col_names:
             self.cols[col_name].pop(row_idx)
 
+        self.row_len -= 1
+
     def append(self, row_map):
         '''It appends a row (dict) into model.'''
 
@@ -442,6 +448,8 @@ class Model(Mapping):
                 val = row_map[col_name] = util.default
 
             self.cols[col_name].append(val)
+
+        self.row_len += 1
 
         self.changes.append((None, row_map))
 
