@@ -371,6 +371,15 @@ class Model(Mapping):
     def rows(self):
         return (self[i] for i in xrange(self.row_len))
 
+    def proxy(self, name_or_idx):
+
+        if name_or_idx in self.proxies:
+            return self.proxies[name_or_idx]
+        else:
+            Proxy = ColProxy if isinstance(name_or_idx, basestring) else RowProxy
+            self.proxies[name_or_idx] = proxy = Proxy(self, name_or_idx)
+            return proxy
+
     def __getitem__(self, name_or_idx):
 
         if isinstance(name_or_idx, basestring) and name_or_idx in self.squashed:
@@ -378,12 +387,8 @@ class Model(Mapping):
                 return self.cols[name_or_idx][0]
             except IndexError:
                 return None
-        elif name_or_idx in self.proxies:
-            return self.proxies[name_or_idx]
         else:
-            Proxy = ColProxy if isinstance(name_or_idx, basestring) else RowProxy
-            self.proxies[name_or_idx] = proxy = Proxy(self, name_or_idx)
-            return proxy
+            return self.proxy(name_or_idx)
 
     def __getattr__(self, key):
 
