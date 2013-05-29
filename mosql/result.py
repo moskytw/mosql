@@ -48,6 +48,30 @@ class ColumnProxy(Sequence):
     def __repr__(self):
         return pformat(list(self))
 
+class RowProxy(Mapping):
+
+    def __init__(self, model, row_idx):
+        self.model = model
+        self.row_idx = row_idx
+
+    def __len__(self):
+        return len(self.model.col_names)
+
+    def __iter__(self):
+        return (col_name for col_name in self.model.col_names)
+
+    def __contains__(self, elem):
+        return elem in self.model.col_names
+
+    def __getitem__(self, col_name):
+        return self.model.cols[col_name][self.row_idx]
+
+    def __setitem__(self, col_name, val):
+        self.model.set(col_name, self.row_idx, val)
+
+    def __repr__(self):
+        return pformat(dict(self))
+
 class Model(Mapping):
     '''The base model of result set.
 
