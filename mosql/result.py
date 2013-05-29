@@ -417,7 +417,7 @@ class Model(Mapping):
         for col_name in ident_by:
             val = self.cols[col_name][row_idx]
             if val is util.default:
-                raise ValueError("value of column %r is not decided yet." % col_name)
+                raise ValueError("value of column %r is unknown" % col_name)
             ident[col_name] = val
 
         return ident
