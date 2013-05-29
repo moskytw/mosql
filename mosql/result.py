@@ -58,10 +58,10 @@ class RowProxy(Mapping):
         return len(self.model.col_names)
 
     def __iter__(self):
-        return (col_name for col_name in self.model.col_names)
+        return (col_name for col_name in self.model.cols)
 
     def __contains__(self, elem):
-        return elem in self.model.col_names
+        return elem in self.model.cols
 
     def __getitem__(self, col_name):
         return self.model.cols[col_name][self.row_idx]
@@ -351,10 +351,10 @@ class Model(Mapping):
     # --- read this model ---
 
     def __iter__(self):
-        return (name for name in self.col_names)
+        return (name for name in self.cols)
 
     def __len__(self):
-        return len(self.col_names)
+        return len(self.cols)
 
     def rows(self):
         '''It returns a generator of proxies of rows.'''
