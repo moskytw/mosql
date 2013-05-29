@@ -43,13 +43,13 @@ if __name__ == '__main__':
     print Detail.where(person_id='mosky', key='email')
     print
 
-    print '# Add the Email We Just Removed back, and Re-Select'
+    print '# Add the Email Just Removed Back, and Re-Select'
     mosky_emails.append(removal_email)
     mosky_emails.save()
     print Detail.where(person_id='mosky', key='email')
     print
 
-    print '# Add a New Email for Andy, and Remove it'
+    print '# Add a New Email for Andy, and Remove It'
     print
     andy_emails = Detail.where(person_id='andy', key='email')
     # The squashed columns are auto filled, and the other columns you ignored
