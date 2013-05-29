@@ -439,10 +439,14 @@ class Model(Mapping):
 
         self.changes.append((self.ident(row_idx), None))
 
+        poped_row = {}
+
         for col_name in self.col_names:
-            self.cols[col_name].pop(row_idx)
+            poped_row[col_name] = self.cols[col_name].pop(row_idx)
 
         self.row_len -= 1
+
+        return poped_row
 
     def append(self, row_map):
         '''It appends a row (dict) into model.'''
