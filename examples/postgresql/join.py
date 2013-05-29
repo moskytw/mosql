@@ -1,16 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from base import PostgreSQL
 from mosql import build
 
-class PersonDetail(PostgreSQL):
-    table      = 'detail'
-    clauses    = dict(joins=build.join('person'))
-    arrange_by = set(['person_id', 'key'])
-    squashed   = ('person_id', 'key', 'name')
+from base import PostgreSQL
+from detail import Detail
+from person import Person
+
+class PersonDetail(Detail):
+    squashed   = set(['person_id', 'name'])
+    clauses    = dict(
+        order_by = Detail.arrange_by,
+        joins    = build.join('person')
+    )
 
 if __name__ == '__main__':
+
+    # if you want to see the SQLs it generates
+    #PersonDetail.dump_sql = True
+
+    print "# Show the Mosky's Detail"
+    print
+    for pdetail in PersonDetail.find(person_id='mosky'):
+        print pdetail
+    print
     
-    pdetail = PersonDetail.select(dict(person_id='mosky'))
-    print pdetail
