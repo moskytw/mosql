@@ -350,19 +350,11 @@ class Model(Mapping):
 
     # --- read this model ---
 
-    def col(self, col_name):
-        '''It returns the column you specified in this model.'''
-        return self.cols[col_name]
-
     def __iter__(self):
         return (name for name in self.col_names)
 
     def __len__(self):
         return len(self.col_names)
-
-    def row(self, row_idx):
-        '''It returns the row you specified in this model.'''
-        return [self.cols[col_name][row_idx] for col_name in self.col_names]
 
     def rows(self):
         return (self[i] for i in xrange(self.row_len))
