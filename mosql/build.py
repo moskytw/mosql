@@ -33,15 +33,16 @@ single_value      = (value, )
 single_identifier = (identifier, )
 identifier_list   = (identifier, concat_by_comma)
 column_list       = (identifier, concat_by_comma, paren)
+value_list        = (value, concat_by_comma, paren)
 where_list        = (build_where, )
 set_list          = (build_set, )
 statement_list    = (concat_by_space, )
 
 # insert
 
-insert  = Clause('insert into', single_identifier)
-columns = Clause('columns'    , column_list, hidden=True)
-values  = Clause('values'     , (value, concat_by_comma, paren))
+insert    = Clause('insert into', single_identifier)
+columns   = Clause('columns'    , column_list, hidden=True)
+values    = Clause('values'     , value_list)
 returning = Clause('returning'  , identifier_list)
 on_duplicate_key_update = Clause('on duplicate key update', set_list)
 
