@@ -125,7 +125,7 @@ Then, use :class:`mosql.result.Model` to do so: (The `detail.py` is in the `exam
      'person_id': 'mosky',
      'val': ['mosky.tw@gmail.com', 'mosky.liu@pinkoi.com', 'mosky@ubuntu-tw.org']}
 
-There are almost same, right?
+They are almost same, right?
 
 Here I use :meth:`~mosql.result.Model.arrange` for taking advantages from the
 model configured, so the result sets are grouped into three model instances, but
