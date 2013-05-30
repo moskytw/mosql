@@ -11,6 +11,7 @@ v0.4
 4. support to access :class:`mosql.result.Model` by row index
 5. added :meth:`mosql.result.Model.getcur` for customizing cursor
 6. make :meth:`mosql.result.Model.pop` return the row poped now
+7. removed :meth:`mosql.result.Model.row` and :meth:`mosql.result.Model.col`
 
 v0.3
 ----
