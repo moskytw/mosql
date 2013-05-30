@@ -509,10 +509,10 @@ class Model(Mapping):
     def save(self):
         '''It saves changes.'''
 
-        sqls = []
-
         if not self.changes:
             return
+
+        sqls = []
 
         for i, (cond, val) in enumerate(self.changes):
 
