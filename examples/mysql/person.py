@@ -5,7 +5,7 @@ from base import MySQL
 
 class Person(MySQL):
 
-    # You need the name of table, of course.
+    # the name of table
     table      = 'person'
 
     # Squash some columns?
