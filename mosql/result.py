@@ -300,7 +300,7 @@ class Model(Mapping):
         key_func = lambda row: tuple(row[i] if i is not None else None for i in key_indexes)
 
         for _, rows in groupby(rows, key_func):
-            yield cls.load_rows(col_names, list(rows))
+            yield cls.load_rows(col_names, rows)
 
     @classmethod
     def arrange_cur(cls, cur):
