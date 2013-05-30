@@ -4,11 +4,12 @@ The Changes
 
 v0.4
 ----
+
 1. improved the code of :class:`mosql.result.Model`
-2. added :attr:`mosql.result.Model.squash_all`
-3. added :meth:`mosql.result.Model.rows`
-4. support to use the index of row to access :class:`mosql.result.Model`
-5. added :meth:`mosql.result.Model.getcur`
+2. added :attr:`mosql.result.Model.squash_all` for 1:1 table
+3. added :meth:`mosql.result.Model.rows` for iterating the rows in a model instance
+4. support to access :class:`mosql.result.Model` by row index
+5. added :meth:`mosql.result.Model.getcur` for customizing cursor
 6. make :meth:`mosql.result.Model.pop` return the row poped now
 
 v0.3
