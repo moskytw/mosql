@@ -3,12 +3,10 @@
 
 from mosql import build
 
-from base import MySQL
 from detail import Detail
-from person import Person
 
 class PersonDetail(Detail):
-    squashed   = set(['person_id', 'name'])
+    squashed   = Detail.squashed | set(['name'])
     clauses    = dict(
         order_by = Detail.arrange_by,
         joins    = build.join('person')
