@@ -8,19 +8,18 @@ class Person(MySQL):
     # the name of table
     table      = 'person'
 
-    # Squash some columns?
-    squash_all = True
-    # The above is equals to listing all of the columns:
+    # squash columns?
     #squashed = set(['person_id', 'name'])
+    # set `squash_all` True to squash all of the columns
+    squash_all = True
 
-    # `arrange` uses `arrange_by,
-    # and `arrange` is useful for selecting multi-model
+    # The class method, `arrange`, uses `arrange_by` to arrange result set.
     arrange_by = ('person_id', )
 
-    # It decides the columns which will be use to prepare the conditions.
+    # It specifies the columns which will be use to prepare the conditions.
     ident_by   = arrange_by
 
-    # the other clauses you want to put in queries
+    # the other clauses you want to put in the queries
     clauses    = dict(order_by=arrange_by)
 
 if __name__ == '__main__':
