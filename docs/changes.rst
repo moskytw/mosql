@@ -2,6 +2,17 @@
 The Changes
 ===========
 
+v0.5
+----
+
+1. Improved the code of :class:`mosql.result.Model`.
+2. Added :meth:`mosql.result.Model.new`.
+3. Added :meth:`mosql.result.Model.add`.
+4. Added :meth:`mosql.result.Model.clear`.
+5. The :meth:`mosql.result.Model.perform` now supports to call procedure,
+   execute SQL with parameter and `executemany`.
+6. Fixed the compatibility with MySQL.
+
 v0.4
 ----
 
