@@ -8,8 +8,10 @@ convenient model of result set.
 
 The main features:
 
-1. Easy-to-learn --- Everything is just plain data structure or SQL keyword.
-2. Convenient    --- It makes result set more easy to use.
+1. Easy-to-learn --- Everything is just plain data structure or SQL keyword. See
+   `The SQL Builders`_.
+2. Convenient    --- It makes result set more easy to use. See `The Model of
+   Result Set`_.
 3. Secure        --- It prevents the SQL injection from both identifier and
    value.
 4. Faster        --- It just builds the SQLs from Python's data structure and
@@ -82,6 +84,11 @@ Here I use `arrange <http://mosql.mosky.tw/result.html#mosql.result.Model.arrang
 model configured, so the result sets are grouped into three model instances, but
 the plain methods, such as `select <http://mosql.mosky.tw/result.html#mosql.result.Model.select>`_, are also
 available.
+
+It converts the result set to column-oriented models, and the column can be
+squashed. The non-list value above is just the squashed column. See
+`mosql.result <http://mosql.mosky.tw/result.html#module-mosql.result>`_ for more
+information.
 
 There is more explanation of the model --- `mosql.result <http://mosql.mosky.tw/result.html#module-mosql.result>`_.
 
