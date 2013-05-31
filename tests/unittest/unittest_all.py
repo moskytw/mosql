@@ -27,6 +27,9 @@ def load_tests(loader, tests, ignore):
     #import mosql.ext
     #tests.addTests(doctest.DocTestSuite(mosql.ext))
 
+    import mosql.result
+    tests.addTests(doctest.DocTestSuite(mosql.result))
+
     import unittest_model
     tests.addTest(loader.loadTestsFromModule(unittest_model))
 
