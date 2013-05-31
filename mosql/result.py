@@ -100,7 +100,6 @@ class Model(Mapping):
         Model.getconn
         Model.putconn
 
-
     .. seealso ::
 
          Here are `examples
@@ -183,8 +182,8 @@ class Model(Mapping):
 
     When you finish your editing, use :meth:`save` to save the changes.
 
-    You also have :meth:`pop` and :meth:`append` to maintain the rows in your
-    model instance.
+    You also have :meth:`pop` and :meth:`append` (or :meth:`add`) to maintain
+    the rows in your model instance, or create a empty model by :meth:`new`.
     '''
 
     # --- connection-related ---
@@ -221,7 +220,11 @@ class Model(Mapping):
 
     @classmethod
     def perform(cls, sql=None, param=None, params=None, proc=None, sqls=None):
-        '''It performs SQL, SQLs or/and procedure with parameter(s).'''
+        '''It performs SQL, SQLs or/and procedure with parameter(s).
+
+        .. versionchanged:: v0.5
+            It supports to use parameter and call procedure.
+        '''
 
         conn = cls.getconn()
         cur = cls.getcur(conn)
@@ -280,6 +283,20 @@ class Model(Mapping):
 
     @classmethod
     def new(cls, **defaults):
+        '''Create a empty model instance with the key arguments as the default
+        values. It is a shortcut for initialization method.
+
+        A typical usage:
+
+        >>> m = Model.new(id='mosky')
+        >>> m.add(email='mosky.tw@gmail.com')
+        >>> m.add(email='mosky.liu@pinkoi.com')
+        >>> print m
+        {'email': ['mosky.tw@gmail.com', 'mosky.liu@pinkoi.com'],
+         'id': ['mosky', 'mosky']}
+
+        .. versionadded:: v0.5
+        '''
         return cls(defaults)
 
     @classmethod
@@ -336,7 +353,7 @@ class Model(Mapping):
         class Order(Model):
             ...
             table = 'order'
-            clauses = dict(order_by=('created'))
+            clauses = dict(order_by=('created',))
             ...
     '''
 
@@ -502,7 +519,7 @@ class Model(Mapping):
         '''It appends a row (dict) into model.'''
 
         row_map = row_map.copy()
-        
+
         for col_name in set(row_map.keys()+self.cols.keys()+self.defaults.keys()):
 
             if col_name in row_map:
@@ -522,11 +539,14 @@ class Model(Mapping):
         self.changes.append((None, row_map))
 
     def add(self, **row_map):
-        '''It is a shortcut for :meth:`Model.append`.'''
+        '''It is a shortcut for :meth:`Model.append`.
+
+        .. versionadded:: v0.5
+        '''
         self.append(row_map)
 
     def save(self):
-        '''It saves changes.'''
+        '''It saves the changes.'''
 
         if not self.changes:
             return
@@ -570,8 +590,16 @@ class Model(Mapping):
         return self.perform(sqls=sqls)
 
     def clear(self):
+        '''It pops all of the row in this model.
+
+        .. versionadded:: v0.5
+        '''
         for i in reversed(xrange(self.row_len)):
             self.pop(i)
 
     def __repr__(self):
         return pformat(dict(self))
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
