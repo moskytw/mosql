@@ -71,3 +71,31 @@ if __name__ == '__main__':
     andy_emails.save()
     print andy_emails
     print
+
+    from psycopg2 import IntegrityError
+    from person import Person
+
+    try:
+        Person.insert({'person_id': 'tina', 'name': 'Tina Dico'})
+    except IntegrityError:
+        pass
+
+    print '# Create Emails for Tina'
+    print
+    tina_emails = Detail.new({'person_id': 'tina', 'key': 'email'})
+    # or use ``Detail.default(person_id='tina', key='email')`` for short
+    tina_emails.append({'val': 'tina@whatever.com'})
+    tina_emails.append({'val': 'tina@whatever2.com'})
+    tina_emails.save()
+    print tina_emails
+    print
+
+    print '# Remove Tina'
+    print
+    tina_emails = Detail.where(person_id='tina', key='email')
+    tina_emails.clear()
+    tina_emails.save()
+    print tina_emails
+    print
+
+    Person.delete({'person_id': 'tina'})
