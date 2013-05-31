@@ -79,8 +79,8 @@ if __name__ == '__main__':
 
     print '# Create Emails for Tina'
     print
-    tina_emails = Detail.new({'person_id': 'tina', 'key': 'email'})
-    # or use ``Detail.default(person_id='tina', key='email')`` for short
+    tina_emails = Detail({'person_id': 'tina', 'key': 'email'})
+    # or use ``Detail(person_id='tina', key='email')`` for short
     tina_emails.append({'val': 'tina@whatever.com'})
     tina_emails.append({'val': 'tina@whatever2.com'})
     tina_emails.save()
