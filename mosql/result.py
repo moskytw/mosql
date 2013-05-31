@@ -258,11 +258,21 @@ class Model(Mapping):
     # It makes __setattr__ work.
     cols = None
 
-    def __init__(self):
+    defaults = {}
+
+    def __init__(self, defaults=None):
+
+        if defaults:
+            self.defaults = defaults
+
         self.changes = []
         self.cols = {}
         self.row_len = 0
         self.proxies = {}
+
+    @classmethod
+    def new(cls, **defaults):
+        return cls(defaults=defaults)
 
     col_names = tuple()
 
@@ -487,7 +497,7 @@ class Model(Mapping):
         row_map = row_map.copy()
 
         if not self.col_names:
-            col_names = row_map.keys()
+            col_names = row_map.keys()+self.defaults.keys()
         else:
             col_names = self.col_names
 
@@ -495,12 +505,17 @@ class Model(Mapping):
 
             if col_name in row_map:
                 val = row_map[col_name]
+            elif self.defaults and col_name in self.defaults:
+                val = row_map[col_name] = self.defaults[col_name]
             elif col_name in self.squashed:
                 val = row_map[col_name] = self.cols[col_name][0]
             else:
                 val = row_map[col_name] = util.default
 
-            self.cols[col_name].append(val)
+            if col_name in self.cols:
+                self.cols[col_name].append(val)
+            else:
+                self.cols[col_name] = [val]
 
         self.row_len += 1
 
