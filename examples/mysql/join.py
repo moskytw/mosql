@@ -14,7 +14,7 @@ class PersonDetail(Detail):
 
 if __name__ == '__main__':
 
-    # if you want to see the SQLs it generates
+    # If you want to see the SQLs it generates:
     #PersonDetail.dump_sql = True
 
     print "# Show the Mosky's Detail"
