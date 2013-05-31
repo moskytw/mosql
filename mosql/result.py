@@ -521,6 +521,10 @@ class Model(Mapping):
 
         self.changes.append((None, row_map))
 
+    def add(self, **row_map):
+        '''It is a shortcut for :meth:`Model.append`.'''
+        self.append(row_map)
+
     def save(self):
         '''It saves changes.'''
 
