@@ -504,7 +504,6 @@ class Model(Mapping):
         self.changes.append((self.ident(row_idx), None))
 
         poped_row = {}
-
         for col_name in self.cols:
             poped_row[col_name] = self.cols[col_name].pop(row_idx)
 
