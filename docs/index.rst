@@ -106,7 +106,7 @@ Here is a SQL and the result set:
             10 | mosky     | email   | mosky@ubuntu-tw.org
     (6 rows)
 
-Then, use the model configured (The module, ``detail``, is in the `examples
+Then, use the model configured (the module, ``detail``, is in the `examples
 <https://github.com/moskytw/mosql/tree/dev/examples>`_) to do so:
 
 ::
