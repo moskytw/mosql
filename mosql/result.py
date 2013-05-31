@@ -564,5 +564,9 @@ class Model(Mapping):
 
         return self.perform(sqls)
 
+    def clear(self):
+        for i in reversed(xrange(self.row_len)):
+            self.pop(i)
+
     def __repr__(self):
         return pformat(dict(self))
