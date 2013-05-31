@@ -8,8 +8,7 @@ convenient model of result set.
 
 The main features:
 
-1. Easy-to-learn --- No magic syntax. Everything is just plain data structure or
-   SQL keyword.
+1. Easy-to-learn --- Everything is just plain data structure or SQL keyword.
 2. Convenient    --- It makes result set more easy to use.
 3. Secure        --- It prevents the SQL injection from both identifier and
    value.
@@ -77,7 +76,7 @@ Then, use `mosql.result.Model <http://mosql.mosky.tw/result.html#mosql.result.Mo
      'person_id': 'mosky',
      'val': ['mosky.tw@gmail.com', 'mosky.liu@pinkoi.com', 'mosky@ubuntu-tw.org']}
 
-There are almost same, right?
+They are almost same, right?
 
 Here I use `arrange <http://mosql.mosky.tw/result.html#mosql.result.Model.arrange>`_ for taking advantages from the
 model configured, so the result sets are grouped into three model instances, but
