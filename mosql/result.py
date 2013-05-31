@@ -58,7 +58,7 @@ class RowProxy(Mapping):
         self.row_idx = row_idx
 
     def __len__(self):
-        return len(self.model.col_names)
+        return len(self.model.cols)
 
     def __iter__(self):
         return (col_name for col_name in self.model.cols)
@@ -269,25 +269,21 @@ class Model(Mapping):
     def new(cls, squashed_cols):
         m = cls()
         m.squashed_cols = squashed_cols
-        m.col_names = squashed_cols.keys()
         return m
 
     @classmethod
     def default(cls, **squashed_cols):
         return cls.new(squashed_cols)
 
-    col_names = tuple()
-
     @classmethod
     def load_rows(cls, col_names, rows):
 
         m = cls()
-        m.col_names = col_names
 
-        m.cols = dict((col_name, []) for col_name in m.col_names)
+        m.cols = dict((col_name, []) for col_name in col_names)
 
         for row in rows:
-            for col_name, col_val in zip(m.col_names, row):
+            for col_name, col_val in zip(col_names, row):
                 m.cols[col_name].append(col_val)
                 if m.squash_all or col_name in m.squashed:
                     m.squashed_cols[col_name] = col_val
@@ -448,12 +444,8 @@ class Model(Mapping):
 
     def ident(self, row_idx):
 
-        ident_by = self.ident_by
-        if ident_by is None:
-            ident_by = self.col_names
-
         ident = {}
-        for col_name in ident_by:
+        for col_name in (self.ident_by or self.cols):
             val = self.cols[col_name][row_idx]
             if val is util.default:
                 raise ValueError("value of column %r is unknown" % col_name)
@@ -488,7 +480,7 @@ class Model(Mapping):
 
         poped_row = {}
 
-        for col_name in self.col_names:
+        for col_name in self.cols:
             poped_row[col_name] = self.cols[col_name].pop(row_idx)
 
         self.row_len -= 1
@@ -500,9 +492,7 @@ class Model(Mapping):
 
         row_map = row_map.copy()
 
-        col_names = set(self.col_names+row_map.keys())
-
-        for col_name in col_names:
+        for col_name in set(self.cols.keys()+self.squashed_cols.keys()):
 
             if col_name in row_map:
                 val = row_map[col_name]
