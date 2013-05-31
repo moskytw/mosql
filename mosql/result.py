@@ -86,9 +86,6 @@ class RowProxy(Mapping):
 def get_col_names(cur):
     return [row_desc[0] for row_desc in cur.description]
 
-def hash_dict(d):
-    return hash(frozenset(d.items()))
-
 class Model(Mapping):
     '''The base model of result set.
 
@@ -563,7 +560,6 @@ class Model(Mapping):
 
                 # find other update changes which cond is target_cond
                 target_cond = cond
-                cond_hash = hash_dict(target_cond)
 
                 merged_val = val.copy()
                 merged_idxs = []
@@ -576,7 +572,7 @@ class Model(Mapping):
                     if cond is None or val is None:
                         continue
 
-                    if hash_dict(cond) == cond_hash:
+                    if cond == target_cond:
                         merged_val.update(val)
                         merged_idxs.append(j)
 
