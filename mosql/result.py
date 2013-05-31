@@ -259,11 +259,11 @@ class Model(Mapping):
     cols = None
 
     def __init__(self):
-        self.changes = []
-        self.cols = {}
         self.row_len = 0
-        self.proxies = {}
+        self.cols = {}
         self.squashed_cols = {}
+        self.changes = []
+        self.proxies = {}
 
     @classmethod
     def new(cls, squashed_cols):
