@@ -220,27 +220,42 @@ class Model(Mapping):
     performs them.'''
 
     @classmethod
-    def perform(cls, sql_or_sqls):
-        '''It executes SQL (str) or SQLs (seq) and return a cursor.
-        :class:`Model` uses it to perform every SQL.'''
+    def perform(cls, sql=None, param=None, params=None, proc=None, sqls=None):
+        '''It performs SQL, SQLs or/and procedure with parameter(s).'''
 
         conn = cls.getconn()
         cur = cls.getcur(conn)
 
-        if isinstance(sql_or_sqls, basestring):
-            sqls = [sql_or_sqls]
-        else:
-            sqls = sql_or_sqls
-
         if cls.dump_sql:
-            print '--- SQL DUMP ---'
-            for sql in sqls:
-                print sql
-            print '--- END ---'
+            if sql or sqls:
+                print '--- SQL DUMP ---'
+                for sql in (sqls or [sql]):
+                    print sql
+                print '--- END ---'
+            if proc:
+                print '--- SQL DUMP ---'
+                print 'callproc: %r' % proc
+                print '--- END ---'
+            if param or params:
+                print '--- PARAMETER DUMP ---'
+                for param in (params or [param]):
+                    print param
+                print '--- END ---'
+
+        _do = cur.execute
+        _param = param
+        if params:
+            _do = cur.executemany
+            _param = params
 
         try:
-            for sql in sqls:
-                cur.execute(sql)
+            if sql:
+                _do(sql, _param)
+            if sqls:
+                for sql in sqls:
+                    _do(sql, _param)
+            if proc:
+                cur.callproc(proc, _param)
         except:
             conn.rollback()
             raise
@@ -548,7 +563,7 @@ class Model(Mapping):
 
         self.changes = []
 
-        return self.perform(sqls)
+        return self.perform(sqls=sqls)
 
     def clear(self):
         for i in reversed(xrange(self.row_len)):
