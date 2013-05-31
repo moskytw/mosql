@@ -239,7 +239,8 @@ class Model(Mapping):
             print '--- END ---'
 
         try:
-            cur.execute('; '.join(sqls))
+            for sql in sqls:
+                cur.execute(sql)
         except:
             conn.rollback()
             raise
