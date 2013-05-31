@@ -255,22 +255,16 @@ class Model(Mapping):
 
     # --- translate result set to a model or models ---
 
-    def __init__(self):
+    def __init__(self, squashed_cols=None):
         self.row_len = 0
         self.cols = {}
-        self.squashed_cols = {}
+        self.squashed_cols = squashed_cols or {}
         self.changes = []
         self.proxies = {}
 
     @classmethod
-    def new(cls, squashed_cols):
-        m = cls()
-        m.squashed_cols = squashed_cols
-        return m
-
-    @classmethod
-    def default(cls, **squashed_cols):
-        return cls.new(squashed_cols)
+    def new(cls, **squashed_cols):
+        return cls(squashed_cols)
 
     @classmethod
     def load_rows(cls, col_names, rows):
