@@ -486,8 +486,8 @@ class Model(Mapping):
         '''It appends a row (dict) into model.'''
 
         row_map = row_map.copy()
-
-        for col_name in set(self.cols.keys()+self.squashed_cols.keys()):
+        
+        for col_name in set(row_map.keys()+self.cols.keys()+self.squashed_cols.keys()):
 
             if col_name in row_map:
                 val = row_map[col_name]
