@@ -74,7 +74,7 @@ class RowProxy(Mapping):
         if key in self.model.cols:
             return self[key]
         else:
-            raise AttributeError('attribute %r is not found' % key)
+            raise AttributeError('%r object has no attribute %r' % (self.__class__.__name__, key))
 
     # It makes __setattr__ work.
     model = None
@@ -422,7 +422,7 @@ class Model(Mapping):
         if key in self.cols:
             return self[key]
         else:
-            raise AttributeError('attribute %r is not found' % key)
+            raise AttributeError('%r object has no attribute %r' % (self.__class__.__name__, key))
 
     # It makes __setattr__ work.
     cols = None
@@ -446,7 +446,7 @@ class Model(Mapping):
         for col_name in (self.ident_by or self.cols):
             val = self.cols[col_name][row_idx]
             if val is util.default:
-                raise ValueError("value of column %r is unknown" % col_name)
+                raise ValueError('value of column %r is unknown' % col_name)
             ident[col_name] = val
 
         return ident
