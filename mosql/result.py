@@ -256,16 +256,16 @@ class Model(Mapping):
 
     # --- translate result set to a model or models ---
 
-    def __init__(self, squashed_cols=None):
+    def __init__(self, defaults=None):
         self.row_len = 0
         self.cols = {}
-        self.squashed_cols = squashed_cols or {}
         self.changes = []
         self.proxies = {}
+        self.defaults = defaults or {}
 
     @classmethod
-    def new(cls, **squashed_cols):
-        return cls(squashed_cols)
+    def new(cls, **defaults):
+        return cls(defaults)
 
     @classmethod
     def load_rows(cls, col_names, rows):
@@ -278,7 +278,7 @@ class Model(Mapping):
             for col_name, col_val in zip(col_names, row):
                 m.cols[col_name].append(col_val)
                 if m.squash_all or col_name in m.squashed:
-                    m.squashed_cols[col_name] = col_val
+                    m.defaults[col_name] = col_val
             m.row_len += 1
 
         return m
@@ -409,8 +409,11 @@ class Model(Mapping):
 
     def __getitem__(self, name_or_idx):
 
-        if name_or_idx in self.squashed_cols:
-            return self.squashed_cols[name_or_idx]
+        if self.squash_all or name_or_idx in self.squashed:
+            try:
+                return self.cols[name_or_idx][0]
+            except IndexError:
+                return None
         else:
             return self.proxy(name_or_idx)
 
@@ -450,10 +453,8 @@ class Model(Mapping):
 
     def __setitem__(self, col_name, val):
 
-        if col_name in self.squashed_cols:
-
-            self.squashed_cols[col_name] = val
-
+        if self.squash_all or col_name in self.squashed:
+            self.defaults[col_name] = val
             for i in range(len(self.cols[col_name])):
                 self.cols[col_name][i] = val
                 self.set(col_name, i, val)
@@ -487,12 +488,12 @@ class Model(Mapping):
 
         row_map = row_map.copy()
         
-        for col_name in set(row_map.keys()+self.cols.keys()+self.squashed_cols.keys()):
+        for col_name in set(row_map.keys()+self.cols.keys()+self.defaults.keys()):
 
             if col_name in row_map:
                 val = row_map[col_name]
-            elif col_name in self.squashed_cols:
-                val = row_map[col_name] = self.squashed_cols[col_name]
+            elif col_name in self.defaults:
+                val = row_map[col_name] = self.defaults[col_name]
             else:
                 val = row_map[col_name] = util.default
 
