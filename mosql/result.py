@@ -18,12 +18,6 @@ from pprint import pformat
 from . import build
 from . import util
 
-def get_col_names(cur):
-    return [row_desc[0] for row_desc in cur.description]
-
-def hash_dict(d):
-    return hash(frozenset(d.items()))
-
 class ColProxy(Sequence):
 
     def __init__(self, model, col_name):
@@ -88,6 +82,12 @@ class RowProxy(Mapping):
 
     def __repr__(self):
         return pformat(dict(self))
+
+def get_col_names(cur):
+    return [row_desc[0] for row_desc in cur.description]
+
+def hash_dict(d):
+    return hash(frozenset(d.items()))
 
 class Model(Mapping):
     '''The base model of result set.
