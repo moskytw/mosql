@@ -39,11 +39,11 @@ class ColProxy(Sequence):
     def __contains__(self, elem):
         return self.model.cols[self.col_name].__contains__(elem)
 
-    def __getitem__(self, idx):
-        return self.model.cols[self.col_name][idx]
+    def __getitem__(self, row_idx):
+        return self.model.cols[self.col_name][row_idx]
 
-    def __setitem__(self, idx, val):
-        self.model.set(self.col_name, idx, val)
+    def __setitem__(self, row_idx, val):
+        self.model.set(self.col_name, row_idx, val)
 
     def __repr__(self):
         return pformat(list(self))
