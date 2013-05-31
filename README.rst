@@ -57,7 +57,8 @@ Here is a SQL and the result set:
             10 | mosky     | email   | mosky@ubuntu-tw.org
     (6 rows)
 
-Then, use `mosql.result.Model <http://mosql.mosky.tw/result.html#mosql.result.Model>`_ to do so: (The `detail.py` is in the `examples <https://github.com/moskytw/mosql/tree/dev/examples>`_.)
+Then, use the model configured (The module, ``detail``, is in the `examples
+<https://github.com/moskytw/mosql/tree/dev/examples>`_) to do so:
 
 ::
 
@@ -78,7 +79,6 @@ Then, use `mosql.result.Model <http://mosql.mosky.tw/result.html#mosql.result.Mo
      'person_id': 'mosky',
      'val': ['mosky.tw@gmail.com', 'mosky.liu@pinkoi.com', 'mosky@ubuntu-tw.org']}
 
-They are almost same, right?
 
 Here I use `arrange <http://mosql.mosky.tw/result.html#mosql.result.Model.arrange>`_ for taking advantages from the
 model configured, so the result sets are grouped into three model instances, but
