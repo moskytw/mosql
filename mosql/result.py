@@ -258,21 +258,23 @@ class Model(Mapping):
     # It makes __setattr__ work.
     cols = None
 
-    defaults = {}
-
-    def __init__(self, defaults=None):
-
-        if defaults:
-            self.defaults = defaults
-
+    def __init__(self):
         self.changes = []
         self.cols = {}
         self.row_len = 0
         self.proxies = {}
+        self.squashed_cols = {}
 
     @classmethod
-    def new(cls, **defaults):
-        return cls(defaults=defaults)
+    def new(cls, squashed_cols):
+        m = cls()
+        m.squashed_cols = squashed_cols
+        m.col_names = squashed_cols.keys()
+        return m
+
+    @classmethod
+    def default(cls, **squashed_cols):
+        return cls.new(squashed_cols)
 
     col_names = tuple()
 
@@ -287,6 +289,8 @@ class Model(Mapping):
         for row in rows:
             for col_name, col_val in zip(m.col_names, row):
                 m.cols[col_name].append(col_val)
+                if m.squash_all or col_name in m.squashed:
+                    m.squashed_cols[col_name] = col_val
             m.row_len += 1
 
         return m
@@ -417,12 +421,8 @@ class Model(Mapping):
 
     def __getitem__(self, name_or_idx):
 
-        if isinstance(name_or_idx, basestring) and \
-           (self.squash_all or name_or_idx in self.squashed):
-            try:
-                return self.cols[name_or_idx][0]
-            except IndexError:
-                return None
+        if name_or_idx in self.squashed_cols:
+            return self.squashed_cols[name_or_idx]
         else:
             return self.proxy(name_or_idx)
 
@@ -463,8 +463,12 @@ class Model(Mapping):
 
     def __setitem__(self, col_name, val):
 
-        if self.squash_all or col_name in self.squashed:
+        if col_name in self.squashed_cols:
+
+            self.squashed_cols[col_name] = val
+
             for i in range(len(self.cols[col_name])):
+                self.cols[col_name][i] = val
                 self.set(col_name, i, val)
         else:
             raise TypeError("column %r is not squashed." % col_name)
@@ -496,19 +500,14 @@ class Model(Mapping):
 
         row_map = row_map.copy()
 
-        if not self.col_names:
-            col_names = row_map.keys()+self.defaults.keys()
-        else:
-            col_names = self.col_names
+        col_names = set(self.col_names+row_map.keys())
 
         for col_name in col_names:
 
             if col_name in row_map:
                 val = row_map[col_name]
-            elif self.defaults and col_name in self.defaults:
-                val = row_map[col_name] = self.defaults[col_name]
-            elif col_name in self.squashed:
-                val = row_map[col_name] = self.cols[col_name][0]
+            elif col_name in self.squashed_cols:
+                val = row_map[col_name] = self.squashed_cols[col_name]
             else:
                 val = row_map[col_name] = util.default
 
