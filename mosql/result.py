@@ -50,9 +50,6 @@ class ColProxy(Sequence):
 
 class RowProxy(Mapping):
 
-    # It makes __setattr__ work.
-    model = None
-
     def __init__(self, model, row_idx):
         self.model = model
         self.row_idx = row_idx
@@ -78,6 +75,9 @@ class RowProxy(Mapping):
             return self[key]
         else:
             raise AttributeError('attribute %r is not found' % key)
+
+    # It makes __setattr__ work.
+    model = None
 
     def __setattr__(self, key, val):
 
@@ -255,9 +255,6 @@ class Model(Mapping):
 
     # --- translate result set to a model or models ---
 
-    # It makes __setattr__ work.
-    cols = None
-
     def __init__(self):
         self.row_len = 0
         self.cols = {}
@@ -428,6 +425,9 @@ class Model(Mapping):
             return self[key]
         else:
             raise AttributeError('attribute %r is not found' % key)
+
+    # It makes __setattr__ work.
+    cols = None
 
     def __setattr__(self, key, val):
 
