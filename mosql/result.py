@@ -469,10 +469,10 @@ class Model(Mapping):
     '''It defines how to identify a row. It should be column names in a tuple.
     By default, it use all of the columns.'''
 
-    def ident(self, row_idx):
+    def ident(self, row_idx, ident_by=None):
 
         ident = {}
-        for col_name in (self.ident_by or self.cols):
+        for col_name in (ident_by or self.ident_by or self.cols):
             val = self.cols[col_name][row_idx]
             if val is util.default:
                 raise ValueError('value of column %r is unknown' % col_name)
@@ -483,9 +483,16 @@ class Model(Mapping):
     def __setitem__(self, col_name, val):
 
         if self.squash_all or col_name in self.squashed:
+
             self.defaults[col_name] = val
-            for i in range(len(self.cols[col_name])):
-                self.set(col_name, i, val)
+
+            if self.arrange_by:
+                self.changes.append((self.ident(0, self.arrange_by), {col_name: val}))
+                for i in range(len(self.cols[col_name])):
+                    self.cols[col_name][i] = val
+            else:
+                for i in range(len(self.cols[col_name])):
+                    self.set(col_name, i, val)
         else:
             raise TypeError("column %r is not squashed." % col_name)
 
