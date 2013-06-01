@@ -485,7 +485,6 @@ class Model(Mapping):
         if self.squash_all or col_name in self.squashed:
             self.defaults[col_name] = val
             for i in range(len(self.cols[col_name])):
-                self.cols[col_name][i] = val
                 self.set(col_name, i, val)
         else:
             raise TypeError("column %r is not squashed." % col_name)
