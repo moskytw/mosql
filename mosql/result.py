@@ -314,7 +314,11 @@ class Model(Mapping):
 
     @classmethod
     def load_cur(cls, cur):
-        if cur.description is None:
+
+        # The `description` is None if use an insert, update or delete without
+        # `returning`.
+        # The `rowcount` is 0 if no row returns from a select.
+        if cur.rowcount == 0 or cur.description is None:
             return None
         else:
             return cls.load_rows(get_col_names(cur), cur)
