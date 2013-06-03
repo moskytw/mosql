@@ -1,10 +1,11 @@
-The full version of this documentation is at `mosql.mosky.tw <http://mosql.mosky.tw>`_.
+The full version of this documentation is at `mosql.mosky.tw
+<http://mosql.mosky.tw>`_.
 
 MoSQL --- More than SQL
 =======================
 
-It lets you use the common Python's data structures to build SQLs, and provides a
-convenient model of result set.
+It lets you use the common Python's data structures to build SQLs, and provides
+a convenient model of result set.
 
 The main features:
 
@@ -15,12 +16,12 @@ The main features:
 3. Secure        --- It prevents the SQL injection from both identifier and
    value.
 4. Faster        --- It just builds the SQLs from Python's data structure and
-   then send it via the connector.
+   then send to the connector.
 
 It is just "More than SQL".
 
-NOTE: The versions after v0.2 are a new branch and it does **not** provide backward-compatibility for
-v0.1.x.
+NOTE: The versions after v0.2 are a new branch and it does **not** provide
+backward-compatibility for v0.1.x.
 
 The SQL Builders
 ----------------
@@ -34,10 +35,12 @@ The SQL Builders
 It is very easy to build a query by Python's data structures and
 `mosql.build <http://mosql.mosky.tw/builders.html#module-mosql.build>`_.
 
-There is more explanation of the builders --- `mosql.build <http://mosql.mosky.tw/builders.html#module-mosql.build>`_.
+There is more explanation of the builders --- `mosql.build
+<http://mosql.mosky.tw/builders.html#module-mosql.build>`_.
 
-It also provides `mosql.result.Model <http://mosql.mosky.tw/result.html#mosql.result.Model>`_ for result set, and you can use the
-same way to make queries to database.
+It also provides `mosql.result.Model
+<http://mosql.mosky.tw/result.html#mosql.result.Model>`_ for result set, and you
+can use the same way to make queries to database.
 
 The Model of Result Set
 -----------------------
@@ -80,13 +83,15 @@ Then, use the model configured (the module, ``detail``, is in the `examples
      'val': ['mosky.tw@gmail.com', 'mosky.liu@pinkoi.com', 'mosky@ubuntu-tw.org']}
 
 
-Here I use `arrange <http://mosql.mosky.tw/result.html#mosql.result.Model.arrange>`_ for taking advantages from the
-model configured, so the result sets are grouped into three model instances, but
-the plain methods, such as `select <http://mosql.mosky.tw/result.html#mosql.result.Model.select>`_, are also
+Here I use `arrange
+<http://mosql.mosky.tw/result.html#mosql.result.Model.arrange>`_ for taking
+advantages from the model configured, so the result sets are grouped into three
+model instances, but the plain methods, such as `select
+<http://mosql.mosky.tw/result.html#mosql.result.Model.select>`_, are also
 available.
 
-It converts the result set to column-oriented models, and the column can be
-squashed. The non-list value above is just the squashed column. See
+It converts the each result set into column-oriented model. The columns are
+squashable. The non-list values above are just the squashed columns. See
 `mosql.result <http://mosql.mosky.tw/result.html#module-mosql.result>`_ for more
 information.
 

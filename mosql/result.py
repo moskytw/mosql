@@ -348,7 +348,7 @@ class Model(Mapping):
     '''It is used as the first argument of SQL builder.'''
 
     clauses = {}
-    '''The additional clauses arguments for :mod:`mosql.build`. For an example:
+    '''The additional clauses arguments for :mod:`mosql.build`. For example:
 
     ::
 
@@ -416,7 +416,7 @@ class Model(Mapping):
         return len(self.cols)
 
     def rows(self):
-        '''It returns a generator of proxies of rows.
+        '''It generates the proxy for each row.
 
         .. versionadded:: 0.4
         '''
@@ -471,8 +471,7 @@ class Model(Mapping):
     # --- modifiy this model --- 
 
     ident_by = None
-    '''It defines how to identify a row. It should be column names in a tuple.
-    By default, it use all of the columns.'''
+    '''It defines how to identify a row. It should be column names in a tuple.'''
 
     def ident(self, row_idx=None):
 
@@ -528,7 +527,14 @@ class Model(Mapping):
         return poped_row
 
     def append(self, row_map):
-        '''It appends a row (dict) into model.'''
+        '''It appends a row into model.
+
+        The `row_map` should be a mapping which includes full or part values of
+        a row. If you provide a part of row, the row will be filled with 1.
+        defaults (by :meth:`__init__`, :meth:`new` or squashed columns) 2. :data:`~mosql.util.default` in order.
+
+        See the :meth:`new` for the typical usage.
+        '''
 
         row_map = row_map.copy()
 

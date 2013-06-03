@@ -6,8 +6,8 @@
 MoSQL --- More than SQL
 =======================
 
-It lets you use the common Python's data structures to build SQLs, and provides a
-convenient model of result set.
+It lets you use the common Python's data structures to build SQLs, and provides
+a convenient model of result set.
 
 The talk, "MoSQL: More than SQL, but Less than ORM", at PyCon TW 2013:
 
@@ -28,7 +28,7 @@ The main features:
 3. Secure        --- It prevents the SQL injection from both identifier and
    value.
 4. Faster        --- It just builds the SQLs from Python's data structure and
-   then send it via the connector.
+   then send to the connector.
 
 It is just "More than SQL".
 
@@ -66,8 +66,8 @@ It is just "More than SQL".
         </div>
     </div>
 
-NOTE: The versions after v0.2 are a new branch and it does **not** provide backward-compatibility for
-v0.1.x.
+NOTE: The versions after v0.2 are a new branch and it does **not** provide
+backward-compatibility for v0.1.x.
 
 The SQL Builders
 ----------------
@@ -133,8 +133,8 @@ model configured, so the result sets are grouped into three model instances, but
 the plain methods, such as :meth:`~mosql.result.Model.select`, are also
 available.
 
-It converts the result set to column-oriented models, and the column can be
-squashed. The non-list value above is just the squashed column. See
+It converts the each result set into column-oriented model. The columns are
+squashable. The non-list values above are just the squashed columns. See
 :class:`mosql.result` for more information.
 
 .. seealso ::
