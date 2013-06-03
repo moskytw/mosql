@@ -564,7 +564,19 @@ class Model(Mapping):
         self.append(row_map)
 
     def save(self):
-        '''It saves the changes.'''
+        '''It saves the changes.
+
+        When it encounters an update, it uses :attr:`ident_by` to build where.
+        If the column updated is squashed, it will use the :attr:`arrange_by`
+        instead. But if the `ident_by` or `arrange_by` is not set, it will use
+        all of the columns
+
+        For efficiency, it will merge the updates which have same condition into
+        a single update.
+
+        .. versionchanged:: v0.5.1
+            It uses `arrange_by` for the column squashed.
+        '''
 
         if not self.changes:
             return
@@ -608,6 +620,9 @@ class Model(Mapping):
 
     def clear(self):
         '''It pops all of the row in this model.
+
+        .. versionchanged:: v0.5.1
+            It doesn't call :meth:`pop` anymore. It clears this model directly.
 
         .. versionadded:: v0.5
         '''
