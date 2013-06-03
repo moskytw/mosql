@@ -474,16 +474,24 @@ class Model(Mapping):
     '''It defines how to identify a row. It should be column names in a tuple.
     By default, it use all of the columns.'''
 
-    def ident(self, row_idx, ident_by=None):
+    def ident(self, row_idx=None):
 
-        ident = {}
-        for col_name in (ident_by or self.ident_by or self.cols):
-            val = self.cols[col_name][row_idx]
-            if val is util.default:
-                raise ValueError('value of column %r is unknown' % col_name)
-            ident[col_name] = val
+        # use what columns to build where clause
+        if row_idx is None:
+            # change the value in all rows
+            cond_col_names = self.arrange_by or self.cols
+        else:
+            cond_col_names = self.ident_by or self.cols
 
-        return ident
+        # build the where
+        cond = {}
+        for cond_col_name in cond_col_names:
+            cond_val = self.cols[cond_col_name][row_idx or 0]
+            if cond_val is util.default:
+                raise ValueError('cond_value of column %r is unknown' % cond_col_name)
+            cond[cond_col_name] = cond_val
+
+        return cond
 
     def __setitem__(self, col_name, val):
 
@@ -494,22 +502,7 @@ class Model(Mapping):
 
     def set(self, col_name, row_idx, val):
 
-        # use what columns to build where clause
-        if row_idx is None:
-            # change the value in all rows
-            cond_col_names = self.arrange_by or self.cols
-        else:
-            cond_col_names = self.cond_by or self.cols
-
-        # build the where
-        cond = {}
-        for cond_col_name in cond_col_names:
-            cond_val = self.cols[cond_col_name][row_idx or 0]
-            if cond_val is util.default:
-                raise ValueError('cond_value of column %r is unknown' % cond_col_name)
-            cond[cond_col_name] = cond_val
-
-        self.changes.append((cond, {col_name: val}))
+        self.changes.append((self.ident(row_idx), {col_name: val}))
 
         if row_idx is None:
             for row_idx in xrange(len(self.cols[col_name])):
