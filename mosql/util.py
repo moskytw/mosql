@@ -132,7 +132,10 @@ class raw(str):
         return 'raw(%r)' % str(self)
 
 default = raw('DEFAULT')
+'The ``DEFAULT`` keyword in SQL.'
+
 star = raw('*')
+'The ``*`` keyword in SQL.'
 
 class param(str):
     ''':func:`value` builds this type as a parameter for the prepared statement
