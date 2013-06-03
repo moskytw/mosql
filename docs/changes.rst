@@ -2,6 +2,14 @@
 The Changes
 ===========
 
+v0.5.1
+------
+
+1. The :meth:`mosql.result.save` uses :attr:`arrange_by` to save the changes on
+   column squashed.
+2. The :meth:`mosql.result.clear` is also improved.
+3. Improved the program of loading result set.
+
 v0.5
 ----
 
