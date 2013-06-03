@@ -605,8 +605,8 @@ class Model(Mapping):
 
         .. versionadded:: v0.5
         '''
-        for i in reversed(xrange(self.row_len)):
-            self.pop(i)
+        self.changes.append((self.ident(), None))
+        self.cols.clear()
 
     def __repr__(self):
         return pformat(dict(self))
