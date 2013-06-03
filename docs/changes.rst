@@ -5,12 +5,12 @@ The Changes
 v0.5.1
 ------
 
-1. The :meth:`mosql.result.save` uses :attr:`arrange_by` to save the changes on
-   column squashed.
-2. The :meth:`mosql.result.clear` is also improved.
+1. The :meth:`mosql.result.Model.save` uses
+   :attr:`mosql.result.Model.arrange_by` to save the changes on column squashed.
+2. The :meth:`mosql.result.Model.clear` is also improved.
 3. Improved the program of loading result set.
-4. The :meth:`mosql.result.select` or :meth:`mosql.result.where` returns None if
-   no row is returned.
+4. The :meth:`mosql.result.Model.select` or :meth:`mosql.result.Model.where`
+   returns None if no row is returned.
 
 v0.5
 ----
