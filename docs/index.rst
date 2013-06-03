@@ -66,7 +66,7 @@ It is just "More than SQL".
         </div>
     </div>
 
-NOTE: The versions after v0.2 is a new branch and it does **not** provide backward-compatibility for
+NOTE: The versions after v0.2 are a new branch and it does **not** provide backward-compatibility for
 v0.1.x.
 
 The SQL Builders
