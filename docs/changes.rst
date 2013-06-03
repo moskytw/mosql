@@ -9,6 +9,8 @@ v0.5.1
    column squashed.
 2. The :meth:`mosql.result.clear` is also improved.
 3. Improved the program of loading result set.
+4. The :meth:`mosql.result.select` or :meth:`mosql.result.where` returns None if
+   no row is returned.
 
 v0.5
 ----
