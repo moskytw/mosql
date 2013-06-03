@@ -477,7 +477,7 @@ class Model(Mapping):
 
         # use what columns to build where clause
         if row_idx is None:
-            # change the value in all rows
+            # change this value in all rows in this model
             cond_col_names = self.arrange_by or self.cols
         else:
             cond_col_names = self.ident_by or self.cols
