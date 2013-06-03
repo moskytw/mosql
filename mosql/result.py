@@ -479,13 +479,21 @@ class Model(Mapping):
         if row_idx is None:
             # change this value in all rows in this model
             cond_col_names = self.arrange_by or self.cols
+            row_idx = 0
         else:
             cond_col_names = self.ident_by or self.cols
 
         # build the where
         cond = {}
         for cond_col_name in cond_col_names:
-            cond_val = self.cols[cond_col_name][row_idx or 0]
+
+            try:
+                cond_val = self.cols[cond_col_name][row_idx]
+            except IndexError:
+                raise IndexError('row index out of range')
+            except KeyError:
+                raise KeyError('the column is not existent: %r' % cond_col_name)
+
             if cond_val is util.default:
                 raise ValueError('cond_value of column %r is unknown' % cond_col_name)
             cond[cond_col_name] = cond_val
