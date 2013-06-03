@@ -328,7 +328,12 @@ class Model(Mapping):
 
         name_index_map = dict((name, i) for i, name  in enumerate(col_names))
         key_indexes = tuple(name_index_map.get(name) for name in cls.arrange_by)
-        key_func = lambda row: tuple(row[i] if i is not None else None for i in key_indexes)
+
+        # use util.default as the hyper None
+        key_func = lambda row: tuple(
+            row[i] if i is not None else util.default
+            for i in key_indexes
+        )
 
         for _, rows in groupby(rows, key_func):
             yield cls.load_rows(col_names, rows)
