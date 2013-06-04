@@ -24,7 +24,7 @@ except ImportError:
 from datetime import datetime, date
 from functools import partial
 
-from .result import Model
+from .result import Model, ColProxy, RowProxy
 
 class ModelJSONEncoder(json.JSONEncoder):
     '''It is compatible with :py:mod:`mosql.result` and built-in `datetime`.'''
@@ -37,6 +37,10 @@ class ModelJSONEncoder(json.JSONEncoder):
             if isinstance(obj, (datetime, date)):
                 return obj.isoformat()
             elif isinstance(obj, Model):
+                return dict(obj)
+            elif isinstance(obj, ColProxy):
+                return list(obj)
+            elif isinstance(obj, RowProxy):
                 return dict(obj)
             else:
                 raise e
