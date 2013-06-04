@@ -2,6 +2,12 @@
 The Changes
 ===========
 
+v0.5.2
+------
+
+1. Fixed the compatibility of :mod:`mosql.json` with
+   :class:`mosql.result.Model`.
+
 v0.5.1
 ------
 
