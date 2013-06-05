@@ -366,9 +366,8 @@ class Model(Mapping):
     @classmethod
     def _query(cls, cur_handler, sql_builder, *args, **kargs):
 
-        clauses = getattr(cls, 'clauses', None)
-        if clauses:
-            mixed_kargs = clauses.copy()
+        if cls.clauses:
+            mixed_kargs = cls.clauses.copy()
             if kargs:
                 mixed_kargs.update(kargs)
         else:
