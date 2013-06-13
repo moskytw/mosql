@@ -499,6 +499,7 @@ class Model(Mapping):
 
             if cond_val is util.default:
                 raise ValueError('cond_value of column %r is unknown' % cond_col_name)
+
             cond[cond_col_name] = cond_val
 
         return cond
