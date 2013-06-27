@@ -2,6 +2,12 @@
 The Changes
 ===========
 
+v0.5.3
+------
+
+1. Fixed the compatibility of :mod:`mosql.util` with types which inherit the the
+   basic types.
+
 v0.5.2
 ------
 
