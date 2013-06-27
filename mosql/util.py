@@ -228,7 +228,15 @@ def value(x):
     if x is None:
         return 'NULL'
     else:
-        return _type_value_map.get(type(x), str)(x)
+        handler =  _type_value_map.get(type(x))
+        if handler:
+            return handler(x)
+        else:
+            for t in _type_value_map:
+                if isinstance(x, t):
+                    return _type_value_map[t](x)
+            else:
+                return str(x)
 
 class OptionError(Exception):
     '''The instance of it will be raised when :func:`identifier` detects an
