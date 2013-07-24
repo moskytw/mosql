@@ -49,7 +49,7 @@ if __name__ == '__main__':
     # The previous one has some typo.
     mosky.name = 'Yiyu Liu'
 
-    # The two changes will be merge into only an update.
+    # The two changes will be merged into only an update.
     mosky.save()
 
     # Re-selecting is not necessary. I just wanna show you the db is really
