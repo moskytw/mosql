@@ -393,6 +393,56 @@ def _to_pairs(x):
 
     return x
 
+def _build_condition(x, key_qualify=identifier, value_qualifier=value):
+
+    ps = _to_pairs(x)
+
+    pieces = []
+
+    for k, v in ps:
+
+        # find the op
+
+        op = ''
+
+        if not isinstance(k, raw):
+
+            # split the op out
+            space_pos = k.find(' ')
+            if space_pos != -1:
+                k, op = k[:space_pos], k[space_pos+1:].strip()
+
+            if not op:
+                if _is_iterable_not_str(v):
+                    op = 'IN'
+                elif v is None:
+                    op = 'IS'
+                else:
+                    op = '='
+            else:
+                op = op.upper()
+                if allowed_operators is not None and op not in allowed_operators:
+                    raise OperatorError(op)
+
+        # feature of autoparam
+        if isinstance(v, type) and v.__name__ == 'param':
+            v = param(k)
+
+        # qualify the v
+        v = value_qualifier(v)
+        if _is_iterable_not_str(v):
+            v = paren(concat_by_comma(v))
+
+        # qualify the k
+        k = key_qualify(k)
+
+        if op:
+            pieces.append('%s %s %s' % (k, op, v))
+        else:
+            pieces.append('%s %s' % (k, v))
+
+    return concat_by_and(pieces)
+
 @joiner
 def build_where(x):
     '''It is a joiner function which builds the where list of SQL from a `dict`
@@ -436,54 +486,7 @@ def build_where(x):
         By default, the operators are limited. Check the :attr:`allowed_operators`
         for more information.
     '''
-
-    ps = _to_pairs(x)
-
-    pieces = []
-
-    for k, v in ps:
-
-        # find the op
-
-        op = ''
-
-        if not isinstance(k, raw):
-
-            # split the op out
-            space_pos = k.find(' ')
-            if space_pos != -1:
-                k, op = k[:space_pos], k[space_pos+1:].strip()
-
-            if not op:
-                if _is_iterable_not_str(v):
-                    op = 'IN'
-                elif v is None:
-                    op = 'IS'
-                else:
-                    op = '='
-            else:
-                op = op.upper()
-                if allowed_operators is not None and op not in allowed_operators:
-                    raise OperatorError(op)
-
-        # feature of autoparam
-        if isinstance(v, type) and v.__name__ == 'param':
-            v = param(k)
-
-        # qualify the v
-        v = value(v)
-        if _is_iterable_not_str(v):
-            v = paren(concat_by_comma(v))
-
-        # qualify the k
-        k = identifier(k)
-
-        if op:
-            pieces.append('%s %s %s' % (k, op, v))
-        else:
-            pieces.append('%s %s' % (k, v))
-
-    return concat_by_and(pieces)
+    return _build_condition(x, identifier, value)
 
 @joiner
 def build_set(x):
@@ -532,15 +535,11 @@ def build_on(x):
 
     >>> print build_on((('person.person_id', 'detail.person_id'), ))
     "person"."person_id" = "detail"."person_id"
+
+    >>> print build_on({'person.age >': raw(20)})
+    "person"."age" > 20
     '''
-
-    ps = _to_pairs(x)
-
-    pieces = []
-    for k, v in ps:
-        pieces.append('%s = %s' % (identifier(k), identifier(v)))
-
-    return concat_by_and(pieces)
+    return _build_condition(x, identifier, identifier)
 
 # NOTE: To keep simple, the below classes shouldn't rely on the above functions
 
