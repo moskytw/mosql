@@ -184,7 +184,7 @@ def _quote_str(x):
 def _quote_datetime(x):
     return "'%s'" % x
 
-_type_value_map = {
+_type_handler_map = {
     str     : _quote_str,
     unicode : _quote_str,
     bool    : stringify_bool,
@@ -228,13 +228,13 @@ def value(x):
     if x is None:
         return 'NULL'
     else:
-        handler =  _type_value_map.get(type(x))
+        handler =  _type_handler_map.get(type(x))
         if handler:
             return handler(x)
         else:
-            for t in _type_value_map:
+            for t in _type_handler_map:
                 if isinstance(x, t):
-                    return _type_value_map[t](x)
+                    return _type_handler_map[t](x)
             else:
                 return str(x)
 
