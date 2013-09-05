@@ -37,7 +37,7 @@ __all__ = [
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
     'build_where', 'build_set', 'build_on',
-    'Clause', 'Statement',
+    'Clause', 'Statement', 'Query',
 ]
 
 from functools import wraps
@@ -652,6 +652,33 @@ class Statement(object):
 
     def __repr__(self):
         return 'Statement(%s)' % self.clauses
+
+class Query(object):
+
+    def __init__(self, statement, preprocessor=None, clause_args=None):
+        self.statement = statement
+        self.preprocessor = preprocessor
+        self.clause_args = clause_args
+
+    def extend(self, clause_args=None):
+        if clause_args:
+            clause_args.update(self.clause_args)
+        return Query(self.Statement, self.preprocessor, clause_args)
+
+    def format(self, clause_args=None, dont_copy=False):
+        if self.clause_args:
+            clause_args.update(self.clause_args)
+        if self.preprocessor:
+            if not dont_copy:
+                clause_args = clause_args.copy()
+            self.preprocessor(clause_args)
+        return self.statement.format(clause_args)
+
+    def stringify(self, **clause_args):
+        return self.format(clause_args, True)
+
+    def __call__(self, **clause_args):
+        return self.format(clause_args, True)
 
 if __name__ == '__main__':
     import doctest
