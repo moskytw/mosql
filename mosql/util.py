@@ -666,7 +666,7 @@ class Query(object):
         self.preprocessor = preprocessor
         self.clause_args = clause_args
 
-    def extend(self, clause_args=None):
+    def breed(self, clause_args=None):
         if clause_args:
             clause_args.update(self.clause_args)
         return Query(self.Statement, self.preprocessor, clause_args)
