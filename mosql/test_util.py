@@ -39,5 +39,7 @@ def select_preprocessor(clause_args):
         clause_args['group by'] = clause_args['group_by']
 
 select = Query(select_stat, select_preprocessor)
+print select.stringify(table='order', where={'order_id': 123})
 
-print select.stringify(table='orders')
+order_select = select.breed({'table': 'order', 'order by': 'order_created'})
+print order_select(where={'order_id': 123})
