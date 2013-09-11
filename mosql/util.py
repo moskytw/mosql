@@ -659,32 +659,45 @@ class Statement(object):
     def __repr__(self):
         return 'Statement(%s)' % self.clauses
 
+def _merge_dicts(default, *updates):
+    result = default.copy()
+    for update in updates:
+        result.update(update)
+    return result
+
 class Query(object):
 
     def __init__(self, statement, preprocessor=None, clause_args=None):
+
         self.statement = statement
-        self.preprocessor = preprocessor
-        self.clause_args = clause_args
+
+        if preprocessor is None:
+            self.preprocessor = lambda d: d
+        else:
+            self.preprocessor = preprocessor
+
+        if clause_args is None:
+            self.clause_args = {}
+        else:
+            self.clause_args = clause_args
 
     def breed(self, clause_args=None):
-        if clause_args:
-            clause_args.update(self.clause_args)
-        return Query(self.Statement, self.preprocessor, clause_args)
+        return Query(
+            self.statement,
+            self.preprocessor,
+            _merge_dicts(self.clause_args, clause_args)
+        )
 
-    def format(self, clause_args=None, dont_copy=False):
-        if self.clause_args:
-            clause_args.update(self.clause_args)
-        if self.preprocessor:
-            if not dont_copy:
-                clause_args = clause_args.copy()
-            self.preprocessor(clause_args)
+    def format(self, clause_args=None):
+        clause_args = _merge_dicts(self.clause_args, clause_args)
+        self.preprocessor(clause_args)
         return self.statement.format(clause_args)
 
     def stringify(self, **clause_args):
-        return self.format(clause_args, True)
+        return self.format(clause_args)
 
     def __call__(self, **clause_args):
-        return self.format(clause_args, True)
+        return self.format(clause_args)
 
 if __name__ == '__main__':
     import doctest
