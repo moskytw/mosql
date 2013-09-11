@@ -42,4 +42,4 @@ select = Query(select_stat, select_preprocessor)
 print select.stringify(table='order', where={'order_id': 123})
 
 order_select = select.breed({'table': 'order', 'order by': 'order_created'})
-print order_select(where={'order_id': 123})
+print order_selec(where={'order_id': 123})

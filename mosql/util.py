@@ -666,6 +666,15 @@ def _merge_dicts(default, *updates):
     return result
 
 class Query(object):
+    '''It makes a partial :class:`Statement`.
+
+    :param statement: a statement
+    :type statement: :class:`Statement`
+    :param preprocessor: a preprocessor of the `clause_args`
+    :type preprocessor: function
+    :param clause_args: the arguments of the clauses you want to predefine
+    :type clause_args: dict
+    '''
 
     def __init__(self, statement, preprocessor=None, clause_args=None):
 
@@ -682,6 +691,8 @@ class Query(object):
             self.clause_args = clause_args
 
     def breed(self, clause_args=None):
+        '''It merges the `clause_args` from both this instance and the argument,
+        and then create new :class:`Query` instance by that.'''
         return Query(
             self.statement,
             self.preprocessor,
@@ -689,14 +700,18 @@ class Query(object):
         )
 
     def format(self, clause_args=None):
+        '''It merges the `clause_args` from both this instance and the
+        arguments, and then apply to the statement.'''
         clause_args = _merge_dicts(self.clause_args, clause_args)
         self.preprocessor(clause_args)
         return self.statement.format(clause_args)
 
     def stringify(self, **clause_args):
+        '''It is same as the :meth:`format`, but it let you use keyword arguments.'''
         return self.format(clause_args)
 
     def __call__(self, **clause_args):
+        '''It is same as the :meth:`stringify`. It is for backward-compatibility, and not encourage to use.'''
         return self.format(clause_args)
 
 if __name__ == '__main__':
