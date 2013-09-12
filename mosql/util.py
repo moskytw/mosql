@@ -591,11 +591,12 @@ class Clause(object):
     VALUES (r, 'b', 'c')
     '''
 
-    def __init__(self, name, formatters, hidden=False, aliases=None):
+    def __init__(self, name, formatters, hidden=False, aliases=None, default=None):
 
         self.prefix = prefix = name.upper()
         self.formatters = formatters
         self.hidden = hidden
+        self.default = default
 
         underscore_name = name.replace(' ', '_')
 
