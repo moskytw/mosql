@@ -593,25 +593,23 @@ class Clause(object):
 
     def __init__(self, name, formatters, hidden=False, alias=None, default=None):
 
-        self.prefix = prefix = name.upper()
+        self.prefix = name.upper()
         self.formatters = formatters
         self.hidden = hidden
+
+        # the default and possibles both are used by Statement
         self.default = default
-
-        underscore_name = name.replace(' ', '_')
-
         self.possibles = []
 
         if alias:
             self.possibles.append(alias)
 
-        self.possibles.append(underscore_name)
+        lower_name = name.lower()
+        underscore_lower_name = lower_name.replace(' ', '_')
+        self.possibles.append(underscore_lower_name)
 
-        if name != underscore_name:
-            self.possibles.append(name)
-
-        if prefix != name:
-            self.possibles.append(prefix)
+        if lower_name != underscore_lower_name:
+            self.possibles.append(lower_name)
 
     def format(self, x):
         '''Apply `x` to this clause template.
