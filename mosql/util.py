@@ -589,6 +589,9 @@ class Clause(object):
 
     >>> print values.format((raw('r'), 'b', 'c'))
     VALUES (r, 'b', 'c')
+
+    .. versionchanged :: 0.6
+        Added two arguments, `alias` and `default`.
     '''
 
     def __init__(self, name, formatters, hidden=False, alias=None, default=None):
@@ -650,6 +653,9 @@ class Statement(object):
     ...     'values'     : ('daniel', 'Diane Leonard'),
     ... })
     INSERT INTO "person" ("person_id", "name") VALUES ('daniel', 'Diane Leonard')
+
+    .. versionchanged :: 0.6
+        Added `preprocessor`.
     '''
 
     def __init__(self, clauses, preprocessor=None):
@@ -704,6 +710,8 @@ class Query(object):
     :type statement: :class:`Statement`
     :param clause_args: the arguments of the clauses you want to predefine
     :type clause_args: dict
+
+    .. versionadded :: 0.6
     '''
 
     def __init__(self, statement,  clause_args=None):
