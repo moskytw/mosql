@@ -672,6 +672,7 @@ class Statement(object):
         '''
 
         if self.preprocessor:
+            clause_args = clause_args.copy()
             self.preprocessor(clause_args)
 
         pieces = []
