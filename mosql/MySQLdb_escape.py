@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 
 '''
+.. deprecated:: 0.6
+    You should use safe connection encoding, such as utf-8. This module will be
+    removed in a future release.
+
 It applies the escape function in MySQLdb to :mod:`mosql.util`.
 
 Usage:

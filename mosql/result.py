@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It provides useful :class:`Model` which let you commuicate with database
+'''
+.. deprecated:: 0.6
+    It will be removed because it is what it shouldn't do. If you need a model,
+    just write a class with :mod:`mosql.queries` instead of it.
+
+It provides useful :class:`Model` which let you commuicate with database
 smoothly.
 
 .. versionchanged:: 0.2

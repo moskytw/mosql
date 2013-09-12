@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It contains the common SQL builders.
+'''
+.. deprecated:: 0.6
+    Use :mod:`mosql.queries` instead.
+
+It contains the common SQL builders.
 
 .. versionchanged:: 0.2
     It is renamed from ``common``.
