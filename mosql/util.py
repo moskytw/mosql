@@ -591,7 +591,7 @@ class Clause(object):
     VALUES (r, 'b', 'c')
     '''
 
-    def __init__(self, name, formatters, hidden=False, aliases=None, default=None):
+    def __init__(self, name, formatters, hidden=False, alias=None, default=None):
 
         self.prefix = prefix = name.upper()
         self.formatters = formatters
@@ -602,8 +602,8 @@ class Clause(object):
 
         self.possibles = []
 
-        if aliases:
-            self.possibles.extend(aliases)
+        if alias:
+            self.possibles.append(alias)
 
         self.possibles.append(underscore_name)
 

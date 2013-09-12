@@ -14,7 +14,7 @@ set_list          = (build_set, )
 statement_list    = (concat_by_space, )
 
 select   = Clause('select'  , identifier_list, default=star)
-from_    = Clause('from'    , identifier_list, aliases=['table'])
+from_    = Clause('from'    , identifier_list, alias='table')
 joins    = Clause('joins'   , statement_list, hidden=True)
 where    = Clause('where'   , where_list)
 group_by = Clause('group by', identifier_list)
