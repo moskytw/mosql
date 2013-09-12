@@ -591,10 +591,26 @@ class Clause(object):
     VALUES (r, 'b', 'c')
     '''
 
-    def __init__(self, prefix, formatters, hidden=False):
-        self.prefix = prefix.upper()
+    def __init__(self, name, formatters, hidden=False, aliases=None):
+
+        self.prefix = prefix = name.upper()
         self.formatters = formatters
         self.hidden = hidden
+
+        underscore_name = name.replace(' ', '_')
+
+        self.possibles = []
+
+        if aliases:
+            self.possibles.extend(aliases)
+
+        self.possibles.append(underscore_name)
+
+        if name != underscore_name:
+            self.possibles.append(name)
+
+        if prefix != name:
+            self.possibles.append(prefix)
 
     def format(self, x):
         '''Apply `x` to this clause template.
