@@ -13,8 +13,8 @@ where_list        = (build_where, )
 set_list          = (build_set, )
 statement_list    = (concat_by_space, )
 
-select   = Clause('select'  , identifier_list)
-from_    = Clause('from'    , identifier_list)
+select   = Clause('select'  , identifier_list, default=star)
+from_    = Clause('from'    , identifier_list, aliases=['table'])
 joins    = Clause('joins'   , statement_list, hidden=True)
 where    = Clause('where'   , where_list)
 group_by = Clause('group by', identifier_list)
@@ -23,20 +23,7 @@ order_by = Clause('order by', identifier_list)
 limit    = Clause('limit'   , single_value)
 offset   = Clause('offset'  , single_value)
 
-def select_stat_preprocessor(clause_args):
-
-    clause_args.setdefault('select', star)
-
-    if 'table' in clause_args:
-        clause_args['select'] = clause_args['table']
-
-    if 'order_by' in clause_args:
-        clause_args['order by'] = clause_args['order_by']
-
-    if 'group_by' in clause_args:
-        clause_args['group by'] = clause_args['group_by']
-
-select_stat = Statement([select, from_, joins, where, group_by, having, order_by, limit, offset], select_stat_preprocessor)
+select_stat = Statement([select, from_, joins, where, group_by, having, order_by, limit, offset])
 
 select = Query(select_stat)
 print select.stringify(table='order', where={'order_id': 123})

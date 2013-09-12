@@ -672,11 +672,22 @@ class Statement(object):
 
         pieces = []
         for clause in self.clauses:
-            arg = clause_args.get(clause.prefix.lower())
-            # NOTE: for backward compatibility
-            #if arg is not None:
-            if arg:
+
+            arg = None
+            for possible in clause.possibles:
+                try:
+                    arg = clause_args[possible]
+                except KeyError:
+                    continue
+                else:
+                    break
+
+            if arg is None and clause.default:
+                arg = clause.default
+
+            if arg is not None:
                 pieces.append(clause.format(arg))
+
         return ' '.join(pieces)
 
     def __repr__(self):
