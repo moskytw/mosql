@@ -23,9 +23,7 @@ order_by = Clause('order by', identifier_list)
 limit    = Clause('limit'   , single_value)
 offset   = Clause('offset'  , single_value)
 
-select_stat = Statement([select, from_, joins, where, group_by, having, order_by, limit, offset])
-
-def select_preprocessor(clause_args):
+def select_stat_preprocessor(clause_args):
 
     clause_args.setdefault('select', star)
 
@@ -38,7 +36,9 @@ def select_preprocessor(clause_args):
     if 'group_by' in clause_args:
         clause_args['group by'] = clause_args['group_by']
 
-select = Query(select_stat, select_preprocessor)
+select_stat = Statement([select, from_, joins, where, group_by, having, order_by, limit, offset], select_stat_preprocessor)
+
+select = Query(select_stat)
 print select.stringify(table='order', where={'order_id': 123})
 
 order_select = select.breed({'table': 'order', 'order by': 'order_created'})

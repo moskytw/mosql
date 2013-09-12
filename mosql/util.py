@@ -618,6 +618,8 @@ class Statement(object):
 
     :param clauses: the clauses which consist this statement
     :type clauses: :class:`Clause`
+    :param preprocessor: a preprocessor for the argument, `clause_args`, of the :meth:`format`
+    :type preprocessor: function
 
     Here is an example of using :class:`Statement`:
 
@@ -635,8 +637,9 @@ class Statement(object):
     INSERT INTO "person" ("person_id", "name") VALUES ('daniel', 'Diane Leonard')
     '''
 
-    def __init__(self, clauses):
+    def __init__(self, clauses, preprocessor=None):
         self.clauses = clauses
+        self.preprocessor = preprocessor
 
     def format(self, clause_args):
         '''Apply the `clause_args` to each clauses.
@@ -646,6 +649,9 @@ class Statement(object):
 
         :rtype: str
         '''
+
+        if self.preprocessor:
+            self.preprocessor(clause_args)
 
         pieces = []
         for clause in self.clauses:
@@ -670,20 +676,13 @@ class Query(object):
 
     :param statement: a statement
     :type statement: :class:`Statement`
-    :param preprocessor: a preprocessor of the `clause_args`
-    :type preprocessor: function
     :param clause_args: the arguments of the clauses you want to predefine
     :type clause_args: dict
     '''
 
-    def __init__(self, statement, preprocessor=None, clause_args=None):
+    def __init__(self, statement,  clause_args=None):
 
         self.statement = statement
-
-        if preprocessor is None:
-            self.preprocessor = lambda d: d
-        else:
-            self.preprocessor = preprocessor
 
         if clause_args is None:
             self.clause_args = {}
@@ -695,7 +694,6 @@ class Query(object):
         and then create new :class:`Query` instance by that.'''
         return Query(
             self.statement,
-            self.preprocessor,
             _merge_dicts(self.clause_args, clause_args)
         )
 
@@ -703,7 +701,6 @@ class Query(object):
         '''It merges the `clause_args` from both this instance and the
         arguments, and then apply to the statement.'''
         clause_args = _merge_dicts(self.clause_args, clause_args)
-        self.preprocessor(clause_args)
         return self.statement.format(clause_args)
 
     def stringify(self, **clause_args):
