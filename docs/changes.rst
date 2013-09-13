@@ -1,6 +1,5 @@
-
-The Changes
-===========
+The Change Log
+==============
 
 v0.5.3
 ------
@@ -69,6 +68,9 @@ v0.2
 6. The :mod:`mosql.select` uses `*` if user pass ``None`` in.
 7. MoSQL passed all of the injection tests from `sqlmap <http://sqlmap.org/>`_
    on value and identifier with PostgreSQL and MySQL.
+
+NOTE: The versions after v0.2 are a new branch and it does **not** provide
+backward-compatibility for v0.1.x.
 
 v0.1.6
 ------
