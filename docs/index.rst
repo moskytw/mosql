@@ -74,6 +74,7 @@ The Documentions
 .. toctree::
     :maxdepth: 1
 
+    query
     patch
     util
     deprecated
