@@ -47,7 +47,7 @@ __all__ = [
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
     'build_where', 'build_set', 'build_on',
-    'or',
+    'or_',
     'Clause', 'Statement', 'Query',
 ]
 
@@ -773,6 +773,9 @@ class Query(object):
     def __call__(self, *positional_values, **clause_args):
         '''It is same as the :meth:`stringify`. It is for backward-compatibility, and not encourage to use.'''
         return self.stringify(*positional_values, **clause_args)
+
+    def __repr__(self):
+        return 'Query(%s, %s, %s)' % (self.statement, self.positional_keys, self.clause_args)
 
 if __name__ == '__main__':
     import doctest
