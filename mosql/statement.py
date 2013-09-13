@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from .util import Statement
-from .clauses import returning, where
-from .clauses import insert, columns, values, on_duplicate_key_update
-from .clauses import select, from_, joins, group_by, having, order_by, limit, offset
-from .clauses import update, set_
-from .clauses import delete
-from .clauses import type_, join, on, using
+from .clause import returning, where
+from .clause import insert, columns, values, on_duplicate_key_update
+from .clause import select, from_, joins, group_by, having, order_by, limit, offset
+from .clause import update, set_
+from .clause import delete
+from .clause import type_, join, on, using
 
 def insert_preprocessor(clause_args):
 

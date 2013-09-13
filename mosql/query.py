@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .util import Query
-from .statements import insert, select, update, delete, join
+from .statement import insert, select, update, delete, join
 
 insert = Query(insert)
 select = Query(select)

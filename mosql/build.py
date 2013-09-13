@@ -3,7 +3,7 @@
 
 '''
 .. deprecated:: 0.6
-    Use :mod:`mosql.queries` instead.
+    Use :mod:`mosql.query` instead.
 
 It contains the common SQL builders.
 
