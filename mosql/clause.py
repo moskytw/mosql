@@ -1,20 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from .util import star
-from .util import value, identifier, paren, paren
-from .util import concat_by_comma, concat_by_space, build_where, build_set, build_on
-from .util import Clause
+'''It provides common clauses.'''
 
-# the formatting chain
-single_value      = (value, )
-single_identifier = (identifier, )
-identifier_list   = (identifier, concat_by_comma)
-column_list       = (identifier, concat_by_comma, paren)
-value_list        = (value, concat_by_comma, paren)
-where_list        = (build_where, )
-set_list          = (build_set, )
-statement_list    = (concat_by_space, )
+from .util import star, Clause
+from .chain import identifier_list, where_list
+from .chain import single_identifier, column_list, value_list, set_list
+from .chain import statement_list, single_value
+from .chain import on_list
 
 # common clauses
 returning = Clause('returning' , identifier_list)
@@ -46,5 +39,5 @@ delete = Clause('delete from', single_identifier, alias='table')
 # for join statement
 join  = Clause('join' , single_identifier, alias='table')
 type_ = Clause('type' , tuple(), hidden=True)
-on    = Clause('on'   , (build_on, ))
+on    = Clause('on'   , on_list)
 using = Clause('using', column_list)
