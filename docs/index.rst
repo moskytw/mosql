@@ -9,15 +9,15 @@ MoSQL --- More than SQL
 It lets you use the common Python's data structures to build SQLs, and provides
 a convenient model of result set.
 
-The talk, "MoSQL: More than SQL, but Less than ORM", at PyCon TW 2013:
-
-.. raw:: html
-
-    <div style="width: 600px">
-        <script async class="speakerdeck-embed"
-        data-id="5c9f3200a72b0130a3946ae3c3cecfe8" data-ratio="1.33507170795306"
-        src="//speakerdeck.com/assets/embed.js"></script>
-    </div>
+.. The talk, "MoSQL: More than SQL, but Less than ORM", at PyCon TW 2013:
+..
+.. .. raw:: html
+..
+..     <div style="width: 600px">
+..         <script async class="speakerdeck-embed"
+..         data-id="5c9f3200a72b0130a3946ae3c3cecfe8" data-ratio="1.33507170795306"
+..         src="//speakerdeck.com/assets/embed.js"></script>
+..     </div>
 
 The main features:
 
