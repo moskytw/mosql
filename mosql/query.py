@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+'''It provides common queies.'''
+
 from .util import Query
 from .statement import insert, select, update, delete, join
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+'''It provides common statements.'''
+
 from .util import Statement
 from .clause import returning, where
 from .clause import insert, columns, values, on_duplicate_key_update
