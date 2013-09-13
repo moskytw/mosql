@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It provides the basic brick to build SQLs.
+'''It provides the basic bricks to build SQLs.
 
 .. versionchanged:: 0.1.6
     It is rewritten and totally different from old version.
