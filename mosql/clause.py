@@ -17,8 +17,8 @@ set_list          = (build_set, )
 statement_list    = (concat_by_space, )
 
 # common clauses
-returning = Clause('returning'  , identifier_list)
-where    = Clause('where'   , where_list)
+returning = Clause('returning' , identifier_list)
+where     = Clause('where'     , where_list)
 
 # for insert statement
 insert    = Clause('insert into', single_identifier, alias='table')
