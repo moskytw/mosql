@@ -10,6 +10,18 @@ future release:
 4. :mod:`mosql.psycopg2_escape`
 5. :mod:`mosql.MySQLdb_escape`
 
+
+.. testsetup::
+
+    # reset the mosql.util
+    import mosql.util
+    reload(mosql.util)
+
+    from mosql.util import *
+    from mosql.build import *
+    from mosql.result import *
+    from mosql.json import *
+
 The Common SQL Builders --- :py:mod:`mosql.build`
 -------------------------------------------------
 
