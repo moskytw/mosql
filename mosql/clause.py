@@ -22,7 +22,7 @@ where    = Clause('where'   , where_list)
 
 # for insert statement
 insert    = Clause('insert into', single_identifier, alias='table')
-columns   = Clause('columns'    , column_list, hidden=True, alias='set')
+columns   = Clause('columns'    , column_list, hidden=True)
 values    = Clause('values'     , value_list)
 on_duplicate_key_update = Clause('on duplicate key update', set_list)
 

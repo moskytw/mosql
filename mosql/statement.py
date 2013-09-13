@@ -11,11 +11,14 @@ from .clause import type_, join, on, using
 
 def insert_preprocessor(clause_args):
 
-    if 'values' not in clause_args and \
-       'set' in clause_args        and \
-       hasattr(clause_args['set'], 'items'):
+    if 'values' not in clause_args and 'set' in clause_args:
 
-        clause_args['columns'], clause_args['values'] = zip(*clause_args['set'].items())
+        if hasattr(clause_args['set'], 'items'):
+            pairs = clause_args['set'].items()
+        else:
+            pairs = clause_args['set']
+
+        clause_args['columns'], clause_args['values'] = zip(*pairs)
 
 insert = Statement([insert, columns, values, returning, on_duplicate_key_update], preprocessor=insert_preprocessor)
 select = Statement([select, from_, joins, where, group_by, having, order_by, limit, offset])
