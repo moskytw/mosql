@@ -6,8 +6,7 @@
 MoSQL --- More than SQL
 =======================
 
-It lets you use the common Python's data structures to build SQLs, and provides
-a convenient model of result set.
+It lets you use the common Python's data structures to build SQLs.
 
 .. The talk, "MoSQL: More than SQL, but Less than ORM", at PyCon TW 2013:
 ..
@@ -21,14 +20,9 @@ a convenient model of result set.
 
 The main features:
 
-1. Easy-to-learn --- Everything is just plain data structure or SQL keyword. See
-   `The SQL Builders`_.
-2. Convenient    --- It makes result set more easy to use. See `The Model of
-   Result Set`_.
-3. Secure        --- It prevents the SQL injection from both identifier and
-   value.
-4. Faster        --- It just builds the SQLs from Python's data structure and
-   then send to the connector.
+1. Easy-to-learn --- Everything is just plain data structure or SQL keyword.
+2. Secure --- It prevents the SQL injection from both identifier and value.
+3. Faster --- It just builds the SQLs from Python's data structure.
 
 It is just "More than SQL".
 
@@ -66,80 +60,28 @@ It is just "More than SQL".
         </div>
     </div>
 
-NOTE: The versions after v0.2 are a new branch and it does **not** provide
+
+Major Changes
+-------------
+
+After v0.6
+~~~~~~~~~~
+
+After this version, the following modules are deprecated and they will be obsoleted in a future release:
+
+1. :mod:`mosql.build`
+2. :mod:`mosql.result`
+3. :mod:`mosql.json`
+4. :mod:`mosql.psycopg2_escape`
+5. :mod:`mosql.MySQLdb_escape`
+
+If you are using them, those pages contain some advice for you.
+
+After v0.2
+~~~~~~~~~~
+
+The versions after v0.2 are a new branch and it does **not** provide
 backward-compatibility for v0.1.x.
-
-The SQL Builders
-----------------
-
-::
-
-    >>> from mosql import build
-    >>> build.select('author', {'email like': '%mosky%@%'})
-    SELECT * FROM "author" WHERE "email" LIKE '%mosky%@%'
-
-It is very easy to build a query by Python's data structures and
-:mod:`mosql.build`.
-
-.. seealso ::
-
-    There is more explanation of the builders --- :class:`mosql.build`.
-
-It also provides :class:`mosql.result.Model` for result set, and you can use the
-same way to make queries to database.
-
-The Model of Result Set
------------------------
-
-Here is a SQL and the result set:
-
-::
-
-    mosky=> select * from detail where person_id in ('mosky', 'andy') order by person_id, key;
-     detail_id | person_id |   key   |           val            
-    -----------+-----------+---------+--------------------------
-             5 | andy      | email   | andy@gmail.com
-             3 | mosky     | address | It is my first address.
-             4 | mosky     | address | It is my second address.
-             1 | mosky     | email   | mosky.tw@gmail.com
-             2 | mosky     | email   | mosky.liu@pinkoi.com
-            10 | mosky     | email   | mosky@ubuntu-tw.org
-    (6 rows)
-
-Then, use the model configured (the module, ``detail``, is in the `examples
-<https://github.com/moskytw/mosql/tree/dev/examples>`_) to do so:
-
-::
-
-    >>> from detail import Detail
-    >>> for detail in Detail.arrange({'person_id': ('mosky', 'andy')}):
-    ...     print detail
-    ... 
-    {'detail_id': [5],
-     'key': 'email',
-     'person_id': 'andy',
-     'val': ['andy@gmail.com']}
-    {'detail_id': [3, 4],
-     'key': 'address',
-     'person_id': 'mosky',
-     'val': ['It is my first address.', 'It is my second address.']}
-    {'detail_id': [1, 2, 10],
-     'key': 'email',
-     'person_id': 'mosky',
-     'val': ['mosky.tw@gmail.com', 'mosky.liu@pinkoi.com', 'mosky@ubuntu-tw.org']}
-
-Here I use :meth:`~mosql.result.Model.arrange` for taking advantages from the
-model configured, so the result sets are grouped into three model instances, but
-the plain methods, such as :meth:`~mosql.result.Model.select`, are also
-available.
-
-It converts the each result set into column-oriented model. The columns are
-squashable. The non-list values above are just the squashed columns. See
-:class:`mosql.result` for more information.
-
-.. seealso ::
-
-    There is more explanation of the model --- :class:`mosql.result`.
 
 Installation
 ------------
@@ -162,9 +104,6 @@ The Documentions
 .. toctree::
     :maxdepth: 2
 
-    result.rst
-    builders.rst
-    escape.rst
     changes.rst
 
 Indices and tables
