@@ -715,9 +715,10 @@ class Query(object):
     .. versionadded :: 0.6
     '''
 
-    def __init__(self, statement,  clause_args=None):
+    def __init__(self, statement, positional_keys=None, clause_args=None):
 
         self.statement = statement
+        self.positional_keys = positional_keys
 
         if clause_args is None:
             self.clause_args = {}
@@ -738,13 +739,18 @@ class Query(object):
         clause_args = _merge_dicts(self.clause_args, clause_args)
         return self.statement.format(clause_args)
 
-    def stringify(self, **clause_args):
+    def stringify(self, *positional_values, **clause_args):
         '''It is same as the :meth:`format`, but it let you use keyword arguments.'''
+
+        if self.positional_keys and positional_values:
+            for k, v in zip(self.positional_keys, positional_values):
+                clause_args.setdefault(k, v)
+
         return self.format(clause_args)
 
-    def __call__(self, **clause_args):
+    def __call__(self, *positional_values, **clause_args):
         '''It is same as the :meth:`stringify`. It is for backward-compatibility, and not encourage to use.'''
-        return self.format(clause_args)
+        return self.stringify(*positional_values, **clause_args)
 
 if __name__ == '__main__':
     import doctest
