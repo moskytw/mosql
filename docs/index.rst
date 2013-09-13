@@ -72,8 +72,9 @@ The Documentions
 ================
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
+    patch
     util
     deprecated
     changes
