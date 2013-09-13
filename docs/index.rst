@@ -74,6 +74,7 @@ The Documentions
 .. toctree::
     :maxdepth: 2
 
+    basis
     deprecated
     changes
 

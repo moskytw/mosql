@@ -1,10 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It contains the basic SQL builders.
+'''It provides the basic brick to build SQLs.
 
 .. versionchanged:: 0.1.6
     It is rewritten and totally different from old version.
+
+You may use frequently:
+
+.. autosummary ::
+    raw
+    default
+    star
+    param
+    or_
 
 It is designed for standard SQL and tested in PostgreSQL. If your database uses
 non-standard SQL, you may need to customize and override the following
@@ -25,6 +34,7 @@ If you need you own SQL statements, the following classes may help you.
 .. autosummary ::
     Clause
     Statement
+    Query
 '''
 
 __all__ = [
@@ -37,6 +47,7 @@ __all__ = [
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
     'build_where', 'build_set', 'build_on',
+    'or',
     'Clause', 'Statement', 'Query',
 ]
 
