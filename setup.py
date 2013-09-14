@@ -4,7 +4,7 @@ from mosql import __version__
 
 setup(
     name    = 'mosql',
-    description = "It lets you use the common Python's data structures to build SQLs, and provides a convenient model of result set.",
+    description = "It lets you use the common Python's data structures to build SQLs.",
     long_description = open('README.rst').read(),
     version = __version__,
     author  = 'Mosky',
