@@ -85,6 +85,8 @@ def escape(s):
     '''
     return s.replace("'", "''")
 
+std_escape = escape
+
 def format_param(s=''):
     '''The function which format the parameter of prepared statement.
 
@@ -99,6 +101,8 @@ def format_param(s=''):
     '''
     return '%%(%s)s' % s if s else '%s'
 
+std_format_param = format_param
+
 def stringify_bool(b):
     '''The function which stringifies the bool.
 
@@ -106,6 +110,8 @@ def stringify_bool(b):
     ``'FALSE'``.
     '''
     return 'TRUE' if b else 'FALSE'
+
+std_stringify_bool = stringify_bool
 
 def delimit_identifier(s):
     '''The function which delimits the identifier.
@@ -119,6 +125,8 @@ def delimit_identifier(s):
         disable it.
     '''
     return '"%s"' % s
+
+std_delimit_identifier = delimit_identifier
 
 def escape_identifier(s):
     '''The function which escapes the identifier.
@@ -137,6 +145,8 @@ def escape_identifier(s):
     select * from person where "person_id"" = '' or true; -- " = 'mosky';
     '''
     return s.replace('"', '""')
+
+std_escape_identifier = escape_identifier
 
 class raw(str):
     '''This is a subclass of built-in `str` type. The qualifier function do

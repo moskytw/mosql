@@ -17,10 +17,6 @@ If you want to build you own query, there are all basic bricks you need -
 
 .. testsetup::
 
-    # reset the mosql.util
-    import mosql.util
-    reload(mosql.util)
-
     from mosql.query import select, insert, update, delete
     from mosql.query import join, left_join, right_join, cross_join
     from mosql.util import param, ___, raw
