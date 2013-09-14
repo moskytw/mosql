@@ -154,7 +154,7 @@ There are all basic bricks you will need.
     >>> print delete('person', (('person_id', 'mosky'), ))
     DELETE FROM "person" WHERE "person_id" = 'mosky'
 
-.. py:function:: join(table=None, **clause_args)
+.. py:function:: join(table=None, on=None, **clause_args)
 
     It generates the SQL statement, ``... join ...`` .
 
