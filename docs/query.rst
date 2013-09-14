@@ -158,8 +158,6 @@ There are all basic bricks you will need.
 
     It generates the SQL statement, ``... join ...`` .
 
-    .. versionadded :: 0.1.6
-
     >>> print select('person', joins=join('detail'))
     SELECT * FROM "person" NATURAL JOIN "detail"
 
