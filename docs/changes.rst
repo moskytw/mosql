@@ -1,6 +1,19 @@
 The Change Log
 ==============
 
+v0.6
+----
+
+.. note::
+    Some of the modules are deprecated after v0.6, check :doc:`/deprecated` for
+    more information.
+
+1. Deprecated some of the modules. Check :doc:`/deprecated` for detail.
+2. Made the :class:`mosql.util.Clause` and :class:`mosql.util.Statement` better.
+3. Added the :class:`mosql.util.Query`.
+4. Added the :mod:`mosql.query`, :mod:`mosql.statement`, :mod:`mosql.clause`,
+   and :mod:`mosql.chain` for the instances in common use.
+
 v0.5.3
 ------
 
@@ -59,6 +72,10 @@ v0.2.1
 v0.2
 ----
 
+.. note::
+    The versions after v0.2 are a new branch and it does **not** provide
+    backward-compatibility for v0.1.x.
+
 1. The :mod:`mosql.result` is totally rewritten, and does **not** provide the
    backward-compatibility. See the doc for more info.
 2. The :mod:`mosql.common` is renamed as :mod:`mosql.build`.
@@ -68,9 +85,6 @@ v0.2
 6. The :mod:`mosql.select` uses `*` if user pass ``None`` in.
 7. MoSQL passed all of the injection tests from `sqlmap <http://sqlmap.org/>`_
    on value and identifier with PostgreSQL and MySQL.
-
-NOTE: The versions after v0.2 are a new branch and it does **not** provide
-backward-compatibility for v0.1.x.
 
 v0.1.6
 ------
