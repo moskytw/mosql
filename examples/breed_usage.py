@@ -9,13 +9,15 @@ from mosql.query import insert, select, update, delete
 conn = psycopg2.connect(host='127.0.0.1', database=os.environ['USER'])
 cur = conn.cursor()
 
+# We breed another insert with parital arguments.
+person_insert = insert.breed({'table': 'person'})
+
 tina = {
     'person_id': 'tina',
     'name'     : 'Tina Turner',
 }
 
-# Super easy!
-cur.execute(insert('person', tina, returning=star))
+cur.execute(person_insert(set=tina, returning=star))
 
 person_id, name = cur.fetchone()
 print person_id
