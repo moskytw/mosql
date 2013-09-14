@@ -3,10 +3,7 @@
 
 '''It provides the basic bricks to build SQLs.
 
-.. versionchanged:: 0.1.6
-    It is rewritten and totally different from old version.
-
-You may use frequently:
+The classes or functions you may use frequently:
 
 .. autosummary ::
     raw
@@ -16,8 +13,8 @@ You may use frequently:
     or_
 
 It is designed for standard SQL and tested in PostgreSQL. If your database uses
-non-standard SQL, you may need to customize and override the following
-functions.
+non-standard SQL, such as MySQL, you may need to customize and override the
+following functions.
 
 .. autosummary ::
     escape
@@ -27,7 +24,8 @@ functions.
     escape_identifier
 
 .. note::
-    Here is a patch for MySQL --- :mod:`mosql.mysql`.
+
+    For MySQL, an official patch is here - :doc:`/mysql`.
 
 If you need you own SQL statements, the following classes may help you.
 
@@ -35,6 +33,9 @@ If you need you own SQL statements, the following classes may help you.
     Clause
     Statement
     Query
+
+.. versionchanged:: 0.1.6
+    It is rewritten and totally different from old version.
 '''
 
 __all__ = [
@@ -163,6 +164,8 @@ class param(str):
     '%(name)s'
 
     This is just a subclass of built-in `str` type.
+
+    The :class:`___` is an alias of it.
     '''
 
     def __repr__(self):
@@ -462,7 +465,7 @@ def _build_condition(x, key_qualify=identifier, value_qualifier=value):
 
 @joiner
 def build_where(x):
-    '''It is a joiner function which builds the where list of SQL from a `dict`
+    '''It is a joiner function which builds the where-list of SQL from a `dict`
     or `pairs`.
 
     If input is a `dict` or `pairs`:
@@ -507,7 +510,7 @@ def build_where(x):
 
 @joiner
 def build_set(x):
-    '''It is a joiner function which builds the set list of SQL from a `dict` or
+    '''It is a joiner function which builds the set-list of SQL from a `dict` or
     pairs.
 
     If input is a `dict` or `pairs`:
@@ -544,11 +547,11 @@ def build_set(x):
 
 @joiner
 def build_on(x):
-    '''It is a joiner function which builds the simple (the operator is always
-    =) on list of SQL from a `dict` or pairs.
+    '''It is a joiner function which builds the on-list of SQL from a `dict` or
+    pairs. The difference from :func:`build_where` is the value here will be treated as an identifier.
 
-    >>> print build_on({'person.person_id': 'detail.person_id'})
-    "person"."person_id" = "detail"."person_id"
+    >>> print build_on({'person_id': 'friend_id'})
+    "person_id" = "friend_id"
 
     >>> print build_on((('person.person_id', 'detail.person_id'), ))
     "person"."person_id" = "detail"."person_id"
@@ -576,9 +579,14 @@ class Clause(object):
 
     :param prefix: the lead word(s) of this clause
     :type prefix: str
-
     :param formatters: the qualifier or joiner functions
-    :type formatters: iterable
+    :type formatters: sequence
+    :param hidden: it decides the prefix will be hidden or not
+    :type hidden: bool
+    :param alias: another name of this clause
+    :type alias: str
+    :param default: it will be used if you pass ``None`` to :meth:`format`
+    :type default: str
 
     The :func:`qualifier` functions:
 
@@ -731,6 +739,8 @@ class Query(object):
 
     :param statement: a statement
     :type statement: :class:`Statement`
+    :param positional_keys: the positional arguments accepted by :meth:`stringify`.
+    :type positional_keys: sequence
     :param clause_args: the arguments of the clauses you want to predefine
     :type clause_args: dict
 
@@ -763,7 +773,12 @@ class Query(object):
         return self.statement.format(clause_args)
 
     def stringify(self, *positional_values, **clause_args):
-        '''It is same as the :meth:`format`, but it let you use keyword arguments.'''
+        '''It is same as the :meth:`format`, but it let you use keyword
+        arguments.
+
+        A :class:`Query` instance is callable. When you call it, it uses this
+        method to handle.
+        '''
 
         if self.positional_keys and positional_values:
             for k, v in zip(self.positional_keys, positional_values):

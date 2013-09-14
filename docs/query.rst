@@ -1,10 +1,15 @@
-The Queries --- :mod:`mosql.query`
-===================================
+The Common Queries --- :mod:`mosql.query`
+=========================================
 
-This module provides common :class:`~mosql.util.Query` instance for you.
+This module provides common :class:`~mosql.util.Query` instances for you.
 
-If you want to build you own query, you can check out the :mod:`mosql.util`.
-There are all basic bricks you will need.
+If you want to build you own query, there are all basic bricks you need -
+:doc:`/util`.
+
+.. note::
+
+    If you are using non-standard SQL, such as MySQL, you need to patch the
+    :mod:`mosql.util`. For MySQL, an official patch is here - :doc:`/mysql`.
 
 .. versionadded:: v0.6
 

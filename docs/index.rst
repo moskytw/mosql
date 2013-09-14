@@ -75,8 +75,8 @@ The Documentions
     :maxdepth: 1
 
     query
-    patch
     util
+    mysql
     deprecated
     changes
 
