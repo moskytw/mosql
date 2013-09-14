@@ -752,6 +752,7 @@ class Query(object):
         and then create new :class:`Query` instance by that.'''
         return Query(
             self.statement,
+            self.positional_keys,
             _merge_dicts(self.clause_args, clause_args)
         )
 
