@@ -16,7 +16,8 @@ There are all basic bricks you will need.
     import mosql.util
     reload(mosql.util)
 
-    from mosql.query import select, insert, update, delete, join
+    from mosql.query import select, insert, update, delete
+    from mosql.query import join, left_join, right_join, cross_join
     from mosql.util import param, ___, raw
 
 .. py:function:: select(table=None, where=None, **clause_args)
@@ -172,3 +173,24 @@ There are all basic bricks you will need.
 
     .. seealso ::
         How it builds the where clause --- :func:`mosql.util.build_on`
+
+.. py:function:: left_join(table=None, on=None, **clause_args)
+
+    It generates the SQL statement, ``... left join ...`` .
+
+    >>> print select('person', joins=left_join('detail', {'person_id': 'detail_id'}))
+    SELECT * FROM "person" LEFT JOIN "detail" ON "person_id" = "detail_id"
+
+.. py:function:: right_join(table=None, on=None, **clause_args)
+
+    It generates the SQL statement, ``... right join ...`` .
+
+    >>> print select('person', joins=right_join('detail', {'person_id': 'detail_id'}))
+    SELECT * FROM "person" RIGHT JOIN "detail" ON "person_id" = "detail_id"
+
+.. py:function:: cross_join(table=None, on=None, **clause_args)
+
+    It generates the SQL statement, ``... cross join ...`` .
+
+    >>> print select('person', joins=cross_join('detail', {'person_id': 'detail_id'}))
+    SELECT * FROM "person" CROSS JOIN "detail" ON "person_id" = "detail_id"
