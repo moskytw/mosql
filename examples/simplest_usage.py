@@ -14,7 +14,7 @@ dave = {
     'name'     : 'Dave',
 }
 
-# Super easy!
+# It easy with `insert` from `mosql.query`.
 cur.execute(insert('person', dave, returning=star))
 
 person_id, name = cur.fetchone()

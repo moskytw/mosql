@@ -27,7 +27,7 @@ following functions.
 
     For MySQL, an official patch is here - :doc:`/mysql`.
 
-If you need you own SQL statements, the following classes may help you.
+If you need to customize more, the following classes may help you.
 
 .. autosummary ::
     Clause
@@ -62,7 +62,7 @@ if sys.version_info[0] == 3:
     basestring = (str, bytes)
 
 def escape(s):
-    '''The function which escapes the value.
+    '''It escapes the value.
 
     By default, it just replaces ' (single-quote) with '' (two single-quotes).
 
@@ -88,7 +88,7 @@ def escape(s):
 std_escape = escape
 
 def format_param(s=''):
-    '''The function which format the parameter of prepared statement.
+    '''It formats the parameter of prepared statement.
 
     By default, it formats the parameter in `pyformat
     <http://www.python.org/dev/peps/pep-0249/#paramstyle>`_.
@@ -104,7 +104,7 @@ def format_param(s=''):
 std_format_param = format_param
 
 def stringify_bool(b):
-    '''The function which stringifies the bool.
+    '''It stringifies the bool.
 
     By default, it returns ``'TRUE'`` if `b` is true, otherwise it returns
     ``'FALSE'``.
@@ -114,7 +114,7 @@ def stringify_bool(b):
 std_stringify_bool = stringify_bool
 
 def delimit_identifier(s):
-    '''The function which delimits the identifier.
+    '''It delimits the identifier.
 
     By default, it conforms the standard to encloses the identifier, `s`, by "
     (double quote).
@@ -129,7 +129,7 @@ def delimit_identifier(s):
 std_delimit_identifier = delimit_identifier
 
 def escape_identifier(s):
-    '''The function which escapes the identifier.
+    '''It escapes the identifier.
 
     By default, it just replaces " (double-quote) with "" (two double-quotes).
 
@@ -149,8 +149,8 @@ def escape_identifier(s):
 std_escape_identifier = escape_identifier
 
 class raw(str):
-    '''This is a subclass of built-in `str` type. The qualifier function do
-    noting when the input is an instance of this class
+    '''The qualifier function do noting when the input is an instance of this
+    class. This is a subclass of built-in `str` type.
 
     .. warning ::
         You have responsibility to ensure the security if you use this class.
@@ -166,7 +166,7 @@ star = raw('*')
 'The ``*`` keyword in SQL.'
 
 class param(str):
-    ''':func:`value` builds this type as a parameter for the prepared statement
+    '''The :func:`value` builds this type as a parameter for the prepared statement.
 
     >>> value(param(''))
     '%s'
@@ -228,7 +228,7 @@ _type_handler_map = {
 
 @qualifier
 def value(x):
-    '''It is a qualifier function for values.
+    '''A qualifier function for values.
 
     >>> print value('normal string')
     'normal string'
@@ -294,7 +294,7 @@ An :exc:`OptionError` is raised if an option not allowed is found.
 
 @qualifier
 def identifier(s):
-    '''It is a qualifier function for identifiers.
+    '''A qualifier function for identifiers.
 
     It uses the :func:`delimit_identifier` and :func:`escape_identifier` to
     qualifiy the input.
@@ -344,7 +344,7 @@ def identifier(s):
 
 @qualifier
 def paren(s):
-    '''It is a qualifier function which encloses the input with () (paren).'''
+    '''A qualifier function which encloses the input with () (paren).'''
     return '(%s)' % s
 
 def joiner(f):
@@ -475,8 +475,8 @@ def _build_condition(x, key_qualify=identifier, value_qualifier=value):
 
 @joiner
 def build_where(x):
-    '''It is a joiner function which builds the where-list of SQL from a `dict`
-    or `pairs`.
+    '''A joiner function which builds the where-list of SQL from a `dict` or
+    `pairs`.
 
     If input is a `dict` or `pairs`:
 
@@ -520,7 +520,7 @@ def build_where(x):
 
 @joiner
 def build_set(x):
-    '''It is a joiner function which builds the set-list of SQL from a `dict` or
+    '''A joiner function which builds the set-list of SQL from a `dict` or
     pairs.
 
     If input is a `dict` or `pairs`:
@@ -557,8 +557,9 @@ def build_set(x):
 
 @joiner
 def build_on(x):
-    '''It is a joiner function which builds the on-list of SQL from a `dict` or
-    pairs. The difference from :func:`build_where` is the value here will be treated as an identifier.
+    '''A joiner function which builds the on-list of SQL from a `dict` or pairs.
+    The difference from :func:`build_where` is the value here will be treated as
+    an identifier.
 
     >>> print build_on({'person_id': 'friend_id'})
     "person_id" = "friend_id"

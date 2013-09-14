@@ -3,7 +3,7 @@
 
 '''It applies the MySQL-specific stuff to :mod:`mosql.util`.
 
-Usage:
+The usage:
 
 ::
 
@@ -32,7 +32,7 @@ char_escape_map = {
 }
 
 def escape(s):
-    '''This function escape the `s` into a executable SQL.
+    '''This function escapes the `s` into a executable SQL.
 
     >>> print escape('\\0\\n\\r\\\\\\'\\"\\x1A\\b\\t')
     \\0\\n\\r\x5c\\\\'\\"\Z\\b\\t
@@ -56,7 +56,7 @@ def fast_escape(s):
     return s.replace('\\', '\\\\').replace("'", r"\'")
 
 def format_param(s=''):
-    '''This function always return '%s', so it makes you can use the prepare
+    '''This function always returns '%s', so it makes you can use the prepare
     statement with MySQLdb.'''
     return '%s'
 

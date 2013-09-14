@@ -1,9 +1,9 @@
 The Common Queries --- :mod:`mosql.query`
 =========================================
 
-This module provides common :class:`~mosql.util.Query` instances for you.
+This module provides the common :class:`~mosql.util.Query` instances for you.
 
-If you want to build you own query, there are all basic bricks you need -
+If you want to build you own, there are all basic bricks you need -
 :doc:`/util`.
 
 .. note::
@@ -33,7 +33,7 @@ If you want to build you own query, there are all basic bricks you need -
     >>> print select('person', (('person_id', 'mosky'), ))
     SELECT * FROM "person" WHERE "person_id" = 'mosky'
 
-    It detects the dot in an identifier:
+    It also can handle the dot in an identifier:
 
     >>> print select('person', select=('person.person_id', 'person.name'))
     SELECT "person"."person_id", "person"."name" FROM "person"
@@ -41,7 +41,7 @@ If you want to build you own query, there are all basic bricks you need -
     >>> print select('table', {'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
     SELECT * FROM "table" WHERE "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
 
-    Building prepare statement with :class:`mosql.util.param`:
+    The prepare statement is also available with :class:`mosql.util.param`:
 
     >>> print select('table', {'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
     SELECT * FROM "table" WHERE "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
@@ -119,12 +119,12 @@ If you want to build you own query, there are all basic bricks you need -
     >>> print insert('person', values=('mosky', 'Mosky Liu'))
     INSERT INTO "person" VALUES ('mosky', 'Mosky Liu')
 
-    The :func:`insert`, :func:`update` and :func:`delete` support ``returning``.
+    All of the :func:`insert`, :func:`update` and :func:`delete` support ``returning``.
 
     >>> print insert('person', {'person_id': 'mosky', 'name': 'Mosky Liu'}, returning=raw('*'))
     INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu') RETURNING *
 
-    The MySQL-specific "on duplicate key update" is also supported:
+    The MySQL-specific ``ON DUPLICATE KEY UPDATE`` is also supported:
 
     >>> print insert('person', values=('mosky', 'Mosky Liu'), on_duplicate_key_update={'name': 'Mosky Liu'})
     INSERT INTO "person" VALUES ('mosky', 'Mosky Liu') ON DUPLICATE KEY UPDATE "name"='Mosky Liu'
@@ -163,11 +163,14 @@ If you want to build you own query, there are all basic bricks you need -
     >>> print select('person', joins=join('detail'))
     SELECT * FROM "person" NATURAL JOIN "detail"
 
+    >>> print select('person', joins=join('detail', {'person.person_id': 'detail.person_id'}))
+    SELECT * FROM "person" INNER JOIN "detail" ON "person"."person_id" = "detail"."person_id"
+
     >>> print select('person', joins=join('detail', using=('person_id', )))
     SELECT * FROM "person" INNER JOIN "detail" USING ("person_id")
 
-    >>> print select('person', joins=join('detail', on={'person.person_id': 'detail.person_id'}))
-    SELECT * FROM "person" INNER JOIN "detail" ON "person"."person_id" = "detail"."person_id"
+    >>> print select('person', joins=join('detail', using=('person_id', ), type='left'))
+    SELECT * FROM "person" LEFT JOIN "detail" USING ("person_id")
 
     >>> print select('person', joins=join('detail', type='cross'))
     SELECT * FROM "person" CROSS JOIN "detail"
@@ -177,21 +180,21 @@ If you want to build you own query, there are all basic bricks you need -
 
 .. py:function:: left_join(table=None, on=None, **clause_args)
 
-    It generates the SQL statement, ``... LEFT JOIN ...`` .
+    It generates the SQL statement, ``LEFT JOIN ...`` .
 
-    >>> print select('person', joins=left_join('detail', {'person_id': 'detail_id'}))
-    SELECT * FROM "person" LEFT JOIN "detail" ON "person_id" = "detail_id"
+    >>> print select('person', joins=left_join('detail', using=('person_id', )))
+    SELECT * FROM "person" LEFT JOIN "detail" USING ("person_id")
 
 .. py:function:: right_join(table=None, on=None, **clause_args)
 
-    It generates the SQL statement, ``... RIGHT JOIN ...`` .
+    It generates the SQL statement, ``RIGHT JOIN ...`` .
 
-    >>> print select('person', joins=right_join('detail', {'person_id': 'detail_id'}))
-    SELECT * FROM "person" RIGHT JOIN "detail" ON "person_id" = "detail_id"
+    >>> print select('person', joins=right_join('detail', using=('person_id', )))
+    SELECT * FROM "person" RIGHT JOIN "detail" USING ("person_id")
 
 .. py:function:: cross_join(table=None, on=None, **clause_args)
 
-    It generates the SQL statement, ``... CROSS JOIN ...`` .
+    It generates the SQL statement, ``CROSS JOIN ...`` .
 
-    >>> print select('person', joins=cross_join('detail', {'person_id': 'detail_id'}))
-    SELECT * FROM "person" CROSS JOIN "detail" ON "person_id" = "detail_id"
+    >>> print select('person', joins=cross_join('detail'))
+    SELECT * FROM "person" CROSS JOIN "detail"
