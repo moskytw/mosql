@@ -22,7 +22,7 @@ There are all basic bricks you will need.
 
 .. py:function:: select(table=None, where=None, **clause_args)
 
-    It generates the SQL statement, ``select ...`` .
+    It generates the SQL statement, ``SELECT ...`` .
 
     The following usages generate the same SQL statement.
 
@@ -100,7 +100,7 @@ There are all basic bricks you will need.
 
 .. py:function:: insert(table=None, set=None, **clause_args)
 
-    It generates the SQL statement, ``insert into ...``.
+    It generates the SQL statement, ``INSERT INTO ...``.
 
     The following usages generate the same SQL statement:
 
@@ -130,7 +130,7 @@ There are all basic bricks you will need.
 
 .. py:function:: update(table=None, where=None, set=None, **clause_args)
 
-    It generates the SQL statement, ``update ...`` .
+    It generates the SQL statement, ``UPDATE ...`` .
 
     The following usages generate the same SQL statement.
 
@@ -145,7 +145,7 @@ There are all basic bricks you will need.
 
 .. py:function:: delete(table=None, where=None, **clause_args)
 
-    It generates the SQL statement, ``delete from ...`` .
+    It generates the SQL statement, ``DELETE FROM ...`` .
 
     The following usages generate the same SQL statement.
 
@@ -157,7 +157,7 @@ There are all basic bricks you will need.
 
 .. py:function:: join(table=None, on=None, **clause_args)
 
-    It generates the SQL statement, ``... join ...`` .
+    It generates the SQL statement, ``... JOIN ...`` .
 
     >>> print select('person', joins=join('detail'))
     SELECT * FROM "person" NATURAL JOIN "detail"
@@ -176,21 +176,21 @@ There are all basic bricks you will need.
 
 .. py:function:: left_join(table=None, on=None, **clause_args)
 
-    It generates the SQL statement, ``... left join ...`` .
+    It generates the SQL statement, ``... LEFT JOIN ...`` .
 
     >>> print select('person', joins=left_join('detail', {'person_id': 'detail_id'}))
     SELECT * FROM "person" LEFT JOIN "detail" ON "person_id" = "detail_id"
 
 .. py:function:: right_join(table=None, on=None, **clause_args)
 
-    It generates the SQL statement, ``... right join ...`` .
+    It generates the SQL statement, ``... RIGHT JOIN ...`` .
 
     >>> print select('person', joins=right_join('detail', {'person_id': 'detail_id'}))
     SELECT * FROM "person" RIGHT JOIN "detail" ON "person_id" = "detail_id"
 
 .. py:function:: cross_join(table=None, on=None, **clause_args)
 
-    It generates the SQL statement, ``... cross join ...`` .
+    It generates the SQL statement, ``... CROSS JOIN ...`` .
 
     >>> print select('person', joins=cross_join('detail', {'person_id': 'detail_id'}))
     SELECT * FROM "person" CROSS JOIN "detail" ON "person_id" = "detail_id"
