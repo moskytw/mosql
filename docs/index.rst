@@ -59,21 +59,17 @@ Example
 
 Here we have a dictionary which includes the information of a person:
 
-::
-
-    >>> mosky = {
-    ...    'person_id': 'mosky',
-    ...    'name'     : 'Mosky Liu',
-    ... }
+>>> mosky = {
+...    'person_id': 'mosky',
+...    'name'     : 'Mosky Liu',
+... }
 
 And we want to insert it into a table named person. It is super easy with
 :mod:`mosql.query`.
 
-::
-
-    >>> from mosql.query import insert
-    >>> insert('person', mosky)
-    INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
+>>> from mosql.query import insert
+>>> print insert('person', mosky)
+INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 
 You can check :doc:`/query` for the detail usage, or there are also many
 runnable `examples <https://github.com/moskytw/mosql/tree/dev/examples>`_ on
