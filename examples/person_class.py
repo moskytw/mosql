@@ -74,28 +74,28 @@ class Person(dict):
 
 if __name__ == '__main__':
 
-    tina = {
-        'person_id': 'tina',
-        'name'     : 'Tina Turner',
+    dave = {
+        'person_id': 'dave',
+        'name'     : 'Dave',
     }
 
 
     # insert
-    p = Person.create(tina)
+    p = Person.create(dave)
     print p
 
     # select
-    p = Person.fetch('tina')
+    p = Person.fetch('dave')
     print p
 
     # update
-    p['name'] = 'Tina'
+    p['name'] = 'dave'
     p.save()
-    #p = Person.fetch('tina') # if you insist
+    #p = Person.fetch('dave') # if you insist
     print p
 
     # remove
     p.remove()
-    p = Person.fetch('tina')
+    p = Person.fetch('dave')
     print p
 

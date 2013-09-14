@@ -12,12 +12,12 @@ cur = conn.cursor()
 # We breed another insert with parital arguments.
 person_insert = insert.breed({'table': 'person'})
 
-tina = {
-    'person_id': 'tina',
-    'name'     : 'Tina Turner',
+dave = {
+    'person_id': 'dave',
+    'name'     : 'Dave',
 }
 
-cur.execute(person_insert(set=tina, returning=star))
+cur.execute(person_insert(set=dave, returning=star))
 
 person_id, name = cur.fetchone()
 print person_id

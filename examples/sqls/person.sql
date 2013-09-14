@@ -8,6 +8,6 @@ create table person (
 create index detail_person_id_key_index on detail (person_id, key);
 
 insert into person values ('mosky', 'Mosky Liu');
-insert into person values ('andy' , 'Andy Warhol');
-insert into person values ('bob'  , 'Bob Dylan');
-insert into person values ('cindy', 'Cindy Crawford');
+insert into person values ('alice', 'Andy');
+insert into person values ('bob'  , 'Bob');
+insert into person values ('carol', 'Carol');
