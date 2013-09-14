@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
 
 __author__ = "Mosky <http://mosky.tw>"
-__version__ = '0.5.3'
+__version__ = '0.6'
