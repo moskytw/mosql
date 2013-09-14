@@ -10,10 +10,12 @@ It lets you use the common Python's data structures to build SQLs. The main
 features:
 
 1. Easy-to-learn --- Everything is just plain data structure or SQL keyword.
-2. Secure --- It prevents the SQL injection from both identifier and value.
-3. Faster --- It just builds the SQLs from Python's data structure.
+2. Elastic --- You can change your data structure anytime, and then build a new
+   SQL.
+3. Secure --- It prevents the SQL injection from both identifier and value.
+4. Fast --- It just builds the SQLs from Python's data structures.
 
-It is just "More than SQL".
+It is just *more* than SQL.
 
 NOTE: Some of the modules are deprecated after v0.6, check :doc:`/deprecated`
 for more information.
@@ -52,6 +54,30 @@ for more information.
         </div>
     </div>
 
+Example
+-------
+
+Here we have a dictionary which includes the information of a person:
+
+::
+
+    >>> mosky = {
+    ...    'person_id': 'mosky',
+    ...    'name'     : 'Mosky Liu',
+    ... }
+
+And we want to insert it into a table named person. It is super easy with
+:mod:`mosql.query`.
+
+::
+
+    >>> from mosql.query import insert
+    >>> insert('person', mosky)
+    INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
+
+You can check :doc:`/query` for the detail usage, or there are also many
+runnable `examples <https://github.com/moskytw/mosql/tree/dev/examples>`_ on
+Github.
 
 Installation
 ------------
