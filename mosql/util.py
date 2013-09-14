@@ -166,7 +166,7 @@ class param(str):
     '''
 
     def __repr__(self):
-        return 'param(%s)' % self
+        return 'param(%r)' % self
 
 ___ = param
 
@@ -651,7 +651,7 @@ class Clause(object):
             return '%s %s' % (self.prefix, x)
 
     def __repr__(self):
-        return 'Clause(%s, %s)' % (self.prefix, self.formatters)
+        return 'Clause(%r, %r)' % (self.prefix, self.formatters)
 
 class Statement(object):
     '''It represents a statement of SQL.
@@ -718,7 +718,7 @@ class Statement(object):
         return ' '.join(pieces)
 
     def __repr__(self):
-        return 'Statement(%s)' % self.clauses
+        return 'Statement(%r)' % self.clauses
 
 def _merge_dicts(default, *updates):
     result = default.copy()
@@ -775,7 +775,7 @@ class Query(object):
         return self.stringify(*positional_values, **clause_args)
 
     def __repr__(self):
-        return 'Query(%s, %s, %s)' % (self.statement, self.positional_keys, self.clause_args)
+        return 'Query(%r, %r, %r)' % (self.statement, self.positional_keys, self.clause_args)
 
 if __name__ == '__main__':
     import doctest
