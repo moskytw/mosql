@@ -1,6 +1,11 @@
 The Change Log
 ==============
 
+v0.6.1
+------
+
+1. Nothing but the change of the docs.
+
 v0.6
 ----
 
