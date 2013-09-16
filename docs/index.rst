@@ -6,8 +6,16 @@
 MoSQL --- More than SQL
 =======================
 
-It lets you use the common Python's data structures to build SQLs. Here are the
-main features:
+It lets you use the common Python's data structures to build SQLs.
+
+It is the slide of the talk, "MoSQL: More than SQL, but Less than ORM", at
+`PyCon APAC 2013 <http://apac-2013.pycon.jp/>`_. It introduces MoSQL after v0.6.
+
+.. raw:: html
+
+    <script async class="speakerdeck-embed" data-id="31fce030000d0131b73b267da6cf17f9" data-ratio="1.33333333333333" src="//speakerdeck.com/assets/embed.js"></script>
+
+The main features:
 
 1. Easy-to-learn --- Everything is just plain data structure or SQL keyword.
 2. Flexible --- The queries it builds fully depends on the structure you provide.
