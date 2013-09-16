@@ -13,7 +13,9 @@ It is the slide of the talk, "MoSQL: More than SQL, but Less than ORM", at
 
 .. raw:: html
 
-    <script async class="speakerdeck-embed" data-id="31fce030000d0131b73b267da6cf17f9" data-ratio="1.33333333333333" src="//speakerdeck.com/assets/embed.js"></script>
+    <div style="width: 500px">
+        <script async class="speakerdeck-embed" data-id="31fce030000d0131b73b267da6cf17f9" data-ratio="1.33333333333333" src="//speakerdeck.com/assets/embed.js"></script>
+    </div>
 
 The main features:
 
