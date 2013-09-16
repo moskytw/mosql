@@ -1,5 +1,5 @@
-The Module Deprecated after v0.6
-================================
+The Modules Deprecated after v0.6
+=================================
 
 After v0.6, the following modules are deprecated and they will be obsoleted in a
 future release:

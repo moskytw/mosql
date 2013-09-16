@@ -14,7 +14,7 @@ main features:
 
 It is just more than SQL.
 
-Some of the modules are deprecated after v0.6, check `The Module Deprecated
+Some of the modules are deprecated after v0.6, check `The Modules Deprecated
 after v0.6 <http://mosql.mosky.tw/deprecated.html>`_ for more information.
 
 MoSQL is Elegant
