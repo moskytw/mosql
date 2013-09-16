@@ -6,6 +6,9 @@
 MoSQL --- More than SQL
 =======================
 
+.. image:: https://travis-ci.org/moskytw/mosql.png
+   :target: https://travis-ci.org/moskytw/mosql
+
 It lets you use the common Python's data structures to build SQLs.
 
 It is the slide of the talk, "MoSQL: More than SQL, but Less than ORM", at
