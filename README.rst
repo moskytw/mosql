@@ -1,11 +1,11 @@
+.. image:: https://travis-ci.org/moskytw/mosql.png
+   :target: https://travis-ci.org/moskytw/mosql
+
 The full version of this documentation is at `mosql.mosky.tw
 <http://mosql.mosky.tw>`_.
 
 MoSQL --- More than SQL
 =======================
-
-.. image:: https://travis-ci.org/moskytw/mosql.png
-   :target: https://travis-ci.org/moskytw/mosql
 
 It lets you use the common Python's data structures to build SQLs. Here are the
 main features:
