@@ -54,7 +54,7 @@ It is just more than SQL.
         </div>
     </div>
 
-MoSQL is Elegent
+MoSQL is Elegant
 ----------------
 
 Here we have a dictionary which includes the information of a person:
