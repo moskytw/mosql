@@ -64,7 +64,7 @@ if sys.version_info[0] == 3:
 def escape(s):
     '''It escapes the value.
 
-    By default, it just replaces ' (single-quote) with '' (two single-quotes).
+    By default, it just replaces ``'`` (single-quote) with ``''`` (two single-quotes).
 
     It aims at avoiding SQL injection. Here are some examples:
 
@@ -116,8 +116,8 @@ std_stringify_bool = stringify_bool
 def delimit_identifier(s):
     '''It delimits the identifier.
 
-    By default, it conforms the standard to encloses the identifier, `s`, by "
-    (double quote).
+    By default, it conforms the standard to encloses the identifier, `s`, by
+    ``"`` (double quote).
 
     .. note ::
         It is disableable. Set it ``None`` to disable the feature of delimiting
@@ -131,7 +131,7 @@ std_delimit_identifier = delimit_identifier
 def escape_identifier(s):
     '''It escapes the identifier.
 
-    By default, it just replaces " (double-quote) with "" (two double-quotes).
+    By default, it just replaces ``"`` (double-quote) with ``""`` (two double-quotes).
 
     It also aims at avoid SQL injection. Here are some examples:
 
@@ -344,7 +344,7 @@ def identifier(s):
 
 @qualifier
 def paren(s):
-    '''A qualifier function which encloses the input with () (paren).'''
+    '''A qualifier function which encloses the input with ``()`` (paren).'''
     return '(%s)' % s
 
 def joiner(f):
@@ -380,7 +380,7 @@ def concat_by_space(i):
 
 @joiner
 def concat_by_comma(i):
-    '''A joiner function which concats the iterable by , (comma).'''
+    '''A joiner function which concats the iterable by ``,`` (comma).'''
     return ', '.join(i)
 
 class OperatorError(Exception):
