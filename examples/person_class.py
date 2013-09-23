@@ -25,6 +25,7 @@ class ConnContext(object):
         return self.cur
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+
         self.cur.close()
 
         if exc_type:
