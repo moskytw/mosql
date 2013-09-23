@@ -4,7 +4,7 @@
 import os
 import psycopg2
 from mosql.util import star
-from mosql.query import insert, select, update, delete
+from mosql.query import insert
 
 conn = psycopg2.connect(host='127.0.0.1', database=os.environ['USER'])
 cur = conn.cursor()
