@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# Run this script, then try the following urls:
+#
+# 1. http://127.0.0.1:5000/?person_id=mosky
+# 2. http://127.0.0.1:5000/?name=Mosky Liu
+# 3. http://127.0.0.1:5000/?name like=%Mosky%
+#
+
 import os
 import psycopg2
 from flask import Flask, request, jsonify
@@ -23,12 +30,4 @@ def index():
     return jsonify(data=rows)
 
 if __name__ == '__main__':
-
-    # Run this script, then try the following urls:
-    #
-    # 1. http://127.0.0.1:5000/?person_id=mosky
-    # 2. http://127.0.0.1:5000/?name=Mosky Liu
-    # 3. http://127.0.0.1:5000/?name like=%Mosky%
-    #
-
     app.run(debug=True)
