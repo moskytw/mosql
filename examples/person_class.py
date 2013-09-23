@@ -7,12 +7,22 @@ from mosql.query import insert, select, update, delete
 
 class ConnContext(object):
 
-    def __init__(self, *args, **kargs):
-        self.conn = psycopg2.connect(*args, **kargs)
+    def __init__(self, getconn, putconn=None):
+
+        self.getconn = getconn
+
+        if putconn:
+            self.putconn = putconn
+        else:
+            self.putconn = lambda conn: conn.close()
+
+        self.conn = None
+        self.cur = None
 
     def __enter__(self):
+        self.conn = self.getconn()
         self.cur = self.conn.cursor()
-        return self
+        return self.cur
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.cur.close()
@@ -20,10 +30,13 @@ class ConnContext(object):
             self.conn.rollback()
         else:
             self.conn.commit()
+        self.putconn(self.conn)
 
 class Person(dict):
 
-    conn_context = ConnContext(host='127.0.0.1', database=os.environ['USER'])
+    conn_context = ConnContext(
+        lambda: psycopg2.connect(host='127.0.0.1', database=os.environ['USER'])
+    )
 
     table_info = {'table': 'person'}
     select = select.breed(table_info)
@@ -43,20 +56,20 @@ class Person(dict):
 
         person = cls(*args, **kargs)
 
-        with cls.conn_context as context:
-            context.cur.execute(cls.insert(set=person))
+        with cls.conn_context as cur:
+            cur.execute(cls.insert(set=person))
 
         return person
 
     @classmethod
     def fetch(cls, person_id):
 
-        with cls.conn_context as context:
+        with cls.conn_context as cur:
 
-            context.cur.execute(cls.select(where={'person_id': person_id}))
+            cur.execute(cls.select(where={'person_id': person_id}))
 
-            if context.cur.rowcount:
-                person = cls({desc.name: value for desc, value in zip(context.cur.description, context.cur.fetchone())})
+            if cur.rowcount:
+                person = cls({desc.name: value for desc, value in zip(cur.description, cur.fetchone())})
             else:
                 person = None
 
@@ -64,13 +77,13 @@ class Person(dict):
 
     def save(self):
 
-        with self.conn_context as context:
-            context.cur.execute(self.update(set=self))
+        with self.conn_context as cur:
+            cur.execute(self.update(set=self))
 
     def remove(self):
 
-        with self.conn_context as context:
-            context.cur.execute(self.delete())
+        with self.conn_context as cur:
+            cur.execute(self.delete())
 
 if __name__ == '__main__':
 
