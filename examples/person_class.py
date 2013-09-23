@@ -26,10 +26,12 @@ class ConnContext(object):
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.cur.close()
+
         if exc_type:
             self.conn.rollback()
         else:
             self.conn.commit()
+
         self.putconn(self.conn)
 
 class Person(dict):
