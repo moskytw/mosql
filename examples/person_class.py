@@ -6,6 +6,7 @@ import psycopg2
 from mosql.query import insert, select, update, delete
 
 class ConnContext(object):
+    # It may be the standard component in future.
 
     def __init__(self, getconn, putconn=None):
 

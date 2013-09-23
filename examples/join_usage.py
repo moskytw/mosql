@@ -11,9 +11,13 @@ cur = conn.cursor()
 
 cur.execute(select(
     'person',
+
     {'person_id': 'mosky'},
+    # It is same as using keyword argument:
+    #where = {'person_id': 'mosky'},
+
     joins = left_join('detail', using='person_id'),
-    # You can also use tuple to add multiple join statements.
+    # You can also use tuple to add multiple join statements:
     #joins = (left_join('detail', using='person_id'), )
 ))
 
