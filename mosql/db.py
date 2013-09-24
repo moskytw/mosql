@@ -10,14 +10,17 @@ class Database(object):
 
     Initialize a :class:`Database` instance:
 
-    >>> import psycopg2
-    >>> db = Database(psycopg2, host='127.0.0.1')
+    ::
+
+        import psycopg2
+        db = Database(psycopg2, host='127.0.0.1')
 
     Get a cursor to communicate with database.
 
-    >>> with db as cur:
-    ...     cur.execute('select 1')
-    ... 
+    ::
+
+        with db as cur:
+            cur.execute('select 1')
 
     The changes will be committed after you leave the with-block, or be
     rollbacked if there is any exception. The connection and cursor will also be
@@ -27,10 +30,11 @@ class Database(object):
 
     If you need multiple cursors, just say:
 
-    >>> with db as cur1, db as cur2:
-    ...     cur1.execute('select 1')
-    ...     cur2.execute('select 2')
-    ... 
+    ::
+
+        with db as cur1, db as cur2:
+            cur1.execute('select 1')
+            cur2.execute('select 2')
 
     The :class:`Database` has at most one connection per instance, so the two
     cursors here share the same connection.
