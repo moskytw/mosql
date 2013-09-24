@@ -39,7 +39,7 @@ class ConnContext(object):
         self.putconn(conn)
 
 def get_col_names(cur):
-    return (desc.name for desc in cur.description)
+    return [desc.name for desc in cur.description]
 
 def one_to_dict(cur, row=None):
 
@@ -53,7 +53,7 @@ def all_to_dicts(cur, rows=None):
     if rows is None:
         rows = cur
 
-    col_names = list(get_col_names(cur))
+    col_names = get_col_names(cur)
 
     return [dict(zip(col_names, row)) for row in rows]
 
