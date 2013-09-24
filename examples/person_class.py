@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 import psycopg2
 from mosql.query import insert, select, update, delete
 from mosql.db import Database, one_to_dict
 
 class Person(dict):
 
-    db = Database(psycopg2, host='127.0.0.1', database=os.environ['USER'])
+    db = Database(psycopg2, host='127.0.0.1')
 
     table_info = {'table': 'person'}
     select = select.breed(table_info)

@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 import psycopg2
 from pprint import pprint
 from mosql.query import select, left_join
 
-conn = psycopg2.connect(host='127.0.0.1', database=os.environ['USER'])
+conn = psycopg2.connect(host='127.0.0.1')
 cur = conn.cursor()
 
 cur.execute(select(

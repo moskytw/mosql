@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 import psycopg2
 from mosql.util import star
 from mosql.query import insert
 
-conn = psycopg2.connect(host='127.0.0.1', database=os.environ['USER'])
+conn = psycopg2.connect(host='127.0.0.1')
 cur = conn.cursor()
 
 # We breed another insert with parital arguments.

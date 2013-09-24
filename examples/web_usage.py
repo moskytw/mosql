@@ -8,14 +8,13 @@
 # 3. http://127.0.0.1:5000/?name like=%Mosky%
 #
 
-import os
 import psycopg2
 from flask import Flask, request, jsonify
 from mosql.query import select, left_join
 
 app = Flask(__name__)
 
-conn = psycopg2.connect(host='127.0.0.1', database=os.environ['USER'])
+conn = psycopg2.connect(host='127.0.0.1')
 
 @app.route('/')
 def index():
