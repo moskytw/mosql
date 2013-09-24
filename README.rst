@@ -37,8 +37,6 @@ And we want to insert it into a table named person. It is easy with `mosql.query
 >>> print insert('person', mosky)
 INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 
-How about to send it to db directly? Yes, it is in the to-do, but not for now.
-
 You can check `The Common Queries — mosql.query
 <http://mosql.mosky.tw/query.html>`_ for the detail usage, or there are also
 many `examples <https://github.com/moskytw/mosql/tree/dev/examples>`_ which
