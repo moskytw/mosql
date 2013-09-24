@@ -14,29 +14,31 @@ class ConnContext(object):
         else:
             self.putconn = lambda conn: conn.close()
 
-        self.stack = deque()
+        self._conn = None
+        self._cur_stack = deque()
 
     def __enter__(self):
 
-        conn = self.getconn()
-        cur = conn.cursor()
+        if not self._cur_stack:
+            self._conn = self.getconn()
 
-        self.stack.append((conn, cur))
+        cur = self._conn.cursor()
+        self._cur_stack.append(cur)
 
         return cur
 
     def __exit__(self, exc_type, exc_val, exc_tb):
 
-        conn, cur = self.stack.pop()
-
+        cur = self._cur_stack.pop()
         cur.close()
 
         if exc_type:
-            conn.rollback()
+            self._conn.rollback()
         else:
-            conn.commit()
+            self._conn.commit()
 
-        self.putconn(conn)
+        if not self._cur_stack:
+            self.putconn(self._conn)
 
 def get_col_names(cur):
     return [desc.name for desc in cur.description]
