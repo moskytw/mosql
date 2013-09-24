@@ -5,9 +5,10 @@ from collections import deque
 
 class Database(object):
 
-    def __init__(self, module, *conn_args, **conn_kargs):
+    def __init__(self, module=None, *conn_args, **conn_kargs):
 
-        self.getconn = lambda: module.connect(*conn_args, **conn_kargs)
+        if hasattr(module, 'connect'):
+            self.getconn = lambda: module.connect(*conn_args, **conn_kargs)
 
         # set them None to use the default way
         self.putconn = None
