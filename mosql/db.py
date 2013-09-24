@@ -3,42 +3,55 @@
 
 from collections import deque
 
-class ConnContext(object):
+class Database(object):
 
-    def __init__(self, getconn, putconn=None):
+    def __init__(self, module, *conn_args, **conn_kargs):
 
-        self.getconn = getconn
+        self.getconn = lambda: module.connect(*conn_args, **conn_kargs)
 
-        if putconn:
-            self.putconn = putconn
-        else:
-            self.putconn = lambda conn: conn.close()
+        # set them None to use the default way
+        self.putconn = None
+        self.getcur = None
 
         self._conn = None
         self._cur_stack = deque()
 
     def __enter__(self):
 
+        # check if we need to create connection
         if not self._cur_stack:
             self._conn = self.getconn()
 
-        cur = self._conn.cursor()
+        # get the cursor
+        if self.getcur:
+            cur = self.getcur(self._conn)
+        else:
+            cur = self._conn.cursor()
+
+        # push it into stack
         self._cur_stack.append(cur)
 
         return cur
 
     def __exit__(self, exc_type, exc_val, exc_tb):
 
+        # close the cursor
         cur = self._cur_stack.pop()
         cur.close()
 
+        # rollback or commit
         if exc_type:
             self._conn.rollback()
         else:
             self._conn.commit()
 
+        # close the connection if all cursors are closed
         if not self._cur_stack:
-            self.putconn(self._conn)
+
+            if self.putconn:
+                self.putconn(self._conn)
+            else:
+                self._conn.close()
 
 def get_col_names(cur):
     return [desc.name for desc in cur.description]

@@ -4,13 +4,11 @@
 import os
 import psycopg2
 from mosql.query import insert, select, update, delete
-from mosql.db import ConnContext, one_to_dict
+from mosql.db import Database, one_to_dict
 
 class Person(dict):
 
-    conn_context = ConnContext(
-        lambda: psycopg2.connect(host='127.0.0.1', database=os.environ['USER'])
-    )
+    db = Database(psycopg2, host='127.0.0.1', database=os.environ['USER'])
 
     table_info = {'table': 'person'}
     select = select.breed(table_info)
@@ -30,7 +28,7 @@ class Person(dict):
 
         person = cls(*args, **kargs)
 
-        with cls.conn_context as cur:
+        with cls.db as cur:
             cur.execute(cls.insert(set=person))
 
         return person
@@ -38,7 +36,7 @@ class Person(dict):
     @classmethod
     def fetch(cls, person_id):
 
-        with cls.conn_context as cur:
+        with cls.db as cur:
 
             cur.execute(cls.select(where={'person_id': person_id}))
 
@@ -51,12 +49,12 @@ class Person(dict):
 
     def save(self):
 
-        with self.conn_context as cur:
+        with self.db as cur:
             cur.execute(self.update(set=self))
 
     def remove(self):
 
-        with self.conn_context as cur:
+        with self.db as cur:
             cur.execute(self.delete())
 
 if __name__ == '__main__':
