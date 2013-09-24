@@ -4,37 +4,7 @@
 import os
 import psycopg2
 from mosql.query import insert, select, update, delete
-
-class ConnContext(object):
-    # It may be the standard component in future.
-
-    def __init__(self, getconn, putconn=None):
-
-        self.getconn = getconn
-
-        if putconn:
-            self.putconn = putconn
-        else:
-            self.putconn = lambda conn: conn.close()
-
-        self.conn = None
-        self.cur = None
-
-    def __enter__(self):
-        self.conn = self.getconn()
-        self.cur = self.conn.cursor()
-        return self.cur
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-
-        self.cur.close()
-
-        if exc_type:
-            self.conn.rollback()
-        else:
-            self.conn.commit()
-
-        self.putconn(self.conn)
+from mosql.db import ConnContext, one_to_dict
 
 class Person(dict):
 
@@ -73,7 +43,7 @@ class Person(dict):
             cur.execute(cls.select(where={'person_id': person_id}))
 
             if cur.rowcount:
-                person = cls({desc.name: value for desc, value in zip(cur.description, cur.fetchone())})
+                person = cls(one_to_dict(cur))
             else:
                 person = None
 
