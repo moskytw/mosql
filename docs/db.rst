@@ -1,5 +1,5 @@
-The Utilites for Python DB API 2.0  --- :mod:`mosql.db`
--------------------------------------------------------
+The Utilities for Python DB API 2.0  --- :mod:`mosql.db`
+--------------------------------------------------------
 
 .. versionadded :: 0.7
 

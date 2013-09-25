@@ -1,4 +1,4 @@
-The Basic Utilites --- :mod:`mosql.util`
+The Basic Utilities --- :mod:`mosql.util`
 ----------------------------------------
 
 .. testsetup::
