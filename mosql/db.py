@@ -15,18 +15,19 @@ class Database(object):
         import psycopg2
         db = Database(psycopg2, host='127.0.0.1')
 
-    Get a cursor to communicate with database.
+    Note it just told :class:`Database` how to connect to your database. No
+    connection or cursor is created here.
+
+    Then get a cursor to communicate with database:
 
     ::
 
         with db as cur:
             cur.execute('select 1')
 
-    The changes will be committed after you leave the with-block, or be
-    rollbacked if there is any exception. The connection and cursor will also be
-    closed automatically.
-
-    Note the connection and cursor are only opened while you are in the with-block.
+    The connection and cursor are created when you enter the with-block, and
+    they will be closed when you leave. Also, the changes will be committed when
+    you leave, or be rollbacked if there is any exception.
 
     If you need multiple cursors, just say:
 
@@ -36,11 +37,11 @@ class Database(object):
             cur1.execute('select 1')
             cur2.execute('select 2')
 
-    The :class:`Database` has at most one connection per instance, so the two
-    cursors here share the same connection.
+    Each :class:`Database` instance at most has one connection. The cursors
+    share a same connection no matter how many cursor you asked.
 
     It is possible to customize the creating of connection or cursor. If you
-    want to customize, override the functions you need:
+    want to customize, override the attributes you need:
 
     ::
 
