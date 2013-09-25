@@ -54,10 +54,13 @@ class Database(object):
 
     def __init__(self, module=None, *conn_args, **conn_kargs):
 
-        if hasattr(module, 'connect'):
-            self.getconn = lambda: module.connect(*conn_args, **conn_kargs)
+        if module is not None:
+            self._getconn = lambda: module.connect(*conn_args, **conn_kargs)
+        else:
+            self._getconn = None
 
         # set them None to use the default way
+        self.getconn = None
         self.putconn = None
         self.getcur = None
 
@@ -68,7 +71,11 @@ class Database(object):
 
         # check if we need to create connection
         if not self._cur_stack:
-            self._conn = self.getconn()
+            if self.getconn:
+                self._conn = self.getconn()
+            else:
+                assert self._getconn, "You must set getconn if you don't specifiy a module."
+                self._conn = self._getconn()
 
         # get the cursor
         if self.getcur:
