@@ -50,7 +50,7 @@ class Database(object):
         db.putconn = lambda conn: pool.putconn(conn)
         db.getcur  = lambda conn: conn.cursor('server-side cursor')
 
-    You can set them None to back the default approach.
+    You can set them ``None`` to back the default approach.
     '''
 
     def __init__(self, module=None, *conn_args, **conn_kargs):
