@@ -117,33 +117,22 @@ def extact_col_names(cur):
     '''
     return [desc.name for desc in cur.description]
 
-def one_to_dict(cur, row=None):
+def one_to_dict(cur):
     '''Fetch one row from a cursor and make it as a dict.
-
-    If `row` is provided, then it uses it insteand of fetching from `cur`.
 
     :rtype: dict
     '''
+    return dict(zip(extact_col_names(cur), cur.fetchone()))
 
-    if row is None:
-        row = cur.fetchone()
-
-    return dict(zip(extact_col_names(cur), row))
-
-def all_to_dicts(cur, rows=None):
+def all_to_dicts(cur):
     '''Fetch all rows from a cursor and make it as dicts in a list.
-
-    If `rows` is provided, then it uses it insteand of fetching from `cur`.
 
     :rtype: dicts in list
     '''
+    return [dict(zip(extact_col_names(cur), row)) for row in cur]
 
-    if rows is None:
-        rows = cur
 
-    col_names = extact_col_names(cur)
 
-    return [dict(zip(col_names, row)) for row in rows]
 
 if __name__ == '__main__':
     import doctest
