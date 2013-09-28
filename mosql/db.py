@@ -4,7 +4,8 @@
 from collections import deque
 
 class Database(object):
-    '''It is a context manager for both connection and cursor.
+    '''It is a context manager which manages the creation and destruction of a
+    connection and its cursors.
 
     :param module: a module which conforms Python DB API 2.0
 
@@ -15,7 +16,7 @@ class Database(object):
         import psycopg2
         db = Database(psycopg2, host='127.0.0.1')
 
-    Note it just told :class:`Database` how to connect to your database. No
+    Note it just tells :class:`Database` how to connect to your database. No
     connection or cursor is created here.
 
     Then get a cursor to communicate with database:
@@ -38,7 +39,7 @@ class Database(object):
             cur2.execute('select 2')
 
     Each :class:`Database` instance at most has one connection. The cursors
-    share a same connection no matter how many cursor you asked.
+    share a same connection no matter how many cursors you asked.
 
     It is possible to customize the creating of connection or cursor. If you
     want to customize, override the attributes you need:
@@ -48,9 +49,9 @@ class Database(object):
         db = Database()
         db.getconn = lambda: pool.getconn()
         db.putconn = lambda conn: pool.putconn(conn)
-        db.getcur  = lambda conn: conn.cursor('server-side cursor')
+        db.getcur  = lambda conn: conn.cursor('named-cusor')
 
-    You can set them ``None`` to back the default approach.
+    You can set them ``None`` to back the default way.
     '''
 
     def __init__(self, module=None, *conn_args, **conn_kargs):
