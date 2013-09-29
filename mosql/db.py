@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from itertools import groupby
 from collections import deque
 
 class Database(object):
@@ -158,6 +159,46 @@ def all_to_dicts(cur=None, col_names=None, rows=None):
 
     return [dict(zip(col_names, row)) for row in rows]
 
+def _group(by_col_names, cur=None, col_names=None, rows=None):
+
+    if col_names is None:
+        col_names = extact_col_names(cur, None)
+
+    if rows is None:
+        rows = cur
+
+    assert col_names and rows, 'You must specifiy cur, or col_names and rows.'
+
+    name_index_map = {name: idx for idx, name in enumerate(col_names)}
+    key_indexes = tuple(name_index_map.get(name) for name in by_col_names)
+    key_func = lambda row: tuple(row[i] for i in key_indexes)
+
+    return groupby(rows, key_func)
+
+def group(by_col_names, cur=None, col_names=None, rows=None, drop_key=False, to_dict=False, to_index=False):
+
+    if to_dict and col_names is None:
+        col_names = extact_col_names(cur, None)
+
+    def _pick_and_convert(key, irows):
+
+        if to_dict:
+            rows = all_to_dicts(col_names=col_names, rows=irows)
+        else:
+            rows = list(irows)
+
+        return rows if drop_key else (key, rows)
+
+    if to_index:
+        return {
+            key: _pick_and_convert(key, irows)
+            for key, irows in _group(by_col_names, cur, col_names, rows)
+        }
+    else:
+        return [
+            _pick_and_convert(key, irows)
+            for key, irows in _group(by_col_names, cur, col_names, rows)
+        ]
 
 if __name__ == '__main__':
     import doctest
