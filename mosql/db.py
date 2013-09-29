@@ -122,21 +122,41 @@ def extact_col_names(cur, default=object):
         assert default is not object, 'cur must be a cursor'
         return default
 
-def one_to_dict(cur):
+def one_to_dict(cur=None, col_names=None, row=None):
     '''Fetch one row from a cursor and make it as a dict.
+
+    If `col_names` and `row` are provied, it will use them first.
 
     :rtype: dict
     '''
-    return dict(zip(extact_col_names(cur), cur.fetchone()))
 
-def all_to_dicts(cur):
+    if col_names is None:
+        col_names = extact_col_names(cur, None)
+
+    if row is None:
+        row = cur.fetchone()
+
+    assert col_names and row, 'You must specifiy cur, or col_names and row.'
+
+    return dict(zip(col_names, row))
+
+def all_to_dicts(cur=None, col_names=None, rows=None):
     '''Fetch all rows from a cursor and make it as dicts in a list.
+
+    If `col_names` and `rows` are provied, it will use them first.
 
     :rtype: dicts in list
     '''
-    return [dict(zip(extact_col_names(cur), row)) for row in cur]
 
+    if col_names is None:
+        col_names = extact_col_names(cur, None)
 
+    if rows is None:
+        rows = cur
+
+    assert col_names and rows, 'You must specifiy cur, or col_names and rows.'
+
+    return [dict(zip(col_names, row)) for row in rows]
 
 
 if __name__ == '__main__':
