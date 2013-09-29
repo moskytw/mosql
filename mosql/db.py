@@ -110,12 +110,17 @@ class Database(object):
             else:
                 self._conn.close()
 
-def extact_col_names(cur):
+def extact_col_names(cur, default=object):
     '''Extacts the column names from a cursor.
 
     :rtype: list
     '''
-    return [desc.name for desc in cur.description]
+
+    if hasattr(cur, 'description'):
+        return [desc.name for desc in cur.description]
+    else:
+        assert default is not object, 'cur must be a cursor'
+        return default
 
 def one_to_dict(cur):
     '''Fetch one row from a cursor and make it as a dict.
