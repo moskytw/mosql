@@ -167,7 +167,7 @@ def group(by_col_names, cur=None, rows=None, col_names=None):
 
     :rtype: row generator
 
-    The examples:
+    Assume we have a curosr named ``cur`` has the data:
 
     ::
 
@@ -178,15 +178,33 @@ def group(by_col_names, cur=None, rows=None, col_names=None):
             ('mosky', 'mosky.liu@pinkoi.com')
         ]
 
-        for row in group(['id'], rows=rows, col_names=col_names):
-            print row
-
-    Or you have a cursor instance:
+    Group the rows in ``cur`` by id.
 
     ::
 
         for row in group(['id'], cur):
             print row
+
+    The output:
+
+    ::
+
+        ('alice', ['alice@gmail.com'])
+        ('mosky', ['mosky@gmail.com', 'mosky.liu@pinkoi.com'])
+
+    It works well with :func:`all_to_dicts`:
+
+    ::
+
+        for d in all_to_dicts(cur, group(['id'], cur)):
+            print d
+
+    The output:
+
+    ::
+
+        {'id': 'alice', 'email': ['alice@gmail.com']}
+        {'id': 'mosky', 'email': ['mosky@gmail.com', 'mosky.liu@pinkoi.com']}
 
     '''
 
