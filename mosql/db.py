@@ -187,8 +187,8 @@ def group(by_col_names, cur=None, col_names=None, rows=None,
             for key, irows in _group(by_col_names, cur, col_names, rows)
         ]
 
-def pluck(dicts, key, default=None):
-    return [d.get(key, default) for d in dicts]
+def pluck(iterable, idx_or_key):
+    return [item[idx_or_key] for item in iterable]
 
 if __name__ == '__main__':
     import doctest
