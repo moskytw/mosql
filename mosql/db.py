@@ -73,7 +73,7 @@ class Database(object):
         # check if we need to create connection
         if not self._cur_stack:
             assert callable(self.getconn), "You must set getconn if you don't \
-                specifiy a module."
+                specify a module."
             self._conn = self.getconn()
 
         # get the cursor
@@ -101,7 +101,7 @@ class Database(object):
             self.putconn(self._conn)
 
 def extact_col_names(cur):
-    '''Extacts the column names from a cursor.
+    '''Extracts the column names from a cursor.
 
     :rtype: list
     '''
@@ -110,17 +110,17 @@ def extact_col_names(cur):
 def one_to_dict(cur=None, row=None, col_names=None):
     '''Fetch one row from a cursor and make it as a dict.
 
-    If `col_names` or `row` is provied, it will be used first.
+    If `col_names` or `row` is provided, it will be used first.
 
     :rtype: dict
     '''
 
     if col_names is None:
-        assert cur is not None, 'You must specifiy cur or col_names.'
+        assert cur is not None, 'You must specify cur or col_names.'
         col_names = extact_col_names(cur)
 
     if row is None:
-        assert cur is not None, 'You must specifiy cur or row.'
+        assert cur is not None, 'You must specify cur or row.'
         row = cur.fetchone()
 
     return dict(izip(col_names, row))
@@ -128,17 +128,17 @@ def one_to_dict(cur=None, row=None, col_names=None):
 def all_to_dicts(cur=None, rows=None, col_names=None):
     '''Fetch all rows from a cursor and make it as dicts in a list.
 
-    If `col_names` and `rows` are provied, it will use them first.
+    If `col_names` and `rows` are provided, it will use them first.
 
     :rtype: dicts in list
     '''
 
     if col_names is None:
-        assert cur is not None, 'You must specifiy cur or col_names.'
+        assert cur is not None, 'You must specify cur or col_names.'
         col_names = extact_col_names(cur)
 
     if rows is None:
-        assert cur is not None, 'You must specifiy cur or rows.'
+        assert cur is not None, 'You must specify cur or rows.'
         rows = cur
 
     return [dict(izip(col_names, row)) for row in rows]
@@ -146,7 +146,7 @@ def all_to_dicts(cur=None, rows=None, col_names=None):
 def group(by_col_names, cur=None, rows=None, col_names=None):
     '''Group the rows in application-level.
 
-    If `col_names` and `rows` are provied, it will use them first.
+    If `col_names` and `rows` are provided, it will use them first.
 
     :rtype: row generator
 
@@ -174,11 +174,11 @@ def group(by_col_names, cur=None, rows=None, col_names=None):
     '''
 
     if col_names is None:
-        assert cur is not None, 'You must specifiy cur or col_names.'
+        assert cur is not None, 'You must specify cur or col_names.'
         col_names = extact_col_names(cur)
 
     if rows is None:
-        assert cur is not None, 'You must specifiy cur or rows.'
+        assert cur is not None, 'You must specify cur or rows.'
         rows = cur
 
     name_index_map = {name: idx for idx, name in enumerate(col_names)}
