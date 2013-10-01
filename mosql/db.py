@@ -107,7 +107,7 @@ def extact_col_names(cur):
     '''
     return [desc.name for desc in cur.description]
 
-def one_to_dict(cur=None, col_names=None, row=None):
+def one_to_dict(cur=None, row=None, col_names=None):
     '''Fetch one row from a cursor and make it as a dict.
 
     If `col_names` or `row` is provied, it will be used first.
@@ -125,7 +125,7 @@ def one_to_dict(cur=None, col_names=None, row=None):
 
     return dict(izip(col_names, row))
 
-def all_to_dicts(cur=None, col_names=None, rows=None):
+def all_to_dicts(cur=None, rows=None, col_names=None):
     '''Fetch all rows from a cursor and make it as dicts in a list.
 
     If `col_names` and `rows` are provied, it will use them first.
@@ -143,7 +143,7 @@ def all_to_dicts(cur=None, col_names=None, rows=None):
 
     return [dict(izip(col_names, row)) for row in rows]
 
-def group(by_col_names, cur=None, col_names=None, rows=None):
+def group(by_col_names, cur=None, rows=None, col_names=None):
     '''Group the rows in application-level.
 
     If `col_names` and `rows` are provied, it will use them first.
