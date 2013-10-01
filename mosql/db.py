@@ -144,6 +144,34 @@ def all_to_dicts(cur=None, col_names=None, rows=None):
     return [dict(izip(col_names, row)) for row in rows]
 
 def group(by_col_names, cur=None, col_names=None, rows=None):
+    '''Group the rows in application-level.
+
+    If `col_names` and `rows` are provied, it will use them first.
+
+    :rtype: row generator
+
+    The examples:
+
+    ::
+
+        col_names = ['id', 'email']
+        rows = [
+            ('alice', 'alice@gmail.com'),
+            ('mosky', 'mosky@gmail.com'),
+            ('mosky', 'mosky.liu@pinkoi.com')
+        ]
+
+        for row in group(['id'], rows=rows, col_names=col_names):
+            print row
+
+    Or you have a cursor instance:
+
+    ::
+
+        for row in group(['id'], cur):
+            print row
+
+    '''
 
     if col_names is None:
         assert cur is not None, 'You must specifiy cur or col_names.'
