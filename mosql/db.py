@@ -77,7 +77,8 @@ class Database(object):
             if self.getconn:
                 self._conn = self.getconn()
             else:
-                assert self._getconn, "You must set getconn if you don't specifiy a module."
+                assert self._getconn, "You must set getconn if you don't \
+                    specifiy a module."
                 self._conn = self._getconn()
 
         # get the cursor
@@ -175,7 +176,8 @@ def _group(by_col_names, cur=None, col_names=None, rows=None):
 
     return groupby(rows, key_func)
 
-def group(by_col_names, cur=None, col_names=None, rows=None, drop_key=False, to_dict=False, to_index=False):
+def group(by_col_names, cur=None, col_names=None, rows=None,
+        drop_key=False, to_dict=False, to_index=False):
 
     if to_dict and col_names is None:
         col_names = extact_col_names(cur, None)
