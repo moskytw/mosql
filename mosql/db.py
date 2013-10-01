@@ -51,21 +51,19 @@ class Database(object):
         db.getconn = lambda: pool.getconn()
         db.putconn = lambda conn: pool.putconn(conn)
         db.getcur  = lambda conn: conn.cursor('named-cusor')
-
-    You can set them ``None`` to back the default way.
+        db.putcur  = lambda cur : cur.close()
     '''
 
     def __init__(self, module=None, *conn_args, **conn_kargs):
 
         if module is not None:
-            self._getconn = lambda: module.connect(*conn_args, **conn_kargs)
+            self.getconn = lambda: module.connect(*conn_args, **conn_kargs)
         else:
-            self._getconn = None
+            self.getconn = None
 
-        # set them None to use the default way
-        self.getconn = None
-        self.putconn = None
-        self.getcur = None
+        self.putconn = lambda conn: conn.close()
+        self.getcur  = lambda conn: conn.cursor()
+        self.putcur  = lambda cur : cur.close()
 
         self._conn = None
         self._cur_stack = deque()
@@ -74,18 +72,12 @@ class Database(object):
 
         # check if we need to create connection
         if not self._cur_stack:
-            if self.getconn:
-                self._conn = self.getconn()
-            else:
-                assert self._getconn, "You must set getconn if you don't \
-                    specifiy a module."
-                self._conn = self._getconn()
+            assert callable(self.getconn), "You must set getconn if you don't \
+                specifiy a module."
+            self._conn = self.getconn()
 
         # get the cursor
-        if self.getcur:
-            cur = self.getcur(self._conn)
-        else:
-            cur = self._conn.cursor()
+        cur = self.getcur(self._conn)
 
         # push it into stack
         self._cur_stack.append(cur)
@@ -96,7 +88,7 @@ class Database(object):
 
         # close the cursor
         cur = self._cur_stack.pop()
-        cur.close()
+        self.putcur(cur)
 
         # rollback or commit
         if exc_type:
@@ -106,11 +98,7 @@ class Database(object):
 
         # close the connection if all cursors are closed
         if not self._cur_stack:
-
-            if self.putconn:
-                self.putconn(self._conn)
-            else:
-                self._conn.close()
+            self.putconn(self._conn)
 
 def extact_col_names(cur, default=object):
     '''Extacts the column names from a cursor.
