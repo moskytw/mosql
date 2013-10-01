@@ -143,9 +143,9 @@ def one_to_dict(cur=None, row=None, col_names=None):
     return dict(izip(col_names, row))
 
 def all_to_dicts(cur=None, rows=None, col_names=None):
-    '''Fetch all rows from a cursor and make it as dicts in a list.
+    '''Fetch all rows from a cursor and make them as dicts in a list.
 
-    If `col_names` and `rows` are provided, it will use them first.
+    If `col_names` or `rows` is provided, it will be used first.
 
     :rtype: dicts in list
     '''
@@ -163,11 +163,11 @@ def all_to_dicts(cur=None, rows=None, col_names=None):
 def group(by_col_names, cur=None, rows=None, col_names=None, to_dict=False):
     '''Group the rows in application-level.
 
-    If `col_names` and `rows` are provided, it will use them first.
+    If `col_names` or `rows` is provided, it will be used first.
 
     :rtype: row generator
 
-    Assume we have a curosr named ``cur`` has the data:
+    Assume we have a cursor named ``cur`` has the data:
 
     ::
 
