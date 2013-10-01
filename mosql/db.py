@@ -1,6 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+'''It makes using the module which conforms Python DB API 2.0 easier.
+
+The context manager for both connection and cursor:
+
+.. autosummary ::
+    Database
+
+The functions designed for cursor:
+
+.. autosummary ::
+    extact_col_names
+    one_to_dict
+    all_to_dicts
+    group
+
+'''
+
 from itertools import groupby, izip
 from collections import deque
 
