@@ -18,6 +18,6 @@ with db as cur:
 
     groups = group(['person_id'], cur, drop_key=True, to_dict=True, to_index=True)
 
-    pprint(groups)
+    pprint(groups['mosky',])
 
     print pluck(groups['mosky',], 'val')
