@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from itertools import groupby
+from itertools import groupby, izip
 from collections import deque
 
 class Database(object):
@@ -123,7 +123,7 @@ def one_to_dict(cur=None, col_names=None, row=None):
         assert cur is not None, 'You must specifiy cur or row.'
         row = cur.fetchone()
 
-    return dict(zip(col_names, row))
+    return dict(izip(col_names, row))
 
 def all_to_dicts(cur=None, col_names=None, rows=None):
     '''Fetch all rows from a cursor and make it as dicts in a list.
@@ -141,9 +141,9 @@ def all_to_dicts(cur=None, col_names=None, rows=None):
         assert cur is not None, 'You must specifiy cur or rows.'
         rows = cur
 
-    return [dict(zip(col_names, row)) for row in rows]
+    return [dict(izip(col_names, row)) for row in rows]
 
-def _group(by_col_names, cur=None, col_names=None, rows=None):
+def group(by_col_names, cur=None, col_names=None, rows=None):
 
     if col_names is None:
         assert cur is not None, 'You must specifiy cur or col_names.'
@@ -157,38 +157,11 @@ def _group(by_col_names, cur=None, col_names=None, rows=None):
     key_indexes = tuple(name_index_map.get(name) for name in by_col_names)
     key_func = lambda row: tuple(row[i] for i in key_indexes)
 
-    return groupby(rows, key_func)
-
-def group(by_col_names, cur=None, col_names=None, rows=None,
-        drop_key=False, to_dict=False, to_index=False):
-
-    # If to_dict, it needs to cache the col_names here.
-    if to_dict and col_names is None:
-        assert cur is not None, 'You must specifiy cur or col_names.'
-        col_names = extact_col_names(cur)
-
-    def _pick_and_convert(key, irows):
-
-        if to_dict:
-            rows = all_to_dicts(col_names=col_names, rows=irows)
-        else:
-            rows = list(irows)
-
-        return rows if drop_key else (key, rows)
-
-    if to_index:
-        return {
-            key: _pick_and_convert(key, irows)
-            for key, irows in _group(by_col_names, cur, col_names, rows)
-        }
-    else:
-        return [
-            _pick_and_convert(key, irows)
-            for key, irows in _group(by_col_names, cur, col_names, rows)
-        ]
-
-def pluck(iterable, idx_or_key):
-    return [item[idx_or_key] for item in iterable]
+    for key_values, rows_islice in groupby(rows, key_func):
+        row = [list(col) for col in izip(*rows_islice)]
+        for key_index, key_value in izip(key_indexes, key_values):
+            row[key_index] = key_value
+        yield tuple(row)
 
 if __name__ == '__main__':
     import doctest
