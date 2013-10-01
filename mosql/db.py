@@ -160,7 +160,7 @@ def all_to_dicts(cur=None, rows=None, col_names=None):
 
     return [dict(izip(col_names, row)) for row in rows]
 
-def group(by_col_names, cur=None, rows=None, col_names=None):
+def group(by_col_names, cur=None, rows=None, col_names=None, to_dict=False):
     '''Group the rows in application-level.
 
     If `col_names` and `rows` are provided, it will use them first.
@@ -192,20 +192,6 @@ def group(by_col_names, cur=None, rows=None, col_names=None):
         ('alice', ['alice@gmail.com'])
         ('mosky', ['mosky@gmail.com', 'mosky.liu@pinkoi.com'])
 
-    It works well with :func:`all_to_dicts`:
-
-    ::
-
-        for d in all_to_dicts(cur, group(['id'], cur)):
-            print d
-
-    The output:
-
-    ::
-
-        {'id': 'alice', 'email': ['alice@gmail.com']}
-        {'id': 'mosky', 'email': ['mosky@gmail.com', 'mosky.liu@pinkoi.com']}
-
     '''
 
     if col_names is None:
@@ -221,10 +207,17 @@ def group(by_col_names, cur=None, rows=None, col_names=None):
     key_func = lambda row: tuple(row[i] for i in key_indexes)
 
     for key_values, rows_islice in groupby(rows, key_func):
+
+        # TODO: the performance
+
         row = [list(col) for col in izip(*rows_islice)]
         for key_index, key_value in izip(key_indexes, key_values):
             row[key_index] = key_value
-        yield tuple(row)
+
+        if to_dict:
+            yield one_to_dict(row=row, col_names=col_names)
+        else:
+            yield tuple(row)
 
 if __name__ == '__main__':
     import doctest
