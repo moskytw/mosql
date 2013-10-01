@@ -100,33 +100,28 @@ class Database(object):
         if not self._cur_stack:
             self.putconn(self._conn)
 
-def extact_col_names(cur, default=object):
+def extact_col_names(cur):
     '''Extacts the column names from a cursor.
 
     :rtype: list
     '''
-
-    if hasattr(cur, 'description'):
-        return [desc.name for desc in cur.description]
-    else:
-        assert default is not object, 'cur must be a cursor'
-        return default
+    return [desc.name for desc in cur.description]
 
 def one_to_dict(cur=None, col_names=None, row=None):
     '''Fetch one row from a cursor and make it as a dict.
 
-    If `col_names` and `row` are provied, it will use them first.
+    If `col_names` or `row` is provied, it will be used first.
 
     :rtype: dict
     '''
 
     if col_names is None:
-        col_names = extact_col_names(cur, None)
+        assert cur is not None, 'You must specifiy cur or col_names.'
+        col_names = extact_col_names(cur)
 
     if row is None:
+        assert cur is not None, 'You must specifiy cur or row.'
         row = cur.fetchone()
-
-    assert col_names and row, 'You must specifiy cur, or col_names and row.'
 
     return dict(zip(col_names, row))
 
@@ -139,24 +134,24 @@ def all_to_dicts(cur=None, col_names=None, rows=None):
     '''
 
     if col_names is None:
-        col_names = extact_col_names(cur, None)
+        assert cur is not None, 'You must specifiy cur or col_names.'
+        col_names = extact_col_names(cur)
 
     if rows is None:
+        assert cur is not None, 'You must specifiy cur or rows.'
         rows = cur
-
-    assert col_names and rows, 'You must specifiy cur, or col_names and rows.'
 
     return [dict(zip(col_names, row)) for row in rows]
 
 def _group(by_col_names, cur=None, col_names=None, rows=None):
 
     if col_names is None:
-        col_names = extact_col_names(cur, None)
+        assert cur is not None, 'You must specifiy cur or col_names.'
+        col_names = extact_col_names(cur)
 
     if rows is None:
+        assert cur is not None, 'You must specifiy cur or rows.'
         rows = cur
-
-    assert col_names and rows, 'You must specifiy cur, or col_names and rows.'
 
     name_index_map = {name: idx for idx, name in enumerate(col_names)}
     key_indexes = tuple(name_index_map.get(name) for name in by_col_names)
@@ -167,8 +162,10 @@ def _group(by_col_names, cur=None, col_names=None, rows=None):
 def group(by_col_names, cur=None, col_names=None, rows=None,
         drop_key=False, to_dict=False, to_index=False):
 
+    # If to_dict, it needs to cache the col_names here.
     if to_dict and col_names is None:
-        col_names = extact_col_names(cur, None)
+        assert cur is not None, 'You must specifiy cur or col_names.'
+        col_names = extact_col_names(cur)
 
     def _pick_and_convert(key, irows):
 
