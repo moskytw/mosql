@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It makes using the module which conforms Python DB API 2.0 easier.
+'''It makes it easier to use the module which conforms Python DB API 2.0.
 
 The context manager for both connection and cursor:
 
