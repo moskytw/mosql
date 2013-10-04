@@ -11,22 +11,21 @@
 import psycopg2
 from flask import Flask, request, jsonify
 from mosql.query import select, left_join
+from mosql.db import Database
+
+db = Database(psycopg2, host='127.0.0.1')
 
 app = Flask(__name__)
 
-conn = psycopg2.connect(host='127.0.0.1')
-
 @app.route('/')
 def index():
-    cur = conn.cursor()
-    cur.execute(select(
-        'person',
-        request.args or None,
-        joins = left_join('detail', using=('person_id', )),
-    ))
-    rows = cur.fetchall()
-    cur.close()
-    return jsonify(data=rows)
+    with db as cur:
+        cur.execute(select(
+            'person',
+            request.args or None,
+            joins = left_join('detail', using=('person_id', )),
+        ))
+        return jsonify(data=list(cur))
 
 if __name__ == '__main__':
     app.run(debug=True)
