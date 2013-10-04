@@ -4,11 +4,13 @@
 import psycopg2
 from mosql.util import raw
 from mosql.query import select, left_join
-from mosql.db import *
+from mosql.db import Database, group
 
 db = Database(psycopg2, host='127.0.0.1')
 
 with db as cur:
+
+    ## Use PostgreSQL to group:
 
     cur.execute(select(
         'person',
@@ -24,6 +26,8 @@ with db as cur:
     for row in cur:
         print row
     print
+
+    ## Use MoSQL (App-level) to group:
 
     cur.execute(select(
         'person',

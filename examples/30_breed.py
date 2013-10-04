@@ -4,9 +4,7 @@
 import psycopg2
 from mosql.util import star
 from mosql.query import insert
-
-conn = psycopg2.connect(host='127.0.0.1')
-cur = conn.cursor()
+from mosql.db import Database, one_to_dict
 
 # We breed another insert with parital arguments.
 person_insert = insert.breed({'table': 'person'})
@@ -16,12 +14,12 @@ dave = {
     'name'     : 'Dave',
 }
 
-cur.execute(person_insert(set=dave, returning=star))
+db = Database(psycopg2, host='127.0.0.1')
 
-person_id, name = cur.fetchone()
-print person_id
-print name
+with db as cur:
 
-cur.close()
-#conn.commit() # Actually we don't want to commit here.
-conn.close()
+    cur.execute(person_insert(set=dave, returning=star))
+    print one_to_dict(cur)
+    print
+
+    assert 0, 'Rollback!'
