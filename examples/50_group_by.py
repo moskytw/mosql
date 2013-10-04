@@ -27,7 +27,7 @@ with db as cur:
         print row
     print
 
-    ## Use MoSQL (App-level) to group:
+    ## Use MoSQL (app-level) to group:
 
     cur.execute(select(
         'person',
