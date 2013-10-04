@@ -1,6 +1,15 @@
 The Change Log
 ==============
 
+v0.7
+----
+
+1. Added the Travis CI badge. Thanks `xKerman
+   <https://github.com/moskytw/mosql/pull/7>`_. :)
+2. Added :doc:`/db`.
+3. Arranged the `examples
+   <https://github.com/moskytw/mosql/tree/dev/examples>`_.
+
 v0.6.1
 ------
 
