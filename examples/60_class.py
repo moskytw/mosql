@@ -63,7 +63,6 @@ if __name__ == '__main__':
         'name'     : 'Dave',
     }
 
-
     # insert
     p = Person.create(dave)
     print p
