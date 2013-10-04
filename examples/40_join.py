@@ -4,7 +4,7 @@
 import psycopg2
 from pprint import pprint
 from mosql.query import select, left_join
-from mosql.db import Database
+from mosql.db import Database, all_to_dicts
 
 db = Database(psycopg2, host='127.0.0.1')
 
@@ -22,4 +22,4 @@ with db as cur:
         #joins = (left_join('detail', using='person_id'), )
     ))
 
-    pprint(cur.fetchall())
+    pprint(all_to_dicts(cur))
