@@ -174,7 +174,7 @@ def group(by_col_names, cur=None, rows=None, col_names=None, to_dict=False):
         col_names = ['id', 'email']
         rows = [
             ('alice', 'alice@gmail.com'),
-            ('mosky', 'mosky@gmail.com'),
+            ('mosky', 'mosky.tw@gmail.com'),
             ('mosky', 'mosky.liu@pinkoi.com')
         ]
 
@@ -190,7 +190,7 @@ def group(by_col_names, cur=None, rows=None, col_names=None, to_dict=False):
     ::
 
         ('alice', ['alice@gmail.com'])
-        ('mosky', ['mosky@gmail.com', 'mosky.liu@pinkoi.com'])
+        ('mosky', ['mosky.tw@gmail.com', 'mosky.liu@pinkoi.com'])
 
     '''
 
