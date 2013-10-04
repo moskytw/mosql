@@ -47,12 +47,10 @@ class Person(dict):
         return person
 
     def save(self):
-
         with self.db as cur:
             cur.execute(self.update(set=self))
 
     def remove(self):
-
         with self.db as cur:
             cur.execute(self.delete())
 
