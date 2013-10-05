@@ -31,7 +31,7 @@ v0.6
 v0.5.3
 ------
 
-1. Fixed the compatibility of :mod:`mosql.util` with types which inherit the the
+1. Fixed the compatibility of :mod:`mosql.util` with types which inherit the
    basic types.
 
 v0.5.2
