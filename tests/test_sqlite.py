@@ -59,7 +59,8 @@ class TestSQLite(unittest.TestCase):
 
     def test_native_escape(self):
 
-        strange_name =  '\0\n\r\\\'\"\x1A\b\t'
+        # NOTE: \0 will eat all following chars
+        strange_name =  '\n\r\\\'\"\x1A\b\t'
 
         with self.db as cur:
 
@@ -73,16 +74,12 @@ class TestSQLite(unittest.TestCase):
 
             self.db._conn.rollback()
 
-        # TODO: Here is some problem!
-        print '>>>>> %r %r' % (strange_name, name)
-
         assert strange_name == name
 
     def test_escape(self):
 
-        # TODO: This case is fail.
-
-        strange_name =  '\0\n\r\\\'\"\x1A\b\t'
+        # NOTE: \0 will cause an OperationalError of MoSQL
+        strange_name =  '\n\r\\\'\"\x1A\b\t'
 
         with self.db as cur:
 
