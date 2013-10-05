@@ -1,5 +1,5 @@
-include README*
+include README.rst LICENSE.txt
 graft examples
-graft docs
 graft tests
+graft docs
 prune docs/_build
