@@ -9,9 +9,10 @@ __all__ = [
 ]
 
 from .util import Query
-from .statement import insert, select, update, delete, join
+from .statement import insert, replace, select, update, delete, join
 
 insert = Query(insert, ('table', 'set'))
+replace = Query(replace, ('table', 'set'))
 select = Query(select, ('table', 'where'))
 update = Query(update, ('table', 'where', 'set'))
 delete = Query(delete, ('table', 'where'))
