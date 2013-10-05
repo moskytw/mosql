@@ -11,7 +11,7 @@ class TestMosqlSqlite3(unittest.TestCase):
 
         self.cursor.executescript("""
             create table if not exists person(
-                id integer,
+                id integer integer primary key,
                 person_id text,
                 name text
             );
@@ -49,9 +49,38 @@ class TestMosqlSqlite3(unittest.TestCase):
 
         import mosql.sqlite
         q =  select('person', {'person_id': param('person_id')})
-        print q
+        # print q
 
         self.cursor.execute(q, {'person_id': 'mosky'})
+        self.connect.commit()
+
+    def test_escape_native(self):
+        eval_string =  "\n\r\\\"\x1A\b\t"
+        self.cursor.execute("insert or replace into person(id, person_id, name) values(?, ?,?)", (1, 'mosqk', eval_string))
+        self.connect.commit()
+
+        self.cursor.execute("select name from person where id = ?", (1, ))
+        v = self.cursor.fetchall()
+
+        assert v[0][0] == eval_string
+
+    def test_escape(self):
+        eval_string =  "\n\r\\\"\x1A\b\t"
+        from mosql.query import insert
+        q = insert('person', {
+            "id": 1,
+            "person_id": "mosky",
+            "name": eval_string
+        })
+
+        # print q
+        self.cursor.execute(q)
+        self.connect.commit()
+
+        self.cursor.execute("select name from person where id = ?", (1,))
+        v = self.cursor.fetchall()
+
+        assert v[0][0] == eval_string
 
 
 if __name__ == '__main__':
