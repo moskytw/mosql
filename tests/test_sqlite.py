@@ -15,7 +15,7 @@ class TestSQLite(unittest.TestCase):
         self.db = Database(sqlite3, 'test_sqlite.db')
 
         with self.db as cur:
-            cur.executescript('''
+            cur.execute('''
                 CREATE TABLE IF NOT EXISTS person (
                     person_id TEXT PRIMARY KEY,
                     name      TEXT
