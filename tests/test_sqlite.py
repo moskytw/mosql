@@ -1,94 +1,99 @@
-import mosql
-from mosql.query import insert
-from mosql.util import param
-import sqlite3
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import unittest
+import sqlite3
+import mosql.sqlite
+from mosql.util import param
+from mosql.query import insert, select, update, delete
+from mosql.db import Database
 
-class TestMosqlSqlite3(unittest.TestCase):
+class TestSQLite(unittest.TestCase):
+
     def setUp(self):
-        self.connect = sqlite3.connect(":memory:")
-        self.cursor = self.connect.cursor()
 
-        self.cursor.executescript("""
-            create table if not exists person(
-                id integer integer primary key,
-                person_id text,
-                name text
-            );
-        """)
+        self.db = Database(sqlite3, ':memory')
+
+        with self.db as cur:
+            cur.executescript('''
+                CREATE TABLE IF NOT EXISTS person (
+                    person_id TEXT PRIMARY KEY,
+                    name      TEXT
+                );
+            ''')
 
     def test_insert(self):
-        from mosql.query import insert
-        q = insert('person', {
-            "person_id": "mosky",
-            "name": "Mosky Liu"
-        })
-
-        self.cursor.execute(q)
-        self.connect.commit()
+        with self.db as cur:
+            cur.execute(insert('person', {
+                'person_id': 'mosky',
+                'name'     : 'Mosky Liu'
+            }))
+            self.db._conn.rollback()
 
     def test_update(self):
-        from mosql.query import update
-        q = update('person', {'person_id': 'mosky'}, {'name': 'Mosky Liu'})
-
-        self.cursor.execute(q)
-        self.connect.commit()
+        with self.db as cur:
+            cur.execute(update('person', {'person_id': 'mosky'}, {'name': 'Mosky Liu'}))
+            self.db._conn.rollback()
 
     def test_delete(self):
-        from mosql.query import delete
-        q = delete('person', {'person_id': 'mosky'})
-
-        self.cursor.execute(q)
-        self.connect.commit()
+        with self.db as cur:
+            cur.execute(delete('person', {'person_id': 'mosky'}))
+            self.db._conn.rollback()
 
     def test_select(self):
-        from mosql.query import select
-        q = select('person', {'person_id': 'mosky'})
+        with self.db as cur:
+            cur.execute(select('person', {'person_id': 'mosky'}))
+            self.db._conn.rollback()
 
-        qs = self.cursor.execute(q)
+    def test_param_query(self):
 
-        import mosql.sqlite
-        q =  select('person', {'person_id': param('person_id')})
-        # print q
+        with self.db as cur:
+            cur.execute(
+                select(
+                    'person',
+                    {'person_id': param('person_id')}
+                ),
+                {'person_id': 'mosky'}
+            )
+            self.db._conn.rollback()
 
-        self.cursor.execute(q, {'person_id': 'mosky'})
-        self.connect.commit()
+    def test_native_escape(self):
 
-    def test_escape_native(self):
-        eval_string =  "\n\r\\\"\x1A\b\t"
-        self.cursor.execute("insert or replace into person(id, person_id, name) values(?, ?,?)", (1, 'mosqk', eval_string))
-        self.connect.commit()
+        strange_name =  '\0\n\r\\\'\"\x1A\b\t'
 
-        self.cursor.execute("select name from person where id = ?", (1, ))
-        v = self.cursor.fetchall()
+        with self.db as cur:
 
-        assert v[0][0] == eval_string
+            cur.execute(
+                'insert or replace into person (person_id, name) values (?, ?)',
+                ('mosql', strange_name)
+            )
+
+            cur.execute('select name from person where id = ?', (1, ))
+            name, = cur.fetchone()
+
+            self.db._conn.rollback()
+
+        # TODO: Here is some problem!
+        print '>>>>> %r %r' % (strange_name, name)
+
+        assert strange_name == name
 
     def test_escape(self):
-        eval_string =  "\n\r\\\"\x1A\b\t"
-        from mosql.query import insert
-        q = insert('person', {
-            "id": 1,
-            "person_id": "mosky",
-            "name": eval_string
-        })
 
-        # print q
-        self.cursor.execute(q)
-        self.connect.commit()
+        # TODO: This case is fail.
 
-        self.cursor.execute("select name from person where id = ?", (1,))
-        v = self.cursor.fetchall()
+        strange_name =  '\0\n\r\\\'\"\x1A\b\t'
 
-        assert v[0][0] == eval_string
+        with self.db as cur:
 
+            cur.execute(insert('person', {
+                'person_id': 'mosky',
+                'name'     : strange_name
+            }))
 
-if __name__ == '__main__':
-    # hack the path to run the test in test folder
-    # correct way should be add a run test script in the module root.
-    import sys
-    sys.path.insert(0, "..")
-    reload(mosql)
+            cur.execute('select name from person where id = ?', (1,))
+            name, = cur.fetchone()
 
-    unittest.main()
+            self.db._conn.rollback()
 
+        assert strange_name == name
