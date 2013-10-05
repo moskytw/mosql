@@ -49,7 +49,7 @@ __all__ = [
     'OperatorError', 'allowed_operators',
     'build_where', 'build_set', 'build_on',
     'or_',
-    'Clause', 'Statement', 'Query',
+    'Clause', 'Statement', 'Query', 'Function'
 ]
 
 from functools import wraps
@@ -823,6 +823,18 @@ class Query(object):
 
     def __repr__(self):
         return 'Query(%r, %r, %r)' % (self.statement, self.positional_keys, self.clause_args)
+
+class Function(object):
+    '''A general template to generate SQL function wrappers.'''
+    def __init__(self, name):
+        super(Function, self).__init__()
+        self.name = name
+
+    def __call__(self, *args):
+        return _query('%s(%s)' % (
+            self.name.upper(),
+            concat_by_comma([identifier(x) for x in args])
+        ))
 
 if __name__ == '__main__':
     import doctest
