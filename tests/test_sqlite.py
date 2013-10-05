@@ -64,11 +64,11 @@ class TestSQLite(unittest.TestCase):
         with self.db as cur:
 
             cur.execute(
-                'insert or replace into person (person_id, name) values (?, ?)',
-                ('mosql', strange_name)
+                'insert into person (person_id, name) values (?, ?)',
+                ('native', strange_name)
             )
 
-            cur.execute('select name from person where id = ?', (1, ))
+            cur.execute('select name from person where person_id = ?', ('native', ))
             name, = cur.fetchone()
 
             self.db._conn.rollback()
@@ -87,11 +87,11 @@ class TestSQLite(unittest.TestCase):
         with self.db as cur:
 
             cur.execute(insert('person', {
-                'person_id': 'mosky',
+                'person_id': 'mosql',
                 'name'     : strange_name
             }))
 
-            cur.execute('select name from person where id = ?', (1,))
+            cur.execute('select name from person where person_id = ?', ('mosql',))
             name, = cur.fetchone()
 
             self.db._conn.rollback()
