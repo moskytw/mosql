@@ -42,7 +42,7 @@ __all__ = [
     'escape', 'format_param', 'stringify_bool',
     'delimit_identifier', 'escape_identifier',
     'raw', 'param', 'default', '___', 'star',
-    'qualifier', 'paren', 'value',
+    'qualifier', 'paren', 'value', 'as_',
     'OptionError', 'allowed_options', 'identifier',
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
@@ -357,6 +357,10 @@ def identifier(s):
             r += ' '+op
 
         return _query(r)
+
+def as_(a, b):
+    '''Implement SQL "AS" syntax.'''
+    return _query('%s AS %s' % (identifier(a), identifier(b)))
 
 @qualifier
 def paren(s):
