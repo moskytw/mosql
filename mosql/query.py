@@ -3,6 +3,11 @@
 
 '''It provides common queies.'''
 
+__all__ = [
+    'insert', 'select', 'update', 'delete',
+    'join', 'left_join', 'right_join', 'cross_join'
+]
+
 from .util import Query
 from .statement import insert, select, update, delete, join
 
