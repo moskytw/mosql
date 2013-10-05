@@ -42,14 +42,14 @@ __all__ = [
     'escape', 'format_param', 'stringify_bool',
     'delimit_identifier', 'escape_identifier',
     'raw', 'param', 'default', '___', 'star',
-    'qualifier', 'paren', 'value',
+    'qualifier', 'paren', 'value', 'as_',
     'OptionError', 'allowed_options', 'identifier',
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
     'build_where', 'build_set', 'build_on',
     'or_',
-    'Clause', 'Statement', 'Query',
+    'Clause', 'Statement', 'Query', 'Function'
 ]
 
 import sys
@@ -356,6 +356,10 @@ def identifier(s):
             r += ' '+op
 
         return _query(r)
+
+def as_(a, b):
+    '''Implement SQL "AS" syntax.'''
+    return _query('%s AS %s' % (identifier(a), identifier(b)))
 
 @qualifier
 def paren(s):
@@ -818,6 +822,18 @@ class Query(object):
 
     def __repr__(self):
         return 'Query(%r, %r, %r)' % (self.statement, self.positional_keys, self.clause_args)
+
+class Function(object):
+    '''A general template to generate SQL function wrappers.'''
+    def __init__(self, name):
+        super(Function, self).__init__()
+        self.name = name
+
+    def __call__(self, *args):
+        return _query('%s(%s)' % (
+            self.name.upper(),
+            concat_by_comma([identifier(x) for x in args])
+        ))
 
 if __name__ == '__main__':
     import doctest
