@@ -193,13 +193,13 @@ def select(table, where=None, select=None, **clauses_args):
     Queries built by MoSQL can be used as subqueries inside another query:
 
     >>> subquery = select('person', select=('last_name',))
-    >>> print select('person', where={'first_name': paren(subquery)})
+    >>> print select('person', where={'first_name': subquery})
     SELECT * FROM "person" WHERE "first_name" = (SELECT "last_name" FROM "person")
 
     ...and also with the `as_` utility function
 
     >>> subquery = select('person', where={'first_name': 'Monty'})
-    >>> print select(as_(paren(subquery), 'monty'), where={'last_name': raw('"monty"."first_name"')})
+    >>> print select(as_(subquery, 'monty'), where={'last_name': raw('"monty"."first_name"')})
     SELECT * FROM (SELECT * FROM "person" WHERE "first_name" = 'Monty') AS "monty" WHERE "last_name" = "monty"."first_name"
 
     .. warning ::
