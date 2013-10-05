@@ -1,5 +1,7 @@
-tags
-MANIFEST
-/dist
-/docs/_build
+#
 *.pyc
+/docs/_build
+
+#
+/mosql.egg-info
+/dist
