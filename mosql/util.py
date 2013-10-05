@@ -52,6 +52,10 @@ __all__ = [
     'Clause', 'Statement', 'Query',
 ]
 
+import sys
+if sys.version_info >= (3,):
+    unicode = str
+
 from functools import wraps
 from datetime import datetime, date, time
 
