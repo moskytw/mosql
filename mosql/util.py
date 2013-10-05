@@ -55,6 +55,7 @@ __all__ = [
 import sys
 if sys.version_info >= (3,):
     unicode = str
+    basestring = str
 
 from functools import wraps
 from datetime import datetime, date, time
