@@ -1,6 +1,13 @@
-from distutils.core import setup
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
+import sys
+from distutils.core import setup
 from mosql import __version__
+
+extra = {}
+if sys.version_info >= (3,):
+    extra['use_2to3'] = True
 
 setup(
     name = 'mosql',
@@ -21,6 +28,7 @@ setup(
         'Programming Language :: Python',
         'Topic :: Database :: Front-Ends',
         'Topic :: Software Development :: Libraries :: Python Modules',
-    ]
+    ],
+    **extra
 )
 
