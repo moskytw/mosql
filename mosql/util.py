@@ -148,7 +148,18 @@ def escape_identifier(s):
 
 std_escape_identifier = escape_identifier
 
-class raw(str):
+class _query(str):
+    '''A qualifier that MoSQL uses internally to distinguish strings generated
+    by MoSQL itself, and those you provided through arguments. You can treat
+    this type safely as :class:`str`.
+
+    .. warning ::
+        You generally don't need to, maybe even want to avoid instanciate
+        instancese of this type.
+    '''
+    pass
+
+class raw(_query):
     '''The qualifier function do noting when the input is an instance of this
     class. This is a subclass of built-in `str` type.
 
@@ -204,7 +215,8 @@ def qualifier(f):
         elif _is_iterable_not_str(x):
             return [item if isinstance(item, raw) else f(item) for item in x]
         else:
-            return f(x)
+            r = f(x)
+            return r if isinstance(r, _query) else _query(r)
 
     return qualifier_wrapper
 
@@ -257,6 +269,8 @@ def value(x):
 
     if x is None:
         return 'NULL'
+    elif isinstance(x, _query):
+        return x
     else:
         handler =  _type_handler_map.get(type(x))
         if handler:
@@ -315,8 +329,10 @@ def identifier(s):
     "table_name"."column_name" DESC
     '''
 
-    if delimit_identifier is None:
+    if isinstance(s, _query):
         return s
+    elif delimit_identifier is None:
+        return _query(s)
     elif s.find('.') == -1 and s.find(' ') == -1:
         return delimit_identifier(escape_identifier(s))
     else:
@@ -340,7 +356,7 @@ def identifier(s):
                 raise OptionError(op)
             r += ' '+op
 
-        return r
+        return _query(r)
 
 @qualifier
 def paren(s):
@@ -435,7 +451,7 @@ def _build_condition(x, key_qualify=identifier, value_qualifier=value):
 
         op = ''
 
-        if not isinstance(k, raw):
+        if not isinstance(k, _query):
 
             # split the op out
             space_pos = k.find(' ')
@@ -734,7 +750,7 @@ class Statement(object):
             if arg is not None:
                 pieces.append(clause.format(arg))
 
-        return ' '.join(pieces)
+        return _query(' '.join(pieces))
 
     def __repr__(self):
         return 'Statement(%r)' % self.clauses
