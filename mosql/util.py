@@ -55,12 +55,6 @@ __all__ = [
 from functools import wraps
 from datetime import datetime, date, time
 
-import sys
-if sys.version_info[0] == 3:
-    str = str
-    unicode = str
-    basestring = (str, bytes)
-
 def escape(s):
     '''It escapes the value.
 
