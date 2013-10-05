@@ -17,7 +17,7 @@ If you want to build you own, there are all basic bricks you need -
 
 .. testsetup::
 
-    from mosql.query import select, insert, update, delete
+    from mosql.query import select, insert, update, delete, replace
     from mosql.query import join, left_join, right_join, cross_join
     from mosql.util import param, ___, raw
 
