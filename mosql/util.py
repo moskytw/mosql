@@ -123,14 +123,14 @@ def delimit_identifier(s):
 std_delimit_identifier = delimit_identifier
 
 def escape_identifier(s):
-    '''It escapes the identifier.
+    r'''It escapes the identifier.
 
     By default, it just replaces ``"`` (double-quote) with ``""`` (two double-quotes).
 
     It also aims at avoid SQL injection. Here are some examples:
 
-    >>> tmpl = 'select * from person where "%s" = \\'mosky\\';'
-    >>> evil_value = 'person_id" = \\'\\' or true; -- '
+    >>> tmpl = 'select * from person where "%s" = \'mosky\';'
+    >>> evil_value = 'person_id" = \'\' or true; -- '
 
     >>> print tmpl % evil_value
     select * from person where "person_id" = '' or true; -- " = 'mosky';
@@ -469,7 +469,7 @@ def _build_condition(x, key_qualify=identifier, value_qualifier=value):
 
 @joiner
 def build_where(x):
-    '''A joiner function which builds the where-list of SQL from a `dict` or
+    r'''A joiner function which builds the where-list of SQL from a `dict` or
     `pairs`.
 
     If input is a `dict` or `pairs`:
@@ -487,7 +487,7 @@ def build_where(x):
 
     It does noting if input is a string:
 
-    >>> print build_where('"detail_id" = 1 AND "age" >= 20 AND "created" = \\'2013-04-16\\'')
+    >>> print build_where('"detail_id" = 1 AND "age" >= 20 AND "created" = \'2013-04-16\'')
     "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
 
     The default operator will be changed by the value.
@@ -514,7 +514,7 @@ def build_where(x):
 
 @joiner
 def build_set(x):
-    '''A joiner function which builds the set-list of SQL from a `dict` or
+    r'''A joiner function which builds the set-list of SQL from a `dict` or
     pairs.
 
     If input is a `dict` or `pairs`:
@@ -532,7 +532,7 @@ def build_set(x):
 
     It does noting if input is a string:
 
-    >>> print build_set('"a"=1, "b"=TRUE, "c"=\\'2013-04-16\\'')
+    >>> print build_set('"a"=1, "b"=TRUE, "c"=\'2013-04-16\'')
     "a"=1, "b"=TRUE, "c"='2013-04-16'
     '''
 

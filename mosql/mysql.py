@@ -32,16 +32,16 @@ char_escape_map = {
 }
 
 def escape(s):
-    '''This function escapes the `s` into a executable SQL.
+    r'''This function escapes the `s` into a executable SQL.
 
-    >>> print escape('\\0\\n\\r\\\\\\'\\"\\x1A\\b\\t')
-    \\0\\n\\r\x5c\\\\'\\"\Z\\b\\t
+    >>> print escape('\0\n\r\\\'\"\x1A\b\t')
+    \0\n\r\\\'\"\Z\b\t
 
     >>> tmpl = "select * from person where person_id = '%s';"
     >>> evil_value = "' or true; --"
 
     >>> print tmpl % escape(evil_value)
-    select * from person where person_id = '\\' or true; --';
+    select * from person where person_id = '\' or true; --';
     '''
     global char_escape_map
     return ''.join(char_escape_map.get(c) or c for c in s)
