@@ -185,6 +185,12 @@ def select(table, where=None, select=None, **clauses_args):
     >>> print select('person', select=raw('count(*)'), group_by=('age', ))
     SELECT count(*) FROM "person" GROUP BY "age"
 
+    Queries built by MoSQL can be used as subqueries inside another query:
+
+    >>> subquery = select('person', select=('last_name',))
+    >>> print select('person', where={'first_name': paren(subquery)})
+    SELECT * FROM "person" WHERE "first_name" = (SELECT "last_name" FROM "person")
+
     .. warning ::
         You have responsibility to ensure the security if you use :class:`mosql.util.raw`.
 
