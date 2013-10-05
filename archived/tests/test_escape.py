@@ -12,6 +12,19 @@ conn = db.connect(database='mosky')
 #from mosql.mysql import fast_escape as escape
 #conn = db.connect(user='root', db='mosky')
 
+# or SQLite
+#import sqlite3 as db
+#from mosql.util import escape
+#conn = db.connect('sqlite.db')
+#
+#cur = conn.cursor()
+#cur.execute('''
+#    CREATE TABLE IF NOT EXISTS person (
+#        person_id TEXT PRIMARY KEY,
+#        name      TEXT
+#    );
+#''')
+
 # -- preparation --
 
 cur = conn.cursor()
