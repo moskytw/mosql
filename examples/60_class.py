@@ -65,7 +65,7 @@ if __name__ == '__main__':
     #p = Person.fetch('dave') # if you insist
     print p
 
-    # remove
+    # delete
     p.remove()
     p = Person.fetch('dave')
     print p
