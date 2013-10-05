@@ -12,7 +12,7 @@ class TestSQLite(unittest.TestCase):
 
     def setUp(self):
 
-        self.db = Database(sqlite3, ':memory')
+        self.db = Database(sqlite3, 'test_sqlite.db')
 
         with self.db as cur:
             cur.executescript('''
