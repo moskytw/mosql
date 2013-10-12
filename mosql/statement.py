@@ -5,7 +5,7 @@
 
 from .util import Statement
 from .clause import returning, where
-from .clause import insert, columns, values, on_duplicate_key_update
+from .clause import insert, columns, values, on_duplicate_key_update, replace
 from .clause import select, from_, joins, group_by, having, order_by, limit, offset
 from .clause import update, set_
 from .clause import delete
@@ -23,6 +23,7 @@ def insert_preprocessor(clause_args):
         clause_args['columns'], clause_args['values'] = zip(*pairs)
 
 insert = Statement([insert, columns, values, returning, on_duplicate_key_update], preprocessor=insert_preprocessor)
+replace = Statement([replace, columns, values], preprocessor=insert_preprocessor)
 select = Statement([select, from_, joins, where, group_by, having, order_by, limit, offset])
 update = Statement([update, set_, where, returning])
 delete = Statement([delete, where, returning])

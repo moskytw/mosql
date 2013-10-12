@@ -19,6 +19,9 @@ columns   = Clause('columns'    , column_list, hidden=True)
 values    = Clause('values'     , value_list)
 on_duplicate_key_update = Clause('on duplicate key update', set_list)
 
+# for replace statement (a special case of insert)
+replace   = Clause('replace into', single_identifier, alias='table')
+
 # for select statement
 select   = Clause('select'  , identifier_list, default=star)
 from_    = Clause('from'    , identifier_list, alias='table')
