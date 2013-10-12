@@ -17,7 +17,7 @@ If you want to build you own, there are all basic bricks you need -
 
 .. testsetup::
 
-    from mosql.query import select, insert, update, delete
+    from mosql.query import select, insert, update, delete, replace
     from mosql.query import join, left_join, right_join, cross_join
     from mosql.util import param, ___, raw
 
@@ -128,6 +128,26 @@ If you want to build you own, there are all basic bricks you need -
 
     >>> print insert('person', values=('mosky', 'Mosky Liu'), on_duplicate_key_update={'name': 'Mosky Liu'})
     INSERT INTO "person" VALUES ('mosky', 'Mosky Liu') ON DUPLICATE KEY UPDATE "name"='Mosky Liu'
+
+.. py:function:: replace(table=None, set=None, **clause_args)
+
+    It generates the SQL statement, ``REPLACE INTO...`` .
+
+    The following usages generate the same SQL statement:
+
+    >>> print replace('person', {'person_id': 'mosky', 'name': 'Mosky Liu'})
+    REPLACE INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
+
+    >>> print replace('person', (('person_id', 'mosky'), ('name', 'Mosky Liu')))
+    REPLACE INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
+
+    >>> print replace('person', columns=('person_id', 'name'), values=('mosky', 'Mosky Liu'))
+    REPLACE INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
+
+    The columns is ignorable:
+
+    >>> print replace('person', values=('mosky', 'Mosky Liu'))
+    REPLACE INTO "person" VALUES ('mosky', 'Mosky Liu')
 
 .. py:function:: update(table=None, where=None, set=None, **clause_args)
 

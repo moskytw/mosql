@@ -5,7 +5,7 @@ import unittest
 import sqlite3
 import mosql.sqlite
 from mosql.util import param
-from mosql.query import insert, select, update, delete
+from mosql.query import insert, select, update, delete, replace
 from mosql.db import Database
 
 class TestSQLite(unittest.TestCase):
@@ -25,6 +25,14 @@ class TestSQLite(unittest.TestCase):
     def test_insert(self):
         with self.db as cur:
             cur.execute(insert('person', {
+                'person_id': 'mosky',
+                'name'     : 'Mosky Liu'
+            }))
+            self.db._conn.rollback()
+
+    def test_replace(self):
+        with self.db as cur:
+            cur.execute(replace('person', {
                 'person_id': 'mosky',
                 'name'     : 'Mosky Liu'
             }))
