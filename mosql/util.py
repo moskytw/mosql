@@ -158,7 +158,7 @@ class _query(str):
     '''
     pass
 
-class raw(_query):
+class raw(str):
     '''The qualifier function do noting when the input is an instance of this
     class. This is a subclass of built-in `str` type.
 
@@ -214,8 +214,7 @@ def qualifier(f):
         elif _is_iterable_not_str(x):
             return [item if isinstance(item, raw) else f(item) for item in x]
         else:
-            r = f(x)
-            return r if isinstance(r, _query) else _query(r)
+            return f(x)
 
     return qualifier_wrapper
 
@@ -268,8 +267,6 @@ def value(x):
 
     if x is None:
         return 'NULL'
-    elif isinstance(x, raw):
-        return x
     elif isinstance(x, _query):
         return paren(x)
     else:
@@ -330,12 +327,10 @@ def identifier(s):
     "table_name"."column_name" DESC
     '''
 
-    if isinstance(s, raw):
-        return s
-    elif isinstance(s, _query):
+    if isinstance(s, _query):
         return paren(s)
     elif delimit_identifier is None:
-        return _query(s)
+        return s
     elif s.find('.') == -1 and s.find(' ') == -1:
         return delimit_identifier(escape_identifier(s))
     else:
@@ -359,7 +354,7 @@ def identifier(s):
                 raise OptionError(op)
             r += ' '+op
 
-        return raw(r)
+        return r
 
 def as_(a, b):
     '''Implement SQL "AS" syntax.'''
@@ -368,7 +363,7 @@ def as_(a, b):
 @qualifier
 def paren(s):
     '''A qualifier function which encloses the input with ``()`` (paren).'''
-    return raw('(%s)' % s)
+    return '(%s)' % s
 
 def joiner(f):
     '''A decorator which makes the input apply this function only if the input
@@ -458,7 +453,8 @@ def _build_condition(x, key_qualify=identifier, value_qualifier=value):
 
         op = ''
 
-        if not isinstance(k, _query):
+        # TODO: support subquery and operator
+        if not isinstance(k, raw):
 
             # split the op out
             space_pos = k.find(' ')
