@@ -268,8 +268,10 @@ def value(x):
 
     if x is None:
         return 'NULL'
-    elif isinstance(x, _query):
+    elif isinstance(x, raw):
         return x
+    elif isinstance(x, _query):
+        return paren(x)
     else:
         handler =  _type_handler_map.get(type(x))
         if handler:
@@ -328,8 +330,10 @@ def identifier(s):
     "table_name"."column_name" DESC
     '''
 
-    if isinstance(s, _query):
+    if isinstance(s, raw):
         return s
+    elif isinstance(s, _query):
+        return paren(s)
     elif delimit_identifier is None:
         return _query(s)
     elif s.find('.') == -1 and s.find(' ') == -1:
@@ -355,16 +359,16 @@ def identifier(s):
                 raise OptionError(op)
             r += ' '+op
 
-        return _query(r)
+        return raw(r)
 
 def as_(a, b):
     '''Implement SQL "AS" syntax.'''
-    return _query('%s AS %s' % (identifier(a), identifier(b)))
+    return raw('%s AS %s' % (identifier(a), identifier(b)))
 
 @qualifier
 def paren(s):
     '''A qualifier function which encloses the input with ``()`` (paren).'''
-    return '(%s)' % s
+    return raw('(%s)' % s)
 
 def joiner(f):
     '''A decorator which makes the input apply this function only if the input
