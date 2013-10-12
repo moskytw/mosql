@@ -147,17 +147,6 @@ def escape_identifier(s):
 
 std_escape_identifier = escape_identifier
 
-class _query(str):
-    '''A qualifier that MoSQL uses internally to distinguish strings generated
-    by MoSQL itself, and those you provided through arguments. You can treat
-    this type safely as :class:`str`.
-
-    .. warning ::
-        You generally don't need to, maybe even want to avoid instanciate
-        instancese of this type.
-    '''
-    pass
-
 class raw(str):
     '''The qualifier function do noting when the input is an instance of this
     class. This is a subclass of built-in `str` type.
@@ -236,6 +225,9 @@ _type_handler_map = {
     param   : lambda x: format_param(x),
 }
 
+def _is_select(x):
+    return isinstance(x, basestring) and x.startswith('SELECT ')
+
 @qualifier
 def value(x):
     '''A qualifier function for values.
@@ -267,7 +259,7 @@ def value(x):
 
     if x is None:
         return 'NULL'
-    elif isinstance(x, _query):
+    elif _is_select(x):
         return paren(x)
     else:
         handler =  _type_handler_map.get(type(x))
@@ -327,7 +319,7 @@ def identifier(s):
     "table_name"."column_name" DESC
     '''
 
-    if isinstance(s, _query):
+    if _is_select(s):
         return paren(s)
     elif delimit_identifier is None:
         return s
@@ -753,7 +745,7 @@ class Statement(object):
             if arg is not None:
                 pieces.append(clause.format(arg))
 
-        return _query(' '.join(pieces))
+        return ' '.join(pieces)
 
     def __repr__(self):
         return 'Statement(%r)' % self.clauses
@@ -830,7 +822,7 @@ class Function(object):
         self.name = name
 
     def __call__(self, *args):
-        return _query('%s(%s)' % (
+        return raw('%s(%s)' % (
             self.name.upper(),
             concat_by_comma([identifier(x) for x in args])
         ))
