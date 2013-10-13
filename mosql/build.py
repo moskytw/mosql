@@ -133,11 +133,6 @@ def select(table, where=None, select=None, **clauses_args):
     >>> print select('person', select=('person.person_id', 'person.name'))
     SELECT "person"."person_id", "person"."name" FROM "person"
 
-    And you can use the "AS" syntax to rename the fields if you like:
-
-    >>> print select('person', select=(as_('person.person_id', 'pid'), 'person.name'))
-    SELECT "person"."person_id" AS "pid", "person"."name" FROM "person"
-
     Building prepare statement with :class:`mosql.util.param`:
 
     >>> print select('table', {'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
@@ -189,18 +184,6 @@ def select(table, where=None, select=None, **clauses_args):
 
     >>> print select('person', select=raw('count(*)'), group_by=('age', ))
     SELECT count(*) FROM "person" GROUP BY "age"
-
-    Queries built by MoSQL can be used as subqueries inside another query:
-
-    >>> subquery = select('person', select=('last_name',))
-    >>> print select('person', where={'first_name': subquery})
-    SELECT * FROM "person" WHERE "first_name" = (SELECT "last_name" FROM "person")
-
-    ...and also with the `as_` utility function
-
-    >>> subquery = select('person', where={'first_name': 'Monty'})
-    >>> print select(as_(subquery, 'monty'), where={'last_name': raw('"monty"."first_name"')})
-    SELECT * FROM (SELECT * FROM "person" WHERE "first_name" = 'Monty') AS "monty" WHERE "last_name" = "monty"."first_name"
 
     .. warning ::
         You have responsibility to ensure the security if you use :class:`mosql.util.raw`.
