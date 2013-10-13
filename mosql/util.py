@@ -434,7 +434,7 @@ def _to_pairs(x):
 
     return x
 
-def _build_condition(x, key_qualify=identifier, value_qualifier=value):
+def _build_condition(x, key_qualifier=identifier, value_qualifier=value):
 
     ps = _to_pairs(x)
 
@@ -476,7 +476,7 @@ def _build_condition(x, key_qualify=identifier, value_qualifier=value):
             v = paren(concat_by_comma(v))
 
         # qualify the k
-        k = key_qualify(k)
+        k = key_qualifier(k)
 
         if op:
             pieces.append('%s %s %s' % (k, op, v))
