@@ -122,7 +122,7 @@ def extact_col_names(cur):
 
     :rtype: list
     '''
-    return [desc.name for desc in cur.description]
+    return [desc[0] for desc in cur.description]
 
 def one_to_dict(cur=None, row=None, col_names=None):
     '''Fetch one row from a cursor and make it as a dict.
