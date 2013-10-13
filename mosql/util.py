@@ -42,7 +42,7 @@ __all__ = [
     'escape', 'format_param', 'stringify_bool',
     'delimit_identifier', 'escape_identifier',
     'raw', 'param', 'default', '___', 'star',
-    'qualifier', 'paren', 'value', 'as_',
+    'qualifier', 'paren', 'value',
     'OptionError', 'allowed_options', 'identifier',
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
