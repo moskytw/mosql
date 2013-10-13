@@ -446,7 +446,7 @@ def _build_condition(x, key_qualify=identifier, value_qualifier=value):
 
         op = ''
 
-        # TODO: support subquery and operator
+        # TODO: let user use subquery with operator in first (key) part
         if not isinstance(k, raw):
 
             # split the op out
