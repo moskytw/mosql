@@ -9,7 +9,7 @@ __all__ = [
 ]
 
 from .util import Query
-from .statement import insert, replace, select, update, delete, join
+from .stmt import insert, replace, select, update, delete, join
 
 insert = Query(insert, ('table', 'set'))
 replace = Query(replace, ('table', 'set'))
