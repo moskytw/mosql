@@ -1,6 +1,11 @@
 The Change Log
 ==============
 
+v0.7.1
+------
+
+1. Improved the compatibility with MySQLdb.
+
 v0.7
 ----
 
