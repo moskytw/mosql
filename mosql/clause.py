@@ -19,9 +19,6 @@ columns   = Clause('columns'    , column_list, hidden=True)
 values    = Clause('values'     , value_list)
 on_duplicate_key_update = Clause('on duplicate key update', set_list)
 
-# for replace statement (a special case of insert)
-replace   = Clause('replace into', single_identifier, alias='table')
-
 # for select statement
 select   = Clause('select'  , identifier_list, default=star)
 from_    = Clause('from'    , identifier_list, alias='table')
@@ -44,3 +41,6 @@ join  = Clause('join' , single_identifier, alias='table')
 type_ = Clause('type' , tuple(), hidden=True)
 on    = Clause('on'   , on_list)
 using = Clause('using', column_list)
+
+# for replace statement
+replace = Clause('replace into', single_identifier, alias='table')

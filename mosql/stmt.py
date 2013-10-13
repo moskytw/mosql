@@ -23,7 +23,6 @@ def insert_preprocessor(clause_args):
         clause_args['columns'], clause_args['values'] = zip(*pairs)
 
 insert = Statement([insert, columns, values, returning, on_duplicate_key_update], preprocessor=insert_preprocessor)
-replace = Statement([replace, columns, values], preprocessor=insert_preprocessor)
 select = Statement([select, from_, joins, where, group_by, having, order_by, limit, offset])
 update = Statement([update, set_, where, returning])
 delete = Statement([delete, where, returning])
@@ -39,3 +38,5 @@ def join_preprocessor(clause_args):
         clause_args['type'] = clause_args['type'].upper()
 
 join = Statement([type_, join, on, using], preprocessor=join_preprocessor)
+
+replace = Statement([replace, columns, values], preprocessor=insert_preprocessor)
