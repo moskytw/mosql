@@ -272,6 +272,9 @@ def value(x):
             else:
                 return str(x)
 
+def _is_pair(x):
+    return _is_iterable_not_str(x) and len(x) == 2
+
 class OptionError(Exception):
     '''The instance of it will be raised when :func:`identifier` detects an
     invalid option.
@@ -321,6 +324,8 @@ def identifier(s):
 
     if _is_select(s):
         return paren(s)
+    elif _is_pair(s):
+        return '%s AS %s' % (identifier(s[0]), identifier(s[1]))
     elif delimit_identifier is None:
         return s
     elif s.find('.') == -1 and s.find(' ') == -1:
@@ -347,10 +352,6 @@ def identifier(s):
             r += ' '+op
 
         return r
-
-def as_(a, b):
-    '''Implement SQL "AS" syntax.'''
-    return raw('%s AS %s' % (identifier(a), identifier(b)))
 
 @qualifier
 def paren(s):
