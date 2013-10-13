@@ -135,12 +135,12 @@ def escape_identifier(s):
     It also aims at avoid SQL injection. Here are some examples:
 
     >>> tmpl = 'select * from person where "%s" = \'mosky\';'
-    >>> evil_value = 'person_id" = \'\' or true; -- '
+    >>> evil_identifier = 'person_id" = \'\' or true; -- '
 
-    >>> print tmpl % evil_value
+    >>> print tmpl % evil_identifier
     select * from person where "person_id" = '' or true; -- " = 'mosky';
 
-    >>> print tmpl % escape_identifier(evil_value)
+    >>> print tmpl % escape_identifier(evil_identifier)
     select * from person where "person_id"" = '' or true; -- " = 'mosky';
     '''
     return s.replace('"', '""')
