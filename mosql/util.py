@@ -272,9 +272,6 @@ def value(x):
             else:
                 return str(x)
 
-def _is_pair(x):
-    return _is_iterable_not_str(x) and len(x) == 2
-
 class OptionError(Exception):
     '''The instance of it will be raised when :func:`identifier` detects an
     invalid option.
@@ -298,6 +295,9 @@ An :exc:`OptionError` is raised if an option not allowed is found.
     option. But you have responsibility to ensure the security if you disable
     it.
 '''
+
+def _is_pair(x):
+    return _is_iterable_not_str(x) and len(x) == 2
 
 @qualifier
 def identifier(s):
