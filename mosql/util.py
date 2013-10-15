@@ -676,6 +676,9 @@ class Clause(object):
         for formatter in self.formatters:
             x = formatter(x)
 
+        if _is_iterable_not_str(x):
+            x = ''.join(x)
+
         if self.hidden:
             return '%s' % x
         else:
