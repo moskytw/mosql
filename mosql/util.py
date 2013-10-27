@@ -576,6 +576,9 @@ def build_on(x):
 def or_(conditions):
     '''It concats the conditions by ``OR``.
 
+    .. versionchanged:: 0.7.2
+        It helps you to add parens now.
+
     .. versionadded :: 0.6
 
     >>> print or_(({'person_id': 'andy'}, {'person_id': 'bob'}))
