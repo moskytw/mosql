@@ -11,6 +11,7 @@ The classes or functions you may use frequently:
     star
     param
     or_
+    and_
 
 It is designed for standard SQL and tested in PostgreSQL. If your database uses
 non-standard SQL, such as MySQL, you may need to customize and override the
@@ -48,7 +49,7 @@ __all__ = [
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
     'build_where', 'build_set', 'build_on',
-    'or_',
+    'or_', 'and_',
     'Clause', 'Statement', 'Query',
 ]
 
@@ -582,6 +583,17 @@ def or_(conditions):
     '''
 
     return concat_by_or(paren(build_where(c)) for c in conditions)
+
+def and_(conditions):
+    '''It concats the conditions by ``AND``.
+
+    .. versionadded :: 0.7.3
+
+    >>> print and_(({'person_id': 'andy'}, {'name': 'Andy'}))
+    ("person_id" = 'andy') AND ("name" = 'Andy')
+    '''
+
+    return concat_by_and(paren(build_where(c)) for c in conditions)
 
 # NOTE: To keep simple, the below classes shouldn't rely on the above functions
 
