@@ -590,10 +590,10 @@ def or_(conditions):
     .. versionadded :: 0.6
 
     >>> print or_(({'person_id': 'andy'}, {'person_id': 'bob'}))
-    "person_id" = 'andy' OR "person_id" = 'bob'
+    ("person_id" = 'andy') OR ("person_id" = 'bob')
     '''
 
-    return concat_by_or(build_where(c) for c in conditions)
+    return concat_by_or(paren(build_where(c)) for c in conditions)
 
 # NOTE: To keep simple, the below classes shouldn't rely on the above functions
 
