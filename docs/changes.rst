@@ -1,6 +1,11 @@
 The Change Log
 ==============
 
+v0.7.3
+------
+
+2. Added :func:`mosql.util.and_`.
+
 v0.7.2
 ------
 
