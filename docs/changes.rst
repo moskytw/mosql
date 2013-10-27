@@ -1,6 +1,11 @@
 The Change Log
 ==============
 
+v0.7.2
+------
+
+1. :func:`mosql.util.or_` should add paren.
+
 v0.7.1
 ------
 
