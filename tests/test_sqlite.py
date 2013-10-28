@@ -6,7 +6,7 @@ import sqlite3
 import mosql.sqlite
 from mosql.util import param
 from mosql.query import insert, select, update, delete, replace
-from mosql.db import Database
+from mosql.db import Database,all_to_dicts
 
 class TestSQLite(unittest.TestCase):
 
@@ -102,3 +102,14 @@ class TestSQLite(unittest.TestCase):
             self.db._conn.rollback()
 
         assert strange_name == name
+
+    def test_fetch_all_data(self):
+        with self.db as cur:
+            cur.execute(insert('person', {
+                'person_id': 'mosky',
+                'name'     : 'Mosky Liu'
+            }))
+
+            cur.execute(select('person'))
+            results = all_to_dicts(cur)
+            self.db._conn.rollback()
