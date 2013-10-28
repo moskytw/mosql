@@ -202,7 +202,7 @@ def group(by_col_names, cur=None, rows=None, col_names=None, to_dict=False):
         assert cur is not None, 'You must specify cur or rows.'
         rows = cur
 
-    name_index_map = {name: idx for idx, name in enumerate(col_names)}
+    name_index_map = dict((name,idx) for idx,name in enumerate(col_names))
     key_indexes = tuple(name_index_map.get(name) for name in by_col_names)
     key_func = lambda row: tuple(row[i] for i in key_indexes)
 
