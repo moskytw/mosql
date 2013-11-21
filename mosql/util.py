@@ -149,7 +149,7 @@ def escape_identifier(s):
 std_escape_identifier = escape_identifier
 
 class raw(str):
-    '''The qualifier function do noting when the input is an instance of this
+    '''The qualifier function do nothing when the input is an instance of this
     class. This is a subclass of built-in `str` type.
 
     .. warning ::
