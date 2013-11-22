@@ -1,16 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It applies the MySQL-specific stuff to :mod:`mosql.util`.
-
-The usage:
-
-::
-
-    import mosql.mysql
-
-It will replace the functions in :mod:`mosql.util` with its functions.
+'''It provides tools to apply MySQL-specific stuffs to :mod:`mosql.util`.
 '''
+
+import contextlib
+import mosql.util
 
 char_escape_map = {
     # The following 7 chars is escaped in MySQL Connector/C (0.6.2)
@@ -68,12 +63,46 @@ def escape_identifier(s):
     '''It escapes the ````` (back-quote) in the identifier, `s`.'''
     return s.replace('`', '``')
 
-import mosql.util
+def load():
+    '''This function replaces functions in :mod:`mosql.util` perminantely.
 
-mosql.util.escape = fast_escape
-mosql.util.format_param = format_param
-mosql.util.delimit_identifier = delimit_identifier
-mosql.util.escape_identifier = escape_identifier
+    If your program works solely with MySQL, you can use this function to avoid
+    the need of wrapping all your statements in :code:`with apply():` blocks.
+
+    Usage::
+
+        import mosql.mysql
+        mosql.mysql.load()
+
+    :returns: A `dict` containing the attribute replaced in :mod:`mosql.util`.
+    '''
+    patches = {
+        'escape': fast_escape,
+        'format_param': format_param,
+        'delimit_identifier': delimit_identifier,
+        'escape_identifier': escape_identifier
+    }
+    backups = {}
+    for k in patches:
+        backups[k] = getattr(mosql.util, k)
+        setattr(mosql.util, k, patches[k])
+    return backups
+
+@contextlib.contextmanager
+def apply():
+    '''This context manager replaces functions in :mod:`mosql.util` temporarily.
+
+    >>> with apply():
+    ...     print select('person', {'person_id': 'mosky'})
+    ...
+    SELECT * FROM `person` WHERE `person_id` = 'mosky'
+    >>> print select('person', {'person_id': 'mosky'})
+    SELECT * FROM "person" WHERE "person_id" = 'mosky'
+    '''
+    backups = load()
+    yield
+    for k in backups:
+        setattr(mosql.util, k, backups[k])
 
 if __name__ == '__main__':
     import doctest

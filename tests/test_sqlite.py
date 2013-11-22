@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import unittest
 import sqlite3
 import mosql.sqlite
 from mosql.util import param
 from mosql.query import insert, select, update, delete, replace
-from mosql.db import Database,all_to_dicts
+from mosql.db import Database, all_to_dicts
 
 class TestSQLite(unittest.TestCase):
 
     def setUp(self):
 
+        self.backups = mosql.sqlite.load()
         self.db = Database(sqlite3, 'test_sqlite.db')
 
         with self.db as cur:
@@ -21,6 +23,15 @@ class TestSQLite(unittest.TestCase):
                     name      TEXT
                 );
             ''')
+
+    def tearDown(self):
+        import mosql.util
+        for k in self.backups:
+            setattr(mosql.util, k, self.backups[k])
+        try:
+            os.remove('test_sqlite.db')
+        except OSError:
+            pass
 
     def test_insert(self):
         with self.db as cur:
@@ -113,3 +124,6 @@ class TestSQLite(unittest.TestCase):
             cur.execute(select('person'))
             results = all_to_dicts(cur)
             self.db._conn.rollback()
+
+if __name__ == '__main__':
+    unittest.main()
