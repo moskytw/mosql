@@ -20,7 +20,10 @@ def insert_preprocessor(clause_args):
         else:
             pairs = clause_args['set']
 
-        clause_args['columns'], clause_args['values'] = zip(*pairs)
+        if pairs:
+            clause_args['columns'], clause_args['values'] = zip(*pairs)
+        else:
+            clause_args['columns'] = clause_args['values'] = tuple()
 
 insert = Statement([insert, columns, values, returning, on_duplicate_key_update], preprocessor=insert_preprocessor)
 select = Statement([select, from_, joins, where, group_by, having, order_by, limit, offset])
