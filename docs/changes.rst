@@ -4,12 +4,28 @@ The Change Log
 v0.8
 ----
 
-1. Fixed the complain of inserting with empty dict. Thanks `Tzu-ping Chung
-   <https://github.com/moskytw/mosql/pull/27>`_
-1. Provide better support for SQLite. Thanks `lucemia
-   <https://github.com/moskytw/mosql/pull/13>`_.
-2. Support ``replace`` statement. Thanks `lucemia
-   <https://github.com/moskytw/mosql/pull/19>`_, too.
+1. ``columns`` now is the alias of ``select``.
+2. Fixed the complain of inserting with empty dict.
+3. Added :mod:`mosql.sqlite` for better SQLite support.
+4. Added :func:`mosql.query.replace`.
+5. Renamed :mod:`mosql.statement` to :mod:`mosql.stmt`.
+6. Added :mod:`mosql.func` for basic SQL functions supprt.
+7. Support using pair (2-tuple) to build ``AS`` statement.
+8. Support subquery perfectly.
+
+Thanks `Tzu-ping Chung (uranusjr) <https://github.com/uranusjr>`_ contributed
+the PRs (`#27 <https://github.com/moskytw/mosql/pull/27>`_,  `#15
+<https://github.com/moskytw/mosql/pull/15>`_, `#14
+<https://github.com/moskytw/mosql/pull/14>`_, and `#12
+<https://github.com/moskytw/mosql/pull/12>`_) which bring the changes 2, 6, 7
+and 8.
+
+Thanks `lucemia <https://github.com/lucemia>`_ contributed the PRs (`#19
+<https://github.com/moskytw/mosql/pull/19>`_, `#13
+<https://github.com/moskytw/mosql/pull/13>`_) which bring the changes 3 and 4.
+
+Special thanks `PyCon TW <http://pycon.tw>`_ and your `sprint event
+<https://kktix.com/events/9691cb>`_ in 2013 Oct!
 
 v0.7.4
 ------
