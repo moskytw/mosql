@@ -208,24 +208,6 @@ def qualifier(f):
 
     return qualifier_wrapper
 
-def _quote_str(x):
-    return "'%s'" % escape(x)
-
-def _quote_datetime(x):
-    return "'%s'" % x
-
-_type_handler_map = {
-    str     : _quote_str,
-    unicode : _quote_str,
-    bool    : stringify_bool,
-    datetime: _quote_datetime,
-    date    : _quote_datetime,
-    time    : _quote_datetime,
-    raw     : lambda x: x,
-    # it should be a lazy evaluation to be patchable
-    param   : lambda x: format_param(x),
-}
-
 def _is_select(x):
     return isinstance(x, basestring) and x.startswith('SELECT ')
 
@@ -258,20 +240,25 @@ def value(x):
     %(myparam)s
     '''
 
+    # NOTE: 1. raw, 2. param is subclass of str and the 3. _is_select is a kind
+    # of str, so the three types must be first than str.
+
     if x is None:
         return 'NULL'
+    elif isinstance(x, raw):
+        return x
+    elif isinstance(x, param):
+        return format_param(x)
     elif _is_select(x):
         return paren(x)
+    elif isinstance(x, basestring):
+        return "'%s'" % escape(x)
+    elif isinstance(x, (datetime, date, time)):
+        return "'%s'" % x
+    elif isinstance(x, bool):
+        return stringify_bool(x)
     else:
-        handler =  _type_handler_map.get(type(x))
-        if handler:
-            return handler(x)
-        else:
-            for t in _type_handler_map:
-                if isinstance(x, t):
-                    return _type_handler_map[t](x)
-            else:
-                return str(x)
+        return x
 
 class OptionError(Exception):
     '''The instance of it will be raised when :func:`identifier` detects an
