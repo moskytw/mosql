@@ -35,7 +35,7 @@ If you want to build you own, there are all basic bricks you need -
 
     It also can handle the dot in an identifier:
 
-    >>> print select('person', select=('person.person_id', 'person.name'))
+    >>> print select('person', columns=('person.person_id', 'person.name'))
     SELECT "person"."person_id", "person"."name" FROM "person"
 
     >>> print select('table', {'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
@@ -90,7 +90,7 @@ If you want to build you own, there are all basic bricks you need -
 
     If you want to use functions, wrap it with :class:`mosql.util.raw`:
 
-    >>> print select('person', select=raw('count(*)'), group_by=('age', ))
+    >>> print select('person', columns=raw('count(*)'), group_by=('age', ))
     SELECT count(*) FROM "person" GROUP BY "age"
 
     .. warning ::

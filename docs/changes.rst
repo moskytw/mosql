@@ -1,6 +1,16 @@
 The Change Log
 ==============
 
+v0.8
+----
+
+1. Fixed the complain of inserting with empty dict. Thanks `Tzu-ping Chung
+   <https://github.com/moskytw/mosql/pull/27>`_
+1. Provide better support for SQLite. Thanks `lucemia
+   <https://github.com/moskytw/mosql/pull/13>`_.
+2. Support ``replace`` statement. Thanks `lucemia
+   <https://github.com/moskytw/mosql/pull/19>`_, too.
+
 v0.7.4
 ------
 

@@ -20,7 +20,7 @@ values    = Clause('values'     , value_list)
 on_duplicate_key_update = Clause('on duplicate key update', set_list)
 
 # for select statement
-select   = Clause('select'  , identifier_list, default=star)
+select   = Clause('select'  , identifier_list, default=star, alias='columns')
 from_    = Clause('from'    , identifier_list, alias='table')
 joins    = Clause('joins'   , statement_list, hidden=True)
 group_by = Clause('group by', identifier_list)
