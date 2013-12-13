@@ -1,10 +1,16 @@
 The Change Log
 ==============
 
+v0.7.4
+------
+
+1. Fixed the compatibility of :mod:`mosql.db` with Python 2.6. Thanks `Aminzai
+   <http://github.com/moskytw/mosql/pull/23>`_.
+
 v0.7.3
 ------
 
-2. Added :func:`mosql.util.and_`.
+1. Added :func:`mosql.util.and_`.
 
 v0.7.2
 ------
