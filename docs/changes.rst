@@ -24,8 +24,8 @@ Thanks `lucemia <https://github.com/lucemia>`_ contributed the PRs (`#19
 <https://github.com/moskytw/mosql/pull/19>`_, `#13
 <https://github.com/moskytw/mosql/pull/13>`_) which bring the changes 3 and 4.
 
-Special thanks `PyCon TW <http://pycon.tw>`_ and your `sprint event
-<https://kktix.com/events/9691cb>`_ in 2013 Oct!
+And, thanks `PyCon TW <http://pycon.tw>`_ and your `sprint event
+<https://kktix.com/events/9691cb>`_ in 2013 Oct! :)
 
 v0.7.4
 ------
