@@ -240,8 +240,8 @@ def value(x):
     %(myparam)s
     '''
 
-    # NOTE: 1. raw, 2. param is subclass of str and the 3. _is_select is a kind
-    # of str, so the three types must be first than str.
+    # NOTE: 1. raw, 2. param is subclass of str and the 3. _is_select tests a
+    # kind of str, so the three types must be first than str.
 
     if x is None:
         return 'NULL'
