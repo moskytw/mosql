@@ -1,6 +1,12 @@
 The Change Log
 ==============
 
+v0.8.1
+------
+
+1. Fixed the regression that causes converting int fails. `#33
+   <https://github.com/moskytw/mosql/issues/33>`_
+
 v0.8
 ----
 
