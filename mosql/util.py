@@ -258,7 +258,7 @@ def value(x):
     elif isinstance(x, bool):
         return stringify_bool(x)
     else:
-        return x
+        return str(x)
 
 class OptionError(Exception):
     '''The instance of it will be raised when :func:`identifier` detects an
