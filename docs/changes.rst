@@ -1,6 +1,16 @@
 The Change Log
 ==============
 
+v0.9
+----
+
+1. Added MySQL-specific ``UPDATE FOR`` and ``LOCK IN SHARE MODE`` for
+   :func:`~mosql.query.select`.
+2. Added PostgreSQL-specific ``FOR``, ``OF`` and ``NOWAIT`` for
+   :func:`~mosql.query.select`.
+3. Fixed select can't use ``from_`` as argument.
+4. Added and changed the arguments of :class:`~mosql.util.Clause`.
+
 v0.8.1
 ------
 
