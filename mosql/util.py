@@ -612,6 +612,8 @@ class Clause(object):
     :type alias: str
     :param default: it will be used if you pass ``None`` to :meth:`format`
     :type default: str
+    :param no_argument: set ``True`` if this clause doesn't have any argument
+    :type no_argument: bool
 
     The :func:`qualifier` functions:
 
@@ -645,15 +647,19 @@ class Clause(object):
     >>> print values.format((raw('r'), 'b', 'c'))
     VALUES (r, 'b', 'c')
 
+    .. versionchanged :: 0.9
+        Added `no_argument` and made `formatters` has default.
+
     .. versionchanged :: 0.6
         Added two arguments, `alias` and `default`.
     '''
 
-    def __init__(self, name, formatters, hidden=False, alias=None, default=None):
+    def __init__(self, name, formatters=tuple(), hidden=False, alias=None, default=None, no_argument=False):
 
         self.prefix = name.upper()
         self.formatters = formatters
         self.hidden = hidden
+        self.no_argument = no_argument
 
         # the default and possibles both are used by Statement
         self.default = default
@@ -674,6 +680,9 @@ class Clause(object):
 
         :rtype: str
         '''
+
+        if self.no_argument and x:
+            return self.prefix
 
         for formatter in self.formatters:
             x = formatter(x)
