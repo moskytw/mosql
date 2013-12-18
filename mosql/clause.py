@@ -38,7 +38,7 @@ delete = Clause('delete from', single_identifier, alias='table')
 
 # for join statement
 join  = Clause('join' , single_identifier, alias='table')
-type_ = Clause('type' , tuple(), hidden=True)
+type_ = Clause('type' , hidden=True)
 on    = Clause('on'   , on_list)
 using = Clause('using', column_list)
 
