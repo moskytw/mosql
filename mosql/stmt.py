@@ -7,6 +7,7 @@ from .util import Statement
 from .clause import returning, where
 from .clause import insert, columns, values, on_duplicate_key_update, replace
 from .clause import select, from_, joins, group_by, having, order_by, limit, offset
+from .clause import for_, of, nowait
 from .clause import for_update, lock_in_share_mode
 from .clause import update, set_
 from .clause import delete
@@ -27,7 +28,22 @@ def insert_preprocessor(clause_args):
             clause_args['columns'] = clause_args['values'] = tuple()
 
 insert = Statement([insert, columns, values, returning, on_duplicate_key_update], preprocessor=insert_preprocessor)
-select = Statement([select, from_, joins, where, group_by, having, order_by, limit, offset, for_update, lock_in_share_mode])
+
+def select_preprocessor(clause_args):
+
+    if 'for_' in clause_args:
+        clause_args['for'] = clause_args['for_']
+        del clause_args['for_']
+
+    if 'for' in clause_args:
+        clause_args['for'] = clause_args['for'].upper()
+
+select = Statement([
+    select, from_, joins, where, group_by, having, order_by, limit, offset,
+    for_, of, nowait,
+    for_update, lock_in_share_mode
+], preprocessor=select_preprocessor)
+
 update = Statement([update, set_, where, returning])
 delete = Statement([delete, where, returning])
 

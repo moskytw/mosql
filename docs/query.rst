@@ -93,13 +93,28 @@ If you want to build you own, there are all basic bricks you need -
     >>> print select('person', columns=raw('count(*)'), group_by=('age', ))
     SELECT count(*) FROM "person" GROUP BY "age"
 
-    The MySQL-specific ``FOR UPDATE`` and ``LOCK IN SHAER MODE`` are also supported:
+    The PostgreSQL-specific ``FOR``, ``OF`` and ``NOWAIT`` are also supported:
+
+    >>> print select('person', {'person_id': 1}, for_='update', of=('person', ), nowait=True)
+    SELECT * FROM "person" WHERE "person_id" = 1 FOR UPDATE OF "person" NOWAIT
+
+    .. seealso ::
+        Check `PostgreSQL SELECT - The locking Clause
+        <http://www.postgresql.org/docs/9.3/static/sql-select.html#SQL-FOR-UPDATE-SHARE>`_
+        for more detail.
+
+    The MySQL-specific ``FOR UPDATE`` and ``LOCK IN SHAER MODE`` are also available:
 
     >>> print select('person', {'person_id': 1}, for_update=True)
     SELECT * FROM "person" WHERE "person_id" = 1 FOR UPDATE
 
     >>> print select('person', {'person_id': 1}, lock_in_share_mode=True)
     SELECT * FROM "person" WHERE "person_id" = 1 LOCK IN SHARE MODE
+
+    .. seealso ::
+        Check `MySQL Locking Reads
+        <http://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html>`_ for
+        more detail.
 
     .. warning ::
         You have responsibility to ensure the security if you use :class:`mosql.util.raw`.

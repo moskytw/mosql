@@ -28,6 +28,13 @@ having   = Clause('having'  , where_list)
 order_by = Clause('order by', identifier_list)
 limit    = Clause('limit'   , single_value)
 offset   = Clause('offset'  , single_value)
+
+# for PostgreSQL-specific select
+for_   = Clause('for')
+of     = Clause('of', identifier_list)
+nowait = Clause('nowait', no_argument=True)
+
+# for MySQL-specific select
 for_update = Clause('for update', no_argument=True)
 lock_in_share_mode = Clause('lock in share mode', no_argument=True)
 
