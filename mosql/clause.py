@@ -31,7 +31,7 @@ offset   = Clause('offset'  , single_value)
 
 # for PostgreSQL-specific select
 for_   = Clause('for')
-of     = Clause('of', identifier_list)
+of     = Clause('of'    , identifier_list)
 nowait = Clause('nowait', no_argument=True)
 
 # for MySQL-specific select
