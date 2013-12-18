@@ -28,6 +28,8 @@ having   = Clause('having'  , where_list)
 order_by = Clause('order by', identifier_list)
 limit    = Clause('limit'   , single_value)
 offset   = Clause('offset'  , single_value)
+for_update = Clause('for update', no_argument=True)
+lock_in_share_mode = Clause('lock in share mode', no_argument=True)
 
 # for update statement
 update = Clause('update', single_identifier, alias='table')

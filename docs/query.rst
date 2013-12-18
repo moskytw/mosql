@@ -93,11 +93,22 @@ If you want to build you own, there are all basic bricks you need -
     >>> print select('person', columns=raw('count(*)'), group_by=('age', ))
     SELECT count(*) FROM "person" GROUP BY "age"
 
+    The MySQL-specific ``FOR UPDATE`` and ``LOCK IN SHAER MODE`` are also supported:
+
+    >>> print select('person', {'person_id': 1}, for_update=True)
+    SELECT * FROM "person" WHERE "person_id" = 1 FOR UPDATE
+
+    >>> print select('person', {'person_id': 1}, lock_in_share_mode=True)
+    SELECT * FROM "person" WHERE "person_id" = 1 LOCK IN SHARE MODE
+
     .. warning ::
         You have responsibility to ensure the security if you use :class:`mosql.util.raw`.
 
     .. seealso ::
         How it builds the where clause --- :func:`mosql.util.build_where`
+
+    .. versionchanged:: 0.9
+        Added ``FOR UPDATE`` and ``LOCK IN SHARE MODE``.
 
 .. py:function:: insert(table=None, set=None, **clause_args)
 
