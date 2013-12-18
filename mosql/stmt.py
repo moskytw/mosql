@@ -31,6 +31,10 @@ insert = Statement([insert, columns, values, returning, on_duplicate_key_update]
 
 def select_preprocessor(clause_args):
 
+    if 'from_' in clause_args:
+        clause_args['from'] = clause_args['from_']
+        del clause_args['from_']
+
     if 'for_' in clause_args:
         clause_args['for'] = clause_args['for_']
         del clause_args['for_']
