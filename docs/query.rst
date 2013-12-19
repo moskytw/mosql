@@ -103,7 +103,7 @@ If you want to build you own, there are all basic bricks you need -
         <http://www.postgresql.org/docs/9.3/static/sql-select.html#SQL-FOR-UPDATE-SHARE>`_
         for more detail.
 
-    The MySQL-specific ``FOR UPDATE`` and ``LOCK IN SHAER MODE`` are also available:
+    The MySQL-specific ``FOR UPDATE`` and ``LOCK IN SHARE MODE`` are also available:
 
     >>> print select('person', {'person_id': 1}, for_update=True)
     SELECT * FROM "person" WHERE "person_id" = 1 FOR UPDATE
