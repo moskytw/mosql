@@ -13,7 +13,14 @@ It will replace the functions in :mod:`mosql.util` with its functions.
 '''
 
 def format_param(s=''):
-    # TODO: This function leaks doc.
+    '''It formats the parameter of prepared statement.i
+
+    >>> print format_param('name')
+    :name
+
+    >>> print format_param()
+    ?
+    '''
     return ':%s' % s if s else '?'
 
 import mosql.util

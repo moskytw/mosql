@@ -120,6 +120,7 @@ Read More
     query
     util
     mysql
+    sqlite
     db
     deprecated
     changes
