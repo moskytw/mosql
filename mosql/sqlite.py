@@ -15,11 +15,11 @@ It will replace the functions in :mod:`mosql.util` with its functions.
 def format_param(s=''):
     '''It formats the parameter of prepared statement.
 
-    >>> print format_param('name')
-    :name
+    >>> format_param('name')
+    ':name'
 
-    >>> print format_param()
-    ?
+    >>> format_param()
+    '?'
     '''
     return ':%s' % s if s else '?'
 
