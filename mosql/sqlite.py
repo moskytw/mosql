@@ -13,7 +13,7 @@ It will replace the functions in :mod:`mosql.util` with its functions.
 '''
 
 def format_param(s=''):
-    '''It formats the parameter of prepared statement.i
+    '''It formats the parameter of prepared statement.
 
     >>> print format_param('name')
     :name
