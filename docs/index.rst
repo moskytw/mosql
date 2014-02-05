@@ -13,7 +13,7 @@ MoSQL --- More than SQL
    :target: https://pypi.python.org/pypi/mosql
 
 .. image:: https://pypip.in/d/mosql/badge.png
-   :target: https://crate.io/packages/mosql/
+   :target: https://pypi.python.org/pypi/mosql
 
 It lets you use the common Python's data structures to build SQLs.
 

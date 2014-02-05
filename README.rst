@@ -5,7 +5,7 @@
    :target: https://pypi.python.org/pypi/mosql
 
 .. image:: https://pypip.in/d/mosql/badge.png
-   :target: https://crate.io/packages/mosql/
+   :target: https://pypi.python.org/pypi/mosql
 
 The full version of this documentation is at `mosql.mosky.tw
 <http://mosql.mosky.tw>`_.
