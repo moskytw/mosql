@@ -51,7 +51,7 @@ really interact with database.
 Like it?
 --------
 
-It is easy to install MoSQL with pip:
+It is available on PyPI:
 
 ::
 

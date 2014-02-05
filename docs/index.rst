@@ -99,7 +99,7 @@ INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 Like it?
 --------
 
-It is easy to install MoSQL with pip:
+It is available on PyPI:
 
 ::
 
