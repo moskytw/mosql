@@ -204,6 +204,8 @@ def qualifier(f):
         elif _is_iterable_not_str(x):
             return [item if isinstance(item, raw) else f(item) for item in x]
         else:
+            if isinstance(x, unicode):
+                x = x.encode('utf-8')
             return f(x)
 
     return qualifier_wrapper
