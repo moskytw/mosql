@@ -1,6 +1,12 @@
 The Change Log
 ==============
 
+v0.9.1
+------
+
+1. Now :func:`~mosql.util.qualifier` supports to encode ``unicode`` into utf-8
+   ``str`` automatically.
+
 v0.9
 ----
 
