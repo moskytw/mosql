@@ -6,7 +6,7 @@ from mosql.util import star
 from mosql.query import insert
 from mosql.db import Database, one_to_dict
 
-# We breed another insert with parital arguments.
+# We breed another insert with partial arguments.
 person_insert = insert.breed({'table': 'person'})
 
 dave = {
