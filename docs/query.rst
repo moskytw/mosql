@@ -117,7 +117,7 @@ If you want to build you own, there are all basic bricks you need -
         more detail.
 
     .. warning ::
-        You have responsibility to ensure the security if you use :class:`mosql.util.raw`.
+        It is your responsibility to ensure that your SQL queries are properly escaped if you use :class:`mosql.util.raw`.
 
     .. seealso ::
         How it builds the where clause --- :func:`mosql.util.build_where`

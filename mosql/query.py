@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It provides common queies.'''
+'''It provides common queries.'''
 
 __all__ = [
     'insert', 'select', 'update', 'delete',

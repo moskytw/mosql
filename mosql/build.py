@@ -186,7 +186,7 @@ def select(table, where=None, select=None, **clauses_args):
     SELECT count(*) FROM "person" GROUP BY "age"
 
     .. warning ::
-        You have responsibility to ensure the security if you use :class:`mosql.util.raw`.
+        It is your responsibility to ensure that your SQL queries are properly escaped if you use :class:`mosql.util.raw`.
 
     .. seealso ::
         How it builds the where clause --- :func:`mosql.util.build_where`
