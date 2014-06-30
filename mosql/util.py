@@ -153,7 +153,7 @@ class raw(str):
     class. This is a subclass of built-in `str` type.
 
     .. warning ::
-        You have responsibility to ensure the security if you use this class.
+        It is your responsibility to ensure that your SQL queries are properly escaped if you use this class.
     '''
 
     def __repr__(self):
@@ -826,7 +826,7 @@ class Query(object):
         return self.format(clause_args)
 
     def __call__(self, *positional_values, **clause_args):
-        '''It is same as the :meth:`stringify`. It is for backward-compatibility, and not encourage to use.'''
+        '''It is same as the :meth:`stringify`. This function exists for backward-compatibility and should not be used.'''
         return self.stringify(*positional_values, **clause_args)
 
     def __repr__(self):
