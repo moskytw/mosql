@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It provides common standard SQL functions.
-'''
+'''It provides common standard SQL functions.'''
 
 __all__ = [
     'avg', 'count', 'min', 'max', 'stddev', 'sum', 'variance'
