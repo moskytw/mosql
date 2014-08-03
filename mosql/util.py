@@ -12,6 +12,7 @@ The classes or functions you may use frequently:
     param
     or_
     and_
+    subq
 
 It is designed for standard SQL and tested in PostgreSQL. If your database uses
 non-standard SQL, such as MySQL, you may need to customize and override the
@@ -49,7 +50,7 @@ __all__ = [
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
     'build_where', 'build_set', 'build_on',
-    'or_', 'and_',
+    'or_', 'and_', 'subq',
     'Clause', 'Statement', 'Query'
 ]
 
@@ -210,9 +211,6 @@ def qualifier(f):
 
     return qualifier_wrapper
 
-def _is_select(x):
-    return isinstance(x, basestring) and x.startswith('SELECT ')
-
 @qualifier
 def value(x):
     '''A qualifier function for values.
@@ -242,8 +240,8 @@ def value(x):
     %(myparam)s
     '''
 
-    # NOTE: 1. raw, 2. param is subclass of str and the 3. _is_select tests a
-    # kind of str, so the three types must be first than str.
+    # NOTE: 1. raw and 2. param are subclasses of str, so the two types must be
+    # first than str.
 
     if x is None:
         return 'NULL'
@@ -251,8 +249,6 @@ def value(x):
         return x
     elif isinstance(x, param):
         return format_param(x)
-    elif _is_select(x):
-        return paren(x)
     elif isinstance(x, basestring):
         return "'%s'" % escape(x)
     elif isinstance(x, (datetime, date, time)):
@@ -312,9 +308,7 @@ def identifier(s):
     "table_name"."column_name" DESC
     '''
 
-    if _is_select(s):
-        return paren(s)
-    elif _is_pair(s):
+    if _is_pair(s):
         return '%s AS %s' % (identifier(s[0]), identifier(s[1]))
     elif delimit_identifier is None:
         return s
@@ -598,6 +592,13 @@ def and_(conditions):
     '''
 
     return concat_by_and(paren(build_where(c)) for c in conditions)
+
+def subq(s):
+    '''It adds parens and makes `s` as :class:`raw`.
+
+    ..versionadded :: 0.9.2
+    '''
+    return raw(paren(s))
 
 # NOTE: To keep simple, the below classes shouldn't rely on the above functions
 
