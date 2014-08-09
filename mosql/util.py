@@ -863,7 +863,7 @@ class Query(object):
         return self.format(clause_args)
 
     def __call__(self, *positional_values, **clause_args):
-        '''It is same as the :meth:`stringify`. This function exists for backward-compatibility and should not be used.'''
+        '''It is same as the :meth:`stringify`.'''
         return self.stringify(*positional_values, **clause_args)
 
     def __repr__(self):
