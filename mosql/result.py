@@ -14,6 +14,12 @@ smoothly.
     backward-compatibility.
 '''
 
+# --- the removal warning ---
+from __future__ import print_function
+import sys
+print('MoSQL: Warning: mosql.result will be removed at version 1.0.', file=sys.stderr)
+# --- end ---
+
 __all__ = ['Model']
 
 from itertools import groupby

@@ -28,6 +28,12 @@ It is designed for building the standard SQL statement and tested in PostgreSQL.
     If you use MySQL, here is a patch for MySQL --- :mod:`mosql.mysql`.
 '''
 
+# --- the removal warning ---
+from __future__ import print_function
+import sys
+print('MoSQL: Warning: mosql.build will be removed at version 1.0.', file=sys.stderr)
+# --- end ---
+
 __all__ = ['select', 'insert', 'delete', 'update', 'join', 'or_']
 
 from .util import *
