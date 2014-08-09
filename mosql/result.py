@@ -239,19 +239,19 @@ class Model(Mapping):
 
         if cls.dump_sql:
             if sql or sqls:
-                print '--- SQL DUMP ---'
+                print('--- SQL DUMP ---')
                 for sql in (sqls or [sql]):
-                    print sql
-                print '--- END ---'
+                    print(sql)
+                print('--- END ---')
             if proc:
-                print '--- SQL DUMP ---'
-                print 'callproc: %r' % proc
-                print '--- END ---'
+                print('--- SQL DUMP ---')
+                print('callproc: %r' % proc)
+                print('--- END ---')
             if param or params:
-                print '--- PARAMETER DUMP ---'
+                print('--- PARAMETER DUMP ---')
                 for param in (params or [param]):
-                    print param
-                print '--- END ---'
+                    print(param)
+                print('--- END ---')
 
         _do = cur.execute
         _param = param
