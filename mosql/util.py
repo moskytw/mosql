@@ -120,10 +120,8 @@ def delimit_identifier(s):
     By default, it conforms the standard to encloses the identifier, `s`, by
     ``"`` (double quote).
 
-    .. note ::
-        It is disableable. Set it ``None`` to disable the feature of delimiting
-        identifiers. But you have responsibility to ensure the security if you
-        disable it.
+    .. versionchanged:: 0.9.2
+        It's not disableable anymore. Use :class:`raw` instead.
     '''
     return '"%s"' % s
 
@@ -276,10 +274,8 @@ allowed_options = set(['DESC', 'ASC'])
 
 An :exc:`OptionError` is raised if an option not allowed is found.
 
-.. note ::
-    It is disableable. Set it ``None`` to disable the feature of checking the
-    option. But you have responsibility to ensure the security if you disable
-    it.
+.. versionchanged:: 0.9.2
+    It's not disableable anymore. Use :class:`raw` instead.
 '''
 
 def _is_pair(x):
@@ -310,8 +306,6 @@ def identifier(s):
 
     if _is_pair(s):
         return '%s AS %s' % (identifier(s[0]), identifier(s[1]))
-    elif delimit_identifier is None:
-        return s
     elif s.find('.') == -1 and s.find(' ') == -1:
         return delimit_identifier(escape_identifier(s))
     else:
@@ -331,7 +325,7 @@ def identifier(s):
 
         if op:
             op = op.upper()
-            if allowed_options is not None and op not in allowed_options:
+            if op not in allowed_options:
                 raise OptionError(op)
             r += ' '+op
 
@@ -403,10 +397,8 @@ allowed_operators = set([
 
 An :exc:`OperatorError` is raised if an operator not allowed is found.
 
-.. note ::
-    It is disableable. Set it ``None`` to disable the feature of checking the
-    operator. But you have responsibility to ensure the security if you disable
-    it.
+.. versionchanged:: 0.9.2
+    It's not disableable anymore. Use :class:`raw` instead.
 '''
 
 def _to_pairs(x):
@@ -447,7 +439,7 @@ def _build_condition(x, key_qualifier=identifier, value_qualifier=value):
                     op = '='
             else:
                 op = op.upper()
-                if allowed_operators is not None and op not in allowed_operators:
+                if op not in allowed_operators:
                     raise OperatorError(op)
 
         # feature of autoparam
