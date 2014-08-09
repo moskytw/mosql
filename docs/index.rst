@@ -121,6 +121,7 @@ Read More
     util
     mysql
     sqlite
+    std
     db
     deprecated
     changes
