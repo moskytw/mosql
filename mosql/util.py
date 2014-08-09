@@ -286,7 +286,7 @@ def identifier(s):
     '''A qualifier function for identifiers.
 
     It uses the :func:`delimit_identifier` and :func:`escape_identifier` to
-    qualifiy the input.
+    qualify the input.
 
     It returns the input with no changes if :func:`delimit_identifier` is
     ``None``.
