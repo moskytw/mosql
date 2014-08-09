@@ -9,6 +9,12 @@ The usage:
 
     import mosql.sqlite
 
+If you want to patch again:
+
+::
+
+    mosql.sqlite.patch()
+
 It will replace the functions in :mod:`mosql.util` with its functions.
 '''
 
@@ -17,7 +23,11 @@ def format_param(s=''):
     return ':%s' % s if s else '?'
 
 import mosql.util
-mosql.util.format_param = format_param
+
+def patch():
+    mosql.util.format_param = format_param
+
+patch() # patch it when load this module
 
 if __name__ == '__main__':
     import doctest

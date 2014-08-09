@@ -9,6 +9,12 @@ The usage:
 
     import mosql.mysql
 
+If you want to patch again:
+
+::
+
+    mosql.mysql.patch()
+
 It will replace the functions in :mod:`mosql.util` with its functions.
 '''
 
@@ -70,10 +76,13 @@ def escape_identifier(s):
 
 import mosql.util
 
-mosql.util.escape = fast_escape
-mosql.util.format_param = format_param
-mosql.util.delimit_identifier = delimit_identifier
-mosql.util.escape_identifier = escape_identifier
+def patch():
+    mosql.util.escape = fast_escape
+    mosql.util.format_param = format_param
+    mosql.util.delimit_identifier = delimit_identifier
+    mosql.util.escape_identifier = escape_identifier
+
+patch() # patch it when load this module
 
 if __name__ == '__main__':
     import doctest
