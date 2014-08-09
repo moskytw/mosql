@@ -50,7 +50,7 @@ __all__ = [
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
     'build_where', 'build_set', 'build_on',
-    'or_', 'and_', 'subq',
+    'or_', 'and_', 'dot', 'as_', 'asc', 'desc','subq',
     'Clause', 'Statement', 'Query'
 ]
 
@@ -596,6 +596,38 @@ def and_(conditions):
     '''
 
     return concat_by_and(paren(build_where(c)) for c in conditions)
+
+def dot(s, t):
+    '''It treats `s` and `t` as identifiers, concats them by ``.``, and then
+    makes whole string as :class:`raw`.
+
+    ..versionadded :: 0.9.2
+    '''
+    return raw('{}.{}'.format(identifier(s), identifier(t)))
+
+def as_(s, t):
+    '''It treats `s` and `t` as identifiers, concats them by ``AS``, and then
+    makes whole string as :class:`raw`.
+
+    ..versionadded :: 0.9.2
+    '''
+    return raw('{} AS {}'.format(identifier(s), identifier(t)))
+
+def asc(s):
+    '''It treats `s` as an identifier, adds ``ASC`` after `s`, and then makes
+    whole string as :class:`raw`.
+
+    ..versionadded :: 0.9.2
+    '''
+    return raw('{} ASC'.format(identifier(s)))
+
+def desc(s):
+    '''It treats `s` as an identifier, adds ``DESC`` after `s`, and then makes
+    whole string as :class:`raw`.
+
+    ..versionadded :: 0.9.2
+    '''
+    return raw('{} DESC'.format(identifier(s)))
 
 def subq(s):
     '''It adds parens and makes `s` as :class:`raw`.
