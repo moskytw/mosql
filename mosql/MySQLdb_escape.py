@@ -23,7 +23,7 @@ It will replace the escape functions in :mod:`mosql.util`.
 # --- the removal warning ---
 from __future__ import print_function
 import sys
-print('MoSQL: Warning: mosql.MySQLdb_escape will be removed at version 1.0.', file=sys.stderr)
+print('Warning: mosql.MySQLdb_escape will be removed at version 1.0.', file=sys.stderr)
 # --- end ---
 
 import MySQLdb

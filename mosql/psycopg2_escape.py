@@ -23,7 +23,7 @@ It will replace the escape functions in :mod:`mosql.util`.
 # --- the removal warning ---
 from __future__ import print_function
 import sys
-print('MoSQL: Warning: mosql.psycopg2_escape will be removed at version 1.0.', file=sys.stderr)
+print('Warning: mosql.psycopg2_escape will be removed at version 1.0.', file=sys.stderr)
 # --- end ---
 
 from psycopg2.extensions import QuotedString

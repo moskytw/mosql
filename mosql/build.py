@@ -31,7 +31,7 @@ It is designed for building the standard SQL statement and tested in PostgreSQL.
 # --- the removal warning ---
 from __future__ import print_function
 import sys
-print('MoSQL: Warning: mosql.build will be removed at version 1.0.', file=sys.stderr)
+print('Warning: mosql.build will be removed at version 1.0.', file=sys.stderr)
 # --- end ---
 
 __all__ = ['select', 'insert', 'delete', 'update', 'join', 'or_']
