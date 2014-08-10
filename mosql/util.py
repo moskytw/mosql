@@ -429,9 +429,7 @@ def _build_condition(x, key_qualifier=identifier, value_qualifier=value):
         if not isinstance(k, raw):
 
             # split the op out
-            space_pos = k.find(' ')
-            if space_pos != -1:
-                k, op = k[:space_pos], k[space_pos+1:].strip()
+            k, _, op = k.partition(' ')
 
             if not op:
                 if _is_iterable_not_str(v):
@@ -441,7 +439,7 @@ def _build_condition(x, key_qualifier=identifier, value_qualifier=value):
                 else:
                     op = '='
             else:
-                op = op.upper()
+                op = op.strip().upper()
                 if op not in allowed_operators:
                     raise OperatorError(op)
 
