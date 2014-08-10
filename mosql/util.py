@@ -212,10 +212,6 @@ def qualifier(f):
 
     return qualifier_wrapper
 
-def _is_select(x):
-    # TODO: remove it at version 1.0.
-    return isinstance(x, basestring) and x.startswith('SELECT ')
-
 @qualifier
 def value(x):
     '''A qualifier function for values.
@@ -254,12 +250,6 @@ def value(x):
         return x
     elif isinstance(x, param):
         return format_param(x)
-    elif _is_select(x):
-        print_warning(
-            'The auto-detecting subquery feature will be removed at version 1.0. '
-            'Use mosql.util.subq instead.'
-        )
-        return paren(x)
     elif isinstance(x, basestring):
         return "'%s'" % escape(x)
     elif isinstance(x, (datetime, date, time)):
@@ -317,11 +307,7 @@ def identifier(s):
     "table_name"."column_name" DESC
     '''
 
-    if _is_select(s):
-        print >> sys.stderr, 'Warning: The auto-detecting subquery feature will be removed at \
-version 1.0. Use mosql.util.subq instead.'
-        return paren(s)
-    elif _is_pair(s):
+    if _is_pair(s):
         return '%s AS %s' % (identifier(s[0]), identifier(s[1]))
     elif s.find('.') == -1 and s.find(' ') == -1:
         return delimit_identifier(escape_identifier(s))
