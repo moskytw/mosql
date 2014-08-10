@@ -784,6 +784,7 @@ class Statement(object):
         pieces = []
         for clause in self.clauses:
 
+            # find the arg for this clause
             arg = None
             for possible in clause.possibles:
                 try:
@@ -793,9 +794,11 @@ class Statement(object):
                 else:
                     break
 
+            # if not found and have default, use default
             if arg is None and clause.default:
                 arg = clause.default
 
+            # if not found or len(arg) == 0
             if arg:
                 pieces.append(clause.format(arg))
 
