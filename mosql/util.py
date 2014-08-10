@@ -62,6 +62,9 @@ if sys.version_info >= (3,):
 from functools import wraps
 from datetime import datetime, date, time
 
+def print_warning(s):
+    print >> sys.stderr, 'Warning: {}'.format(s)
+
 def escape(s):
     '''It escapes the value.
 
@@ -252,8 +255,10 @@ def value(x):
     elif isinstance(x, param):
         return format_param(x)
     elif _is_select(x):
-        print >> sys.stderr, 'Warning: The auto-detecting subquery feature will be removed at \
-version 1.0. Use mosql.util.subq instead.'
+        print_warning(
+            'The auto-detecting subquery feature will be removed at version 1.0. '
+            'Use mosql.util.subq instead.'
+        )
         return paren(x)
     elif isinstance(x, basestring):
         return "'%s'" % escape(x)
