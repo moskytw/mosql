@@ -787,11 +787,8 @@ class Statement(object):
             # find the arg for this clause
             arg = None
             for possible in clause.possibles:
-                try:
+                if possible in clause_args:
                     arg = clause_args[possible]
-                except KeyError:
-                    continue
-                else:
                     break
 
             # if not found and have default, use default
