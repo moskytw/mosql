@@ -17,8 +17,8 @@ It is compatible with :py:mod:`mosql.result` and built-in `datetime`.
 '''
 
 # --- the removal warning ---
-from .util import print_warning
-print_warning('mosql.json will be removed at version 1.0.')
+from .util import warning
+warning('mosql.json will be removed at version 1.0.')
 # --- end ---
 
 __all__ = ['dump', 'dumps', 'load', 'loads', 'ModelJSONEncoder']

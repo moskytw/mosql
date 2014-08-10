@@ -29,8 +29,8 @@ It is designed for building the standard SQL statement and tested in PostgreSQL.
 '''
 
 # --- the removal warning ---
-from .util import print_warning
-print_warning('mosql.build will be removed at version 1.0.')
+from .util import warning
+warning('mosql.build will be removed at version 1.0.')
 # --- end ---
 
 __all__ = ['select', 'insert', 'delete', 'update', 'join', 'or_']

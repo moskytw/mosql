@@ -62,7 +62,7 @@ if sys.version_info >= (3,):
 from functools import wraps
 from datetime import datetime, date, time
 
-def print_warning(s):
+def warning(s):
     print >> sys.stderr, 'Warning: {}'.format(s)
 
 def escape(s):
