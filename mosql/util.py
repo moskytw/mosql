@@ -796,7 +796,7 @@ class Statement(object):
             if arg is None and clause.default:
                 arg = clause.default
 
-            if arg is not None:
+            if arg:
                 pieces.append(clause.format(arg))
 
         return ' '.join(pieces)
