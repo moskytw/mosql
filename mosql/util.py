@@ -65,6 +65,9 @@ from datetime import datetime, date, time
 def warning(s):
     print >> sys.stderr, 'Warning: {}'.format(s)
 
+def debug(s):
+    print >> sys.stderr, 'Debug: {}'.format(s)
+
 def escape(s):
     '''It escapes the value.
 
