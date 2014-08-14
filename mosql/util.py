@@ -68,6 +68,8 @@ def warning(s):
 def debug(s):
     print >> sys.stderr, 'Debug: {}'.format(s)
 
+# lowest-level
+
 def escape(s):
     '''It escapes the value.
 
@@ -187,6 +189,8 @@ class param(str):
         return 'param(%r)' % self
 
 ___ = param
+
+# low-level
 
 def _is_iterable_not_str(x):
     return not isinstance(x, basestring) and hasattr(x, '__iter__')
@@ -565,6 +569,8 @@ def build_on(x):
     "person"."age" > 20
     '''
     return _build_condition(x, identifier, identifier)
+
+# high-level
 
 def or_(conditions):
     '''It concats the conditions by ``OR``.
