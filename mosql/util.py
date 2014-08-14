@@ -458,7 +458,9 @@ def _build_condition(x, key_qualifier=identifier, value_qualifier=value):
         # qualify the k
         k = key_qualifier(k)
 
-        if op:
+        if op == 'IN' and v == '()':
+            pieces.append(stringify_bool(False))
+        elif op:
             pieces.append('%s %s %s' % (k, op, v))
         else:
             pieces.append('%s %s' % (k, v))
