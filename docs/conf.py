@@ -27,12 +27,8 @@ sys.path.insert(0, os.popen('git rev-parse --show-toplevel 2> /dev/null').read()
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.viewcode', 'sphinx.ext.autosummary', 'sphinx.ext.doctest']
 doctest_global_setup = '''
-import mosql.util
-mosql.util.escape             = mosql.util.std_escape
-mosql.util.format_param       = mosql.util.std_format_param
-mosql.util.stringify_bool     = mosql.util.std_stringify_bool
-mosql.util.delimit_identifier = mosql.util.std_delimit_identifier
-mosql.util.escape_identifier  = mosql.util.std_escape_identifier
+import mosql.std
+mosql.std.patch()
 '''
 
 # Add any paths that contain templates here, relative to this directory.
