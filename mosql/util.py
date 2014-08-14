@@ -50,7 +50,7 @@ __all__ = [
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
     'build_where', 'build_set', 'build_on',
-    'or_', 'and_', 'dot', 'as_', 'asc', 'desc','subq',
+    'or_', 'and_', 'dot', 'as_', 'asc', 'desc', 'in_operand', 'subq',
     'Clause', 'Statement', 'Query'
 ]
 
@@ -622,6 +622,17 @@ def desc(s):
     ..versionadded :: 0.9.2
     '''
     return raw('{} DESC'.format(identifier(s)))
+
+def in_operand(x):
+    '''It stringifies `x` as an right operand for ``IN``.
+
+    ..versionadded :: 0.9.2
+    '''
+
+    if not _is_iterable_not_str(x):
+        x = (x, )
+
+    return paren(concat_by_comma(value(x)))
 
 def subq(s):
     '''It adds parens and makes `s` as :class:`raw`.
