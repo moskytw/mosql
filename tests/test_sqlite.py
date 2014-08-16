@@ -12,6 +12,8 @@ class TestSQLite(unittest.TestCase):
 
     def setUp(self):
 
+        mosql.sqlite.patch()
+
         self.db = Database(sqlite3, 'test_sqlite.db')
 
         with self.db as cur:
