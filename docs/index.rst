@@ -35,10 +35,6 @@ The main features:
 
 It is just more than SQL.
 
-.. note::
-    Some of the modules are deprecated after v0.6, check :doc:`/deprecated` for
-    more information.
-
 .. raw:: html
 
     <div id="fb-root"></div>
@@ -121,8 +117,11 @@ Read More
     util
     db
     patches
+    changes
 
-You may be interested to read :doc:`changes`, or :doc:`deprecated`.
+.. note::
+    Some of the modules are deprecated after v0.6, check :doc:`/deprecated` for
+    more information.
 
 Indices and tables
 ==================
