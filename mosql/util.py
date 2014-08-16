@@ -452,13 +452,13 @@ def _build_condition(x, key_qualifier=identifier, value_qualifier=value):
         if isinstance(v, type) and v.__name__ == 'param':
             v = param(k)
 
+        # qualify the k
+        k = key_qualifier(k)
+
         # qualify the v
         v = value_qualifier(v)
         if _is_iterable_not_str(v):
             v = paren(concat_by_comma(v))
-
-        # qualify the k
-        k = key_qualifier(k)
 
         if op == 'IN' and v == '()':
             pieces.append(stringify_bool(False))
