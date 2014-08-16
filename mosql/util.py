@@ -45,7 +45,7 @@ __all__ = [
     'delimit_identifier', 'escape_identifier',
     'raw', 'param', 'default', '___', 'star',
     'qualifier', 'paren', 'value',
-    'OptionError', 'allowed_options', 'identifier',
+    'OptionError', 'allowed_options', 'identifier', 'identifier_as', 'identifier_dir',
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
@@ -288,6 +288,160 @@ An :exc:`OptionError` is raised if an option not allowed is found.
 
 def _is_pair(x):
     return _is_iterable_not_str(x) and len(x) == 2
+
+@qualifier
+def identifier(s):
+    '''A qualifier function for identifiers.
+
+    It uses the :func:`delimit_identifier` and :func:`escape_identifier` to
+    qualify the input.
+
+    >>> print identifier('column_name')
+    "column_name"
+
+    >>> print identifier('table_name.column_name')
+    "table_name"."column_name"
+
+    It also supports to use pair in pair-list format.
+
+    >>> print identifier([('table_name', 'column_name')])[0]
+    "table_name"."column_name"
+
+    .. versionchanged:: 0.9.2
+        Support to use pair-list to represent dot.
+
+    .. versionchanged:: 0.9.2
+        It doesn't support ``as`` and order directon anymore. Use
+        :func:`identifier_as` or :func:`identifier_dir` instead.
+    '''
+
+    # t: table name
+    # c: column name
+    t = ''
+    c = ''
+
+    if _is_pair(s):
+        t, c = s
+    elif s.find('.') == -1:
+        c = s
+    else:
+        t, _, c = s.partition('.')
+
+    if not t:
+        return delimit_identifier(escape_identifier(c))
+    else:
+        return (
+            delimit_identifier(escape_identifier(t))+
+            '.'+
+            delimit_identifier(escape_identifier(c))
+        )
+
+@qualifier
+def identifier_as(s):
+    '''A qualifier function for identifiers with ``as``.
+
+    >>> print identifier_as('column_name as c')
+    "column_name" AS "c"
+
+    >>> print identifier_as('table_name.column_name as c')
+    "table_name"."column_name" AS "c"
+
+    It also supports to use pair in pair-list format.
+
+    >>> print identifier_as([('table_name.column_name', 'c')])[0]
+    "table_name"."column_name" AS "c"
+
+    >>> print identifier_as([(raw('count(table_name.column_name)'), 'c')])[0]
+    count(table_name.column_name) AS "c"
+
+    It builds a normal identifier string without ``as``.
+
+    >>> print identifier_as('column_name')
+    "column_name"
+
+    >>> print identifier_as('table_name.column_name')
+    "table_name"."column_name"
+
+    ..versionadded :: 0.9.2
+    '''
+
+    # i: identifier part
+    # a: alias name
+    i = ''
+    a = ''
+
+    if _is_pair(s):
+        i, a = s
+    else:
+
+        sep = ''
+        if s.rfind(' as ') != -1:
+            sep = ' as '
+        elif s.rfind(' AS ') != -1:
+            sep = ' AS '
+
+        if not sep:
+            i = s
+        else:
+            i, _, a = s.rpartition(sep)
+
+    if not a:
+        return identifier(i)
+    else:
+        return (
+            identifier(i)+
+            ' AS '+
+            delimit_identifier(escape_identifier(a))
+        )
+
+@qualifier
+def identifier_dir(s):
+    '''A qualifier function for identifiers with order direction.
+
+    >>> print identifier_dir('table_name ASC')
+    "table_name" ASC
+
+    >>> print identifier_dir('table_name.column_name DESC')
+    "table_name"."column_name" DESC
+
+    >>> print identifier_dir([('table_name.column_name', 'ASC')])[0]
+    "table_name"."column_name" ASC
+
+    >>> print identifier_dir([(raw('count(table_name.column_name)'), 'DESC')])[0]
+    count(table_name.column_name) DESC
+
+    It builds a normal identifier string without order direction.
+
+    >>> print identifier_dir('column_name')
+    "column_name"
+
+    >>> print identifier_dir('table_name.column_name')
+    "table_name"."column_name"
+
+    ..versionadded :: 0.9.2
+    '''
+
+    # i: identifier part
+    # d: direction
+    i = ''
+    d = ''
+
+    if _is_pair(s):
+        i, d = s
+    elif s.rfind(' ') == -1:
+        i = s
+    else:
+        i, _, d = s.rpartition(' ')
+
+    if not d:
+        return identifier(s)
+    else:
+        # PostgreSQL supports ``USING operator``
+        if not isinstance(d, raw):
+            d = d.upper()
+            if d not in allowed_options:
+                raise OptionError(d)
+        return identifier(i)+ ' '+d
 
 @qualifier
 def paren(s):
