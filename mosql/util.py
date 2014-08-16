@@ -253,8 +253,6 @@ def value(x):
 
     if x is None:
         return 'NULL'
-    elif isinstance(x, raw):
-        return x
     elif isinstance(x, param):
         return format_param(x)
     elif isinstance(x, basestring):
