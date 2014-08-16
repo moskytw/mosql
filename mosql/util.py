@@ -431,20 +431,30 @@ def _build_condition(x, key_qualifier=identifier, value_qualifier=value):
         op = ''
 
         # TODO: let user use subquery with operator in first (key) part
+        # if k is raw, it means we can't modify the k and op
         if not isinstance(k, raw):
 
-            # split the op out
-            k, _, op = k.partition(' ')
+            if _is_pair(k):
+                # unpack the op out
+                k, op = k
 
             if not op:
+                # split the op out
+                k, _, op = k.partition(' ')
+
+            if not op:
+                # decide op automatically
                 if _is_iterable_not_str(v):
                     op = 'IN'
                 elif v is None:
                     op = 'IS'
                 else:
                     op = '='
-            else:
+
+            if not isinstance(op, raw):
+                # normalize the op
                 op = op.strip().upper()
+                # verify the op
                 if op not in allowed_operators:
                     raise OperatorError(op)
 
