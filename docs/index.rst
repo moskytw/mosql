@@ -115,16 +115,14 @@ Read More
 =========
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
     query
     util
-    mysql
-    sqlite
-    std
     db
-    deprecated
-    changes
+    patches
+
+You may be interested to read :doc:`changes`, or :doc:`deprecated`.
 
 Indices and tables
 ==================
