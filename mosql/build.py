@@ -41,17 +41,17 @@ __all__ = ['select', 'insert', 'delete', 'update', 'join', 'or_']
 from .util import *
 
 # defines formatting chains
-single_value      = (value, )
-single_identifier = (identifier, )
-single_identifier_as = (identifier_as, )
-identifier_list   = (identifier, concat_by_comma)
-identifier_as_list   = (identifier_as, concat_by_comma)
+single_value          = (value, )
+single_identifier     = (identifier, )
+single_identifier_as  = (identifier_as, )
+identifier_list       = (identifier, concat_by_comma)
+identifier_as_list    = (identifier_as, concat_by_comma)
 identifier_dir_list   = (identifier_dir, concat_by_comma)
-column_list       = (identifier, concat_by_comma, paren)
-value_list        = (value, concat_by_comma, paren)
-where_list        = (build_where, )
-set_list          = (build_set, )
-statement_list    = (concat_by_space, )
+column_list           = (identifier, concat_by_comma, paren)
+value_list            = (value, concat_by_comma, paren)
+where_list            = (build_where, )
+set_list              = (build_set, )
+statement_list        = (concat_by_space, )
 
 # insert
 
