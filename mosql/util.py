@@ -290,53 +290,6 @@ def _is_pair(x):
     return _is_iterable_not_str(x) and len(x) == 2
 
 @qualifier
-def identifier(s):
-    '''A qualifier function for identifiers.
-
-    It uses the :func:`delimit_identifier` and :func:`escape_identifier` to
-    qualify the input.
-
-    >>> print identifier('column_name')
-    "column_name"
-
-    >>> print identifier('column_name desc')
-    "column_name" DESC
-
-    >>> print identifier('table_name.column_name')
-    "table_name"."column_name"
-
-    >>> print identifier('table_name.column_name DESC')
-    "table_name"."column_name" DESC
-    '''
-
-    if _is_pair(s):
-        return '%s AS %s' % (identifier(s[0]), identifier(s[1]))
-    elif s.find('.') == -1 and s.find(' ') == -1:
-        return delimit_identifier(escape_identifier(s))
-    else:
-
-        t, _, c = s.rpartition('.')
-        c, _, op = c.partition(' ')
-
-        r = ''
-
-        if t:
-            t = delimit_identifier(escape_identifier(t))
-            r += t+'.'
-
-        if c:
-            c = delimit_identifier(escape_identifier(c))
-            r += c
-
-        if op:
-            op = op.upper()
-            if op not in allowed_options:
-                raise OptionError(op)
-            r += ' '+op
-
-        return r
-
-@qualifier
 def paren(s):
     '''A qualifier function which encloses the input with ``()`` (paren).'''
     return '(%s)' % s
