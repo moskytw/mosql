@@ -296,9 +296,6 @@ def identifier(s):
     It uses the :func:`delimit_identifier` and :func:`escape_identifier` to
     qualify the input.
 
-    It returns the input with no changes if :func:`delimit_identifier` is
-    ``None``.
-
     >>> print identifier('column_name')
     "column_name"
 
