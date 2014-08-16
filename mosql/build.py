@@ -40,7 +40,10 @@ from .util import *
 # defines formatting chains
 single_value      = (value, )
 single_identifier = (identifier, )
+single_identifier_as = (identifier_as, )
 identifier_list   = (identifier, concat_by_comma)
+identifier_as_list   = (identifier_as, concat_by_comma)
+identifier_dir_list   = (identifier_dir, concat_by_comma)
 column_list       = (identifier, concat_by_comma, paren)
 value_list        = (value, concat_by_comma, paren)
 where_list        = (build_where, )
@@ -52,7 +55,7 @@ statement_list    = (concat_by_space, )
 insert    = Clause('insert into', single_identifier)
 columns   = Clause('columns'    , column_list, hidden=True)
 values    = Clause('values'     , value_list)
-returning = Clause('returning'  , identifier_list)
+returning = Clause('returning'  , identifier_as_list)
 on_duplicate_key_update = Clause('on duplicate key update', set_list)
 
 insert_into_stat = Statement([insert, columns, values, returning, on_duplicate_key_update])
@@ -107,13 +110,13 @@ def insert(table, set=None, values=None, **clauses_args):
 
 # select
 
-select   = Clause('select'  , identifier_list)
-from_    = Clause('from'    , identifier_list)
+select   = Clause('select'  , identifier_as_list)
+from_    = Clause('from'    , identifier_as_list)
 joins    = Clause('joins'   , statement_list, hidden=True)
 where    = Clause('where'   , where_list)
 group_by = Clause('group by', identifier_list)
 having   = Clause('having'  , where_list)
-order_by = Clause('order by', identifier_list)
+order_by = Clause('order by', identifier_dir_list)
 limit    = Clause('limit'   , single_value)
 offset   = Clause('offset'  , single_value)
 
@@ -213,7 +216,7 @@ def select(table, where=None, select=None, **clauses_args):
 
 # update
 
-update = Clause('update', single_identifier)
+update = Clause('update', single_identifier_as)
 set    = Clause('set'   , set_list)
 
 update_stat = Statement([update, set, where, returning])
@@ -241,7 +244,7 @@ def update(table, where=None, set=None, **clauses_args):
 
 # delete from
 
-delete = Clause('delete from', single_identifier)
+delete = Clause('delete from', single_identifier_as)
 
 delete_stat = Statement([delete, where, returning])
 
@@ -264,7 +267,7 @@ def delete(table, where=None, **clauses_args):
 
 # join
 
-join  = Clause('join' , single_identifier)
+join  = Clause('join' , single_identifier_as)
 type  = Clause('type' , tuple(), hidden=True)
 on    = Clause('on'   , (build_on, ))
 using = Clause('using', column_list)
