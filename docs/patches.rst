@@ -1,9 +1,11 @@
-The Patch for Non-standard SQLs
-===============================
+The Patches for Non-standard SQLs
+=================================
 
+If you are using MySQL or SQLite, you will need one of the patches here. Just
+import them.
 
-The Patch for MySQL --- :mod:`mosql.mysql`
-------------------------------------------
+For MySQL --- :mod:`mosql.mysql`
+--------------------------------
 
 .. testsetup::
 
@@ -12,8 +14,8 @@ The Patch for MySQL --- :mod:`mosql.mysql`
 .. automodule:: mosql.mysql
     :members:
 
-The Patch for SQLite --- :mod:`mosql.sqlite`
---------------------------------------------
+For SQLite --- :mod:`mosql.sqlite`
+----------------------------------
 
 .. testsetup::
 
@@ -22,8 +24,8 @@ The Patch for SQLite --- :mod:`mosql.sqlite`
 .. automodule:: mosql.sqlite
     :members:
 
-The Patch to Back to Standard --- :mod:`mosql.std`
---------------------------------------------------
+For Resetting --- :mod:`mosql.std`
+----------------------------------
 
 .. automodule:: mosql.std
     :members:
