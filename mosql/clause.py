@@ -4,13 +4,13 @@
 '''It provides common clauses.'''
 
 from .util import star, Clause
-from .chain import identifier_list, where_list
-from .chain import single_identifier, column_list, value_list, set_list
+from .chain import identifier_list, identifier_as_list, identifier_dir_list, where_list
+from .chain import single_identifier, single_identifier_as, column_list, value_list, set_list
 from .chain import statement_list, single_value
 from .chain import on_list
 
 # common clauses
-returning = Clause('returning' , identifier_list)
+returning = Clause('returning' , identifier_as_list)
 where     = Clause('where'     , where_list)
 
 # for insert statement
@@ -20,12 +20,12 @@ values    = Clause('values'     , value_list)
 on_duplicate_key_update = Clause('on duplicate key update', set_list)
 
 # for select statement
-select   = Clause('select'  , identifier_list, default=star, alias='columns')
-from_    = Clause('from'    , identifier_list, alias='table')
+select   = Clause('select'  , identifier_as_list, default=star, alias='columns')
+from_    = Clause('from'    , identifier_as_list, alias='table')
 joins    = Clause('joins'   , statement_list, hidden=True)
 group_by = Clause('group by', identifier_list)
 having   = Clause('having'  , where_list)
-order_by = Clause('order by', identifier_list)
+order_by = Clause('order by', identifier_dir_list)
 limit    = Clause('limit'   , single_value)
 offset   = Clause('offset'  , single_value)
 
@@ -39,14 +39,14 @@ for_update = Clause('for update', no_argument=True)
 lock_in_share_mode = Clause('lock in share mode', no_argument=True)
 
 # for update statement
-update = Clause('update', single_identifier, alias='table')
+update = Clause('update', single_identifier_as, alias='table')
 set_   = Clause('set'   , set_list)
 
 # for delete statement
-delete = Clause('delete from', single_identifier, alias='table')
+delete = Clause('delete from', single_identifier_as, alias='table')
 
 # for join statement
-join  = Clause('join' , single_identifier, alias='table')
+join  = Clause('join' , single_identifier_as, alias='table')
 type_ = Clause('type' , hidden=True)
 on    = Clause('on'   , on_list)
 using = Clause('using', column_list)
