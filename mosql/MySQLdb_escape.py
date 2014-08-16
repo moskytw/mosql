@@ -6,6 +6,9 @@
     You should use safe connection encoding, such as utf-8. This module will be
     removed in a future release.
 
+.. warning::
+    This module will be removed in version 1.0.
+
 It applies the escape function in MySQLdb to :mod:`mosql.util`.
 
 Usage:
@@ -22,7 +25,7 @@ It will replace the escape functions in :mod:`mosql.util`.
 
 # --- the removal warning ---
 from .util import warning
-warning('mosql.MySQL_escape will be removed at version 1.0.')
+warning('mosql.MySQL_escape will be removed in version 1.0.')
 # --- end ---
 
 import MySQLdb

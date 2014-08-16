@@ -6,6 +6,9 @@
     It will be removed because it is which MoSQL shouldn't do. If you need a
     model, just write a class with :mod:`mosql.query` instead.
 
+.. warning::
+    This module will be removed in version 1.0.
+
 It provides useful :class:`Model` which let you commuicate with database
 smoothly.
 
@@ -16,7 +19,7 @@ smoothly.
 
 # --- the removal warning ---
 from .util import warning
-warning('mosql.result will be removed at version 1.0.')
+warning('mosql.result will be removed in version 1.0.')
 # --- end ---
 
 __all__ = ['Model']

@@ -6,6 +6,9 @@
     The :mod:`mosql.result` will be removed in a future release, so this module
     will not be needed once :mod:`~mosql.result` is removed.
 
+.. warning::
+    This module will be removed in version 1.0.
+
 An alternative of built-in `json`.
 
 It is compatible with :py:mod:`mosql.result` and built-in `datetime`.
@@ -18,7 +21,7 @@ It is compatible with :py:mod:`mosql.result` and built-in `datetime`.
 
 # --- the removal warning ---
 from .util import warning
-warning('mosql.json will be removed at version 1.0.')
+warning('mosql.json will be removed in version 1.0.')
 # --- end ---
 
 __all__ = ['dump', 'dumps', 'load', 'loads', 'ModelJSONEncoder']
