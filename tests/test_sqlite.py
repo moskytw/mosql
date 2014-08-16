@@ -6,7 +6,7 @@ import sqlite3
 import mosql.sqlite
 from mosql.util import param
 from mosql.query import insert, select, update, delete, replace
-from mosql.db import Database,all_to_dicts
+from mosql.db import Database, all_to_dicts
 
 class TestSQLite(unittest.TestCase):
 
