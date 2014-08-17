@@ -16,7 +16,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, String
 # its engine.
 user_name = getuser()
 engine = create_engine('postgresql://{}@localhost/{}'.format(user_name, user_name))
-conn = engine.connect()
+conn = engine.connect() # autocommit
 info('* The connection is opened.')
 
 metadata = MetaData()
@@ -41,6 +41,7 @@ def setup():
         {'id': 'mosky.liu', 'name': 'Mosky Liu'},
         {'id': 'yiyu.liu', 'name': 'Yi-Yu Liu'}
     ]))
+
     info('* The data is created.')
 
 def execute_select():
