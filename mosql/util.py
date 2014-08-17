@@ -980,6 +980,15 @@ class Query(object):
     def __repr__(self):
         return 'Query(%r, %r, %r)' % (self.statement, self.positional_keys, self.clause_args)
 
+    def __str__(self):
+        return 'Query({}, ** {})'.format(', '.join(
+            '{}=None'.format(k)
+            for k in self.positional_keys
+        ), ', '.join(
+            '{}=None'.format(clause.prefix.lower().replace(' ', '_'))
+            for clause in self.statement.clauses
+        ))
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
