@@ -428,10 +428,10 @@ def identifier_dir(s):
 
     if _is_pair(s):
         i, d = s
-    elif s.rfind(' ') == -1:
+    elif s.find(' ') == -1:
         i = s
     else:
-        i, _, d = s.rpartition(' ')
+        i, _, d = s.partition(' ')
 
     if not d:
         return identifier(s)
