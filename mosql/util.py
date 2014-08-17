@@ -322,10 +322,8 @@ def identifier(s):
 
     if _is_pair(s):
         t, c = s
-    elif s.find('.') == -1:
-        c = s
     else:
-        t, _, c = s.partition('.')
+        t, _, c = s.rpartition('.')
 
     if not t:
         return delimit_identifier(escape_identifier(c))
@@ -373,17 +371,9 @@ def identifier_as(s):
     if _is_pair(s):
         i, a = s
     else:
-
-        sep = ''
-        if s.rfind(' as ') != -1:
-            sep = ' as '
-        elif s.rfind(' AS ') != -1:
-            sep = ' AS '
-
-        if not sep:
-            i = s
-        else:
-            i, _, a = s.rpartition(sep)
+        i, _, a = s.partition(' as ')
+        if not a:
+            i, _, a = s.partition(' AS ')
 
     if not a:
         return identifier(i)
@@ -428,8 +418,6 @@ def identifier_dir(s):
 
     if _is_pair(s):
         i, d = s
-    elif s.find(' ') == -1:
-        i = s
     else:
         i, _, d = s.partition(' ')
 
