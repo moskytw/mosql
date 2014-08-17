@@ -436,7 +436,7 @@ def identifier_dir(s):
     if not d:
         return identifier(s)
     else:
-        # PostgreSQL supports ``USING operator``
+        # PostgreSQL supports ``USING operator``, ``NULLS FIRST``, ...
         if not isinstance(d, raw):
             d = d.upper()
             if d not in allowed_options:
