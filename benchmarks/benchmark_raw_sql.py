@@ -33,6 +33,8 @@ def setup():
         ('yiyu.liu', 'Yi-Yu Liu')
     ])
 
+    conn.commit()
+
     info('* The data is created.')
 
 def execute_select():
@@ -41,6 +43,7 @@ def execute_select():
 
 def teardown():
     cur.execute('drop table testee')
+    conn.commit()
     info('* The data is cleaned.')
 
 if __name__ == '__main__':
