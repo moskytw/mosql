@@ -18,18 +18,18 @@ info('* The connection is opened.')
 
 def setup():
 
-    cur.execute('drop table if exists testee')
+    cur.execute('drop table if exists _benchmark')
 
     cur.execute('''
         create table
-            testee (
+            _benchmark (
                 id varchar(128) primary key,
                 name varchar(128)
             )
     ''')
 
     cur.executemany(
-        'insert into testee values (%s, %s)', [
+        'insert into _benchmark values (%s, %s)', [
         ('mosky.liu', 'Mosky Liu'),
         ('yiyu.liu', 'Yi-Yu Liu')
     ])
@@ -39,11 +39,11 @@ def setup():
     info('* The data is created.')
 
 def execute_select():
-    cur.execute(select('testee', {'id': 'mosky.liu'}))
+    cur.execute(select('_benchmark', {'id': 'mosky.liu'}))
     return cur.fetchall()
 
 def teardown():
-    cur.execute('drop table testee')
+    cur.execute('drop table _benchmark')
     conn.commit()
     info('* The data is cleaned.')
 

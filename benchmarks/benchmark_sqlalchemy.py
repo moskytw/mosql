@@ -20,24 +20,24 @@ conn = engine.connect() # autocommit
 info('* The connection is opened.')
 
 metadata = MetaData()
-testee = Table('testee', metadata,
+benchmark = Table('_benchmark', metadata,
     Column('id', String(128), primary_key=True),
     Column('name', String(128)),
 )
 
 def setup():
 
-    conn.execute('drop table if exists testee')
+    conn.execute('drop table if exists _benchmark')
 
     conn.execute('''
         create table
-            testee (
+            _benchmark (
                 id varchar(128) primary key,
                 name varchar(128)
             )
     ''')
 
-    conn.execute(testee.insert().values([
+    conn.execute(benchmark.insert().values([
         {'id': 'mosky.liu', 'name': 'Mosky Liu'},
         {'id': 'yiyu.liu', 'name': 'Yi-Yu Liu'}
     ]))
@@ -46,11 +46,11 @@ def setup():
 
 def execute_select():
     return conn.execute(
-        testee.select().where(testee.c.id == 'mosky.liu')
+        benchmark.select().where(benchmark.c.id == 'mosky.liu')
     ).fetchall()
 
 def teardown():
-    conn.execute('drop table testee')
+    conn.execute('drop table _benchmark')
     info('* The data is cleaned.')
 
 if __name__ == '__main__':
