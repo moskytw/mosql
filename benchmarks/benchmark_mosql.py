@@ -2,19 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import sys
-stream = sys.stderr
-def info(s, end='\n'):
-    stream.write(s)
-    if end: stream.write(end)
-info("* It benchmarks MoSQL.")
-
 import psycopg2
 from getpass import getuser
 from mosql.query import select
 
-conn = psycopg2.connect(user=getuser())
-cur = conn.cursor()
-info('* The connection is opened.')
+stream = sys.stderr
+
+def info(s, end='\n'):
+    stream.write(s)
+    if end: stream.write(end)
+
+conn = None
+cur = None
 
 def setup():
 
@@ -51,9 +50,15 @@ if __name__ == '__main__':
 
     from timeit import timeit
 
+    info('* The benchmark for MoSQL')
+
     # init
+    conn = psycopg2.connect(user=getuser())
+    cur = conn.cursor()
+    info('* The connection is opened.')
     setup()
 
+    # benchmark
     n = 1000
     info('* Executing the bencmark (n={}) ...'.format(n))
     info('')

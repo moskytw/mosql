@@ -2,28 +2,24 @@
 # -*- coding: utf-8 -*-
 
 import sys
-stream = sys.stderr
-def info(s, end='\n'):
-    stream.write(s)
-    if end: stream.write(end)
-info("* It benchmarks SQLAlchemy.")
-
 from getpass import getuser
 from sqlalchemy.sql import select
 from sqlalchemy import create_engine, MetaData, Table, Column, String
 
-# It seems SQLAlchemy is hard to co-work with native Psycopg2, so we use the
-# its engine.
-user_name = getuser()
-engine = create_engine('postgresql://{}@localhost/{}'.format(user_name, user_name))
-conn = engine.connect() # autocommit
-info('* The connection is opened.')
+stream = sys.stderr
+
+def info(s, end='\n'):
+    stream.write(s)
+    if end: stream.write(end)
 
 metadata = MetaData()
 benchmark = Table('_benchmark', metadata,
     Column('id', String(128), primary_key=True),
     Column('name', String(128)),
 )
+
+engine = None
+conn = None
 
 def setup():
 
@@ -57,7 +53,15 @@ if __name__ == '__main__':
 
     from timeit import timeit
 
+    info('* The benchmark for SQLAlchemy')
+
     # init
+    # It seems SQLAlchemy is hard to co-work with native Psycopg2, so we use the
+    # its engine.
+    user_name = getuser()
+    engine = create_engine('postgresql://{}@localhost/{}'.format(user_name, user_name))
+    conn = engine.connect() # autocommit
+    info('* The connection is opened.')
     setup()
 
     n = 1000
