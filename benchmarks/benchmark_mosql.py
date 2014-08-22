@@ -33,6 +33,12 @@ def setup():
         ('yiyu.liu', 'Yi-Yu Liu')
     ])
 
+    #from mosql.query import insert
+    #cur.execute(insert('_benchmark', values=[
+    #    ('mosky.liu', 'Mosky Liu'),
+    #    ('yiyu.liu', 'Yi-Yu Liu')
+    #]))
+
     conn.commit()
 
     info('* The data is created.')
