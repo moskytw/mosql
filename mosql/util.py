@@ -49,7 +49,7 @@ __all__ = [
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
-    'build_value_list', 'build_where', 'build_set', 'build_on',
+    'build_values_list', 'build_where', 'build_set', 'build_on',
     'or_', 'and_', 'dot', 'as_', 'asc', 'desc', 'in_operand', 'subq',
     'Clause', 'Statement', 'Query'
 ]
@@ -502,7 +502,7 @@ An :exc:`OperatorError` is raised if an operator not allowed is found.
 '''
 
 @joiner
-def build_value_list(x):
+def build_values_list(x):
 
     if hasattr(x, '__getitem__') and _is_iterable_not_str(x[0]):
         return concat_by_comma(paren(

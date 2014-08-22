@@ -5,7 +5,7 @@
 
 from .util import star, Clause
 from .chain import identifier_list, identifier_as_list, identifier_dir_list, where_list
-from .chain import single_identifier, single_identifier_as, column_list, value_list, set_list
+from .chain import single_identifier, single_identifier_as, column_list, values_list, set_list
 from .chain import statement_list, single_value
 from .chain import on_list
 
@@ -16,7 +16,7 @@ where     = Clause('where'     , where_list)
 # for insert statement
 insert    = Clause('insert into', single_identifier, alias='table')
 columns   = Clause('columns'    , column_list, hidden=True)
-values    = Clause('values'     , value_list)
+values    = Clause('values'     , values_list)
 on_duplicate_key_update = Clause('on duplicate key update', set_list)
 
 # for select statement
