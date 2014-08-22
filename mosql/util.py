@@ -49,7 +49,7 @@ __all__ = [
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
-    'build_where', 'build_set', 'build_on',
+    'build_value_list', 'build_where', 'build_set', 'build_on',
     'or_', 'and_', 'dot', 'as_', 'asc', 'desc', 'in_operand', 'subq',
     'Clause', 'Statement', 'Query'
 ]
@@ -500,6 +500,16 @@ An :exc:`OperatorError` is raised if an operator not allowed is found.
 .. versionchanged:: 0.9.2
     It's not disableable anymore. Use :class:`raw` instead.
 '''
+
+@joiner
+def build_value_list(x):
+
+    if hasattr(x, '__getitem__') and _is_iterable_not_str(x[0]):
+        return concat_by_comma(paren(
+            concat_by_comma(value(item))
+        ) for item in x)
+
+    return paren(concat_by_comma(value(x)))
 
 def _to_pairs(x):
 

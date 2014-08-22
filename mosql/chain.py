@@ -4,7 +4,7 @@
 '''It provides common formatting chain.'''
 
 from .util import value, identifier, identifier_as, identifier_dir, paren
-from .util import concat_by_comma, concat_by_space, build_where, build_set, build_on
+from .util import concat_by_comma, concat_by_space, build_value_list, build_where, build_set, build_on
 
 single_value         = (value, )
 single_identifier    = (identifier, )
@@ -13,7 +13,7 @@ identifier_list      = (identifier, concat_by_comma)
 identifier_as_list   = (identifier_as, concat_by_comma)
 identifier_dir_list  = (identifier_dir, concat_by_comma)
 column_list          = (identifier, concat_by_comma, paren)
-value_list           = (value, concat_by_comma, paren)
+value_list           = (build_value_list, )
 where_list           = (build_where, )
 set_list             = (build_set, )
 on_list              = (build_on, )
