@@ -117,7 +117,8 @@ Read More
     util
     db
     patches
-    changes
+
+and here is :doc:`/changes`.
 
 .. note::
     Some of the modules are deprecated after v0.6, check :doc:`/deprecated` for
