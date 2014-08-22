@@ -91,7 +91,17 @@ def escape(s):
         use native escape function to ensure the security. See
         :mod:`mosql.psycopg2_escape` or :mod:`mosql.MySQLdb_escape` for more
         information.
+
+    .. versionchanged:: 0.9.2
+        It will raise a ValueError if `s` contains a null byte (\\x00).
     '''
+
+    if s.find('\x00') != -1:
+        raise ValueError(
+            r'unable to escape \x00. '
+            r'It will truncate your SQL, is it an attack?'
+        )
+
     return s.replace("'", "''")
 
 std_escape = escape
