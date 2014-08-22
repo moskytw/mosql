@@ -17,7 +17,7 @@ It contains the common SQL builders.
     It is rewritten for using new :mod:`mosql.util`, but it is compatible with
     old version.
 
-.. autosummary ::
+.. autosummary::
     select
     insert
     update
@@ -166,7 +166,7 @@ def select(table, where=None, select=None, **clauses_args):
         ...
     OptionError: this option is not allowed: '; DROP PERSON; --'
 
-    .. seealso ::
+    .. seealso::
         The options allowed --- :attr:`mosql.util.allowed_options`.
 
     >>> print select('person', {'name like': 'Mosky%'}, limit=3, offset=1)
@@ -188,7 +188,7 @@ def select(table, where=None, select=None, **clauses_args):
         ...
     OperatorError: this operator is not allowed: "= '' OR TRUE; --"
 
-    .. seealso ::
+    .. seealso::
         The operators allowed --- :attr:`mosql.util.allowed_operators`.
 
     If you want to use functions, wrap it with :class:`mosql.util.raw`:
@@ -196,10 +196,10 @@ def select(table, where=None, select=None, **clauses_args):
     >>> print select('person', select=raw('count(*)'), group_by=('age', ))
     SELECT count(*) FROM "person" GROUP BY "age"
 
-    .. warning ::
+    .. warning::
         It is your responsibility to ensure that your SQL queries are properly escaped if you use :class:`mosql.util.raw`.
 
-    .. seealso ::
+    .. seealso::
         How it builds the where clause --- :func:`mosql.util.build_where`
     '''
 
@@ -235,7 +235,7 @@ def update(table, where=None, set=None, **clauses_args):
     >>> print update('person', (('person_id', 'mosky'), ), (('name', 'Mosky Liu'),) )
     UPDATE "person" SET "name"='Mosky Liu' WHERE "person_id" = 'mosky'
 
-    .. seealso ::
+    .. seealso::
         How it builds the where clause --- :func:`mosql.util.build_set`
     '''
 
@@ -280,7 +280,7 @@ join_stat = Statement([type, join, on, using])
 def join(table, using=None, on=None, type=None, **clauses_args):
     '''It generates the SQL statement, ``... join ...`` .
 
-    .. versionadded :: 0.1.6
+    .. versionadded:: 0.1.6
 
     >>> print select('person', joins=join('detail'))
     SELECT * FROM "person" NATURAL JOIN "detail"
@@ -294,7 +294,7 @@ def join(table, using=None, on=None, type=None, **clauses_args):
     >>> print select('person', joins=join('detail', type='cross'))
     SELECT * FROM "person" CROSS JOIN "detail"
 
-    .. seealso ::
+    .. seealso::
         How it builds the where clause --- :func:`mosql.util.build_on`
     '''
 
@@ -317,7 +317,7 @@ def join(table, using=None, on=None, type=None, **clauses_args):
 def or_(*conditions):
     '''It concats the conditions by ``OR``.
 
-    .. versionadded :: 0.1.6
+    .. versionadded:: 0.1.6
 
     >>> print or_({'person_id': 'andy'}, {'person_id': 'bob'})
     "person_id" = 'andy' OR "person_id" = 'bob'

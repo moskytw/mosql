@@ -20,7 +20,7 @@ Usage:
 
 It will replace the escape functions in :mod:`mosql.util`.
 
-.. versionadded :: 0.3
+.. versionadded:: 0.3
 '''
 
 # --- the removal warning ---

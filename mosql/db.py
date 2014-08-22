@@ -5,12 +5,12 @@
 
 The context manager for both connection and cursor:
 
-.. autosummary ::
+.. autosummary::
     Database
 
 The functions designed for cursor:
 
-.. autosummary ::
+.. autosummary::
     extact_col_names
     one_to_dict
     all_to_dicts
