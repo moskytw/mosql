@@ -503,6 +503,15 @@ An :exc:`OperatorError` is raised if an operator not allowed is found.
 
 @joiner
 def build_values_list(x):
+    '''It builds the values list for ``VALUES`` clause.
+
+    The `x` can be either
+
+    1. iterable values; or
+    2. iterable values in another iterable.
+
+    .. versionadded:: 0.9.2
+    '''
 
     if hasattr(x, '__getitem__') and _is_iterable_not_str(x[0]):
         return concat_by_comma(paren(
