@@ -6,14 +6,14 @@
 MoSQL --- More than SQL
 =======================
 
-.. .. image:: https://travis-ci.org/moskytw/mosql.png
-..    :target: https://travis-ci.org/moskytw/mosql
-.. 
-.. .. image:: https://pypip.in/v/mosql/badge.png
-..    :target: https://pypi.python.org/pypi/mosql
-.. 
-.. .. image:: https://pypip.in/d/mosql/badge.png
-..    :target: https://pypi.python.org/pypi/mosql
+.. image:: https://travis-ci.org/moskytw/mosql.png
+   :target: https://travis-ci.org/moskytw/mosql
+
+.. image:: https://pypip.in/v/mosql/badge.png
+   :target: https://pypi.python.org/pypi/mosql
+
+.. image:: https://pypip.in/d/mosql/badge.png
+   :target: https://pypi.python.org/pypi/mosql
 
 It lets you use the common Python's data structures to build SQLs.
 
