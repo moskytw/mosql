@@ -1027,7 +1027,7 @@ class Query(object):
 
     def __str__(self):
         return '{}({}, *, {})'.format(
-            self.statement.clauses[0].prefix.lower(),
+            self.statement.clauses[0].prefix.partition(' ')[0].lower(),
             ', '.join(
                 '{}=None'.format(k)
                 for k in self.positional_keys
