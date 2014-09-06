@@ -5,8 +5,10 @@
 
 The five functions below are the core functions of MoSQL and abstract the
 variety of SQL specs. You can override them to let MoSQL support non-standard
-SQL specs.  There are two available built-in patches: :mod:`mosql.mysql` and
-:mod:`mosql.sqlite`.
+SQL specs.
+
+.. note::
+    There are two built-in patches: :mod:`mosql.mysql` and :mod:`mosql.sqlite`.
 
 .. autosummary::
     escape
@@ -62,7 +64,7 @@ The helper functions below fill the gap between basic Python object and SQL:
     in_operand
     subq
 
-The main classes let you combine the bricks above to create a real SQL builder:
+The main classes let you combine the bricks above to create a final SQL builder:
 
 .. autosummary::
     Clause
@@ -120,10 +122,7 @@ def escape(s):
     select * from person where person_id = '\'' or true; -- ';
 
     .. warning ::
-        If you don't use utf-8 for your connection, such as big5, gbk, please
-        use native escape function to ensure the security. See
-        :mod:`mosql.psycopg2_escape` or :mod:`mosql.MySQLdb_escape` for more
-        information.
+        Please use UTF-8 as your connection encoing. Simple escaping will have secuirty risk if you use double-byte connection encoding, such as Big5 or GBK.
 
     .. versionchanged:: 0.9.2
         It will raise a ValueError if `s` contains a null byte (\\x00).
@@ -193,17 +192,20 @@ def escape_identifier(s):
 
     >>> print tmpl % escape_identifier(evil_identifier)
     select * from person where "person_id"" = '' or true; -- " = 'mosky';
+
+    .. warning ::
+        Please use UTF-8 as your connection encoing. Simple escaping will have secuirty risk if you use double-byte connection encoding, such as Big5 or GBK.
     '''
     return s.replace('"', '""')
 
 std_escape_identifier = escape_identifier
 
 class raw(str):
-    '''The qualifier function does nothing when the input is an instance of this
+    '''The qualifier functions do nothing when the input is an instance of this
     class. This is a subclass of built-in :class:`str` type.
 
     .. warning ::
-        It is your responsibility to ensure that your SQL queries are properly escaped if you use this class.
+        It's your responsibility to ensure the security when you use :class:`raw` string.
     '''
 
     def __repr__(self):
@@ -264,7 +266,7 @@ def qualifier(f):
 
 @qualifier
 def value(x):
-    '''A qualifier function for values.
+    '''A qualifier function which formats Python object as SQL value.
 
     >>> print value('normal string')
     'normal string'
@@ -291,7 +293,7 @@ def value(x):
     %(myparam)s
     '''
 
-    # NOTE: 1. raw and 2. param are subclasses of str, so the two types must be
+    # 1. raw and 2. param are subclasses of str, so the two types must be
     # first than str.
 
     if x is None:
@@ -334,7 +336,7 @@ def _is_pair(x):
 
 @qualifier
 def identifier(s):
-    '''A qualifier function for identifiers.
+    '''A qualifier function which formats Python object as SQL identifier.
 
     It uses the :func:`delimit_identifier` and :func:`escape_identifier` to
     qualify the input.
@@ -379,7 +381,7 @@ def identifier(s):
 
 @qualifier
 def identifier_as(s):
-    '''A qualifier function for identifiers with ``as``.
+    '''A qualifier function which formats Python object as SQL identifiers with ``as``.
 
     >>> print identifier_as('column_name as c')
     "column_name" AS "c"
@@ -429,7 +431,7 @@ def identifier_as(s):
 
 @qualifier
 def identifier_dir(s):
-    '''A qualifier function for identifiers with order direction.
+    '''A qualifier function which formats Python object as SQL identifiers with order direction.
 
     >>> print identifier_dir('table_name ASC')
     "table_name" ASC
@@ -546,7 +548,7 @@ An :exc:`OperatorError` is raised if an operator not allowed is found.
 
 @joiner
 def build_values_list(x):
-    '''It builds the values list for ``VALUES`` clause.
+    '''A joiner function which builds the values-list for ``VALUES`` clause.
 
     The `x` can be either
 
@@ -827,25 +829,6 @@ class Clause(object):
     :param no_argument: set ``True`` if this clause doesn't have any argument
     :type no_argument: bool
 
-    The :func:`qualifier` functions:
-
-    .. autosummary ::
-
-        value
-        identifier
-        paren
-
-    The :func:`joiner` functions:
-
-    .. autosummary ::
-        build_where
-        build_set
-        build_on
-        concat_by_comma
-        concat_by_and
-        concat_by_space
-        concat_by_or
-
     Here is an example of using :class:`Clause`:
 
     >>> values = Clause('values', (value, concat_by_comma, paren))
@@ -984,7 +967,7 @@ def _merge_dicts(default, *updates):
     return result
 
 class Query(object):
-    '''It makes a partial :class:`Statement`.
+    '''It makes :class:`Statement` callable and partializeable.
 
     :param statement: a statement
     :type statement: :class:`Statement`
@@ -1022,8 +1005,8 @@ class Query(object):
         return self.statement.format(clause_args)
 
     def stringify(self, *positional_values, **clause_args):
-        '''It is same as the :meth:`format`, but it let you use keyword
-        arguments.
+        '''It is same as the :meth:`format`, but the parameters are more like a
+        function.
 
         A :class:`Query` instance is callable. When you call it, it uses this
         method to handle.
