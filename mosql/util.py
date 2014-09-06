@@ -739,13 +739,13 @@ def build_on(x):
 def or_(conditions):
     '''It concats the conditions by ``OR``.
 
+    >>> print or_(({'person_id': 'andy'}, {'person_id': 'bob'}))
+    ("person_id" = 'andy') OR ("person_id" = 'bob')
+
     .. versionchanged:: 0.7.2
         It helps you to add parens now.
 
     .. versionadded :: 0.6
-
-    >>> print or_(({'person_id': 'andy'}, {'person_id': 'bob'}))
-    ("person_id" = 'andy') OR ("person_id" = 'bob')
     '''
 
     return concat_by_or(paren(build_where(c)) for c in conditions)
@@ -753,10 +753,10 @@ def or_(conditions):
 def and_(conditions):
     '''It concats the conditions by ``AND``.
 
-    .. versionadded :: 0.7.3
-
     >>> print and_(({'person_id': 'andy'}, {'name': 'Andy'}))
     ("person_id" = 'andy') AND ("name" = 'Andy')
+
+    .. versionadded :: 0.7.3
     '''
 
     return concat_by_and(paren(build_where(c)) for c in conditions)
