@@ -1,37 +1,77 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It provides the basic bricks to build SQLs.
+'''It provides basic bricks to build SQLs.
 
-The classes or functions you may use frequently:
+The five functions below are the core functions of MoSQL and abstract the
+variety of SQL specs. You can override them to let MoSQL support non-standard
+SQL specs.  There are two available built-in patches: :mod:`mosql.mysql` and
+:mod:`mosql.sqlite`.
 
-.. autosummary ::
-    raw
-    default
-    star
-    param
-    or_
-    and_
-    subq
+.. autosummary::
 
-It is designed for standard SQL and tested in PostgreSQL. If your database uses
-non-standard SQL, such as MySQL, you may need to customize and override the
-following functions.
-
-.. autosummary ::
     escape
     format_param
     stringify_bool
     delimit_identifier
     escape_identifier
 
-.. note::
+They are the subclasses of `str`. You can use them to represent simple string
+but having special SQL meaning:
 
-    For MySQL, an official patch is here - :doc:`/mysql`.
+.. autosummary::
 
-If you need to customize more, the following classes may help you.
+    raw
+    param
 
-.. autosummary ::
+The built-in :class:`raw` instances:
+
+.. autosummary::
+
+    default
+    star
+
+The functions which are :func:`qualifier` functions format Python objects into
+SQL string:
+
+.. autosummary::
+
+    value
+    identifier
+    identifier_as
+    identifier_dir
+    paren
+
+The functions which are :func:`joiner` functions concatenate the SQL strings:
+
+.. autosummary::
+
+    concat_by_and
+    concat_by_or
+    concat_by_space
+    concat_by_comma
+    build_values_list
+    build_where
+    build_set
+    build_on
+
+The helper functions below fill the gap between basic Python object and SQL:
+
+.. autosummary::
+
+    or_
+    and_
+    dot
+    as_
+    asc
+    desc
+    in_operand
+    subq
+
+The main classes let you combine the bricks above to create a real SQL builder:
+
+.. autosummary::
+
     Clause
     Statement
     Query
