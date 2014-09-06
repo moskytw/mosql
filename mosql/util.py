@@ -765,6 +765,9 @@ def dot(s, t):
     '''It treats `s` and `t` as identifiers, concats them by ``.``, and then
     makes whole string as :class:`raw`.
 
+    >>> print dot('table', 'column')
+    "table"."column"
+
     ..versionadded :: 0.9.2
     '''
     return raw('{}.{}'.format(identifier(s), identifier(t)))
@@ -772,6 +775,12 @@ def dot(s, t):
 def as_(s, t):
     '''It treats `s` and `t` as identifiers, concats them by ``AS``, and then
     makes whole string as :class:`raw`.
+
+    >>> print as_('column', 'c')
+    "column" AS "c"
+
+    >>> print as_('table.column', 'c')
+    "table"."column" AS "c"
 
     ..versionadded :: 0.9.2
     '''
@@ -781,6 +790,9 @@ def asc(s):
     '''It treats `s` as an identifier, adds ``ASC`` after `s`, and then makes
     whole string as :class:`raw`.
 
+    >>> print asc('score')
+    "score" ASC
+
     ..versionadded :: 0.9.2
     '''
     return raw('{} ASC'.format(identifier(s)))
@@ -788,6 +800,9 @@ def asc(s):
 def desc(s):
     '''It treats `s` as an identifier, adds ``DESC`` after `s`, and then makes
     whole string as :class:`raw`.
+
+    >>> print desc('score')
+    "score" DESC
 
     ..versionadded :: 0.9.2
     '''
