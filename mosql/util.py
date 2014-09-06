@@ -80,7 +80,8 @@ __all__ = [
     'delimit_identifier', 'escape_identifier',
     'raw', 'param', 'default', '___', 'star',
     'qualifier', 'paren', 'value',
-    'DirectionError', 'allowed_directions', 'identifier', 'identifier_as', 'identifier_dir',
+    'DirectionError', 'allowed_directions',
+    'identifier', 'identifier_as', 'identifier_dir',
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
@@ -108,7 +109,8 @@ def debug(s):
 def escape(s):
     '''It escapes the value.
 
-    By default, it just replaces ``'`` (single-quote) with ``''`` (two single-quotes).
+    By default, it just replaces ``'`` (single-quote) with ``''`` (two
+    single-quotes).
 
     It aims at avoiding SQL injection. Here are some examples:
 
@@ -122,7 +124,9 @@ def escape(s):
     select * from person where person_id = '\'' or true; -- ';
 
     .. warning ::
-        Please use UTF-8 as your connection encoing. Simple escaping will have secuirty risk if you use double-byte connection encoding, such as Big5 or GBK.
+        Please use UTF-8 as your connection encoing. Simple escaping will have
+        secuirty risk if you use double-byte connection encoding, such as Big5
+        or GBK.
 
     .. versionchanged:: 0.9.2
         It will raise a ValueError if `s` contains a null byte (\\x00).
@@ -180,7 +184,8 @@ std_delimit_identifier = delimit_identifier
 def escape_identifier(s):
     r'''It escapes the identifier.
 
-    By default, it just replaces ``"`` (double-quote) with ``""`` (two double-quotes).
+    By default, it just replaces ``"`` (double-quote) with ``""`` (two
+    double-quotes).
 
     It also aims at avoid SQL injection. Here are some examples:
 
@@ -194,7 +199,9 @@ def escape_identifier(s):
     select * from person where "person_id"" = '' or true; -- " = 'mosky';
 
     .. warning ::
-        Please use UTF-8 as your connection encoing. Simple escaping will have secuirty risk if you use double-byte connection encoding, such as Big5 or GBK.
+        Please use UTF-8 as your connection encoing. Simple escaping will have
+        secuirty risk if you use double-byte connection encoding, such as Big5
+        or GBK.
     '''
     return s.replace('"', '""')
 
@@ -218,7 +225,8 @@ star = raw('*')
 'The ``*`` keyword in SQL.'
 
 class param(str):
-    '''The :func:`value` builds this type as a parameter for the prepared statement.
+    '''The :func:`value` builds this type as a parameter for the prepared
+    statement.
 
     >>> value(param(''))
     '%s'
@@ -381,7 +389,8 @@ def identifier(s):
 
 @qualifier
 def identifier_as(s):
-    '''A qualifier function which formats Python object as SQL identifiers with ``as``.
+    '''A qualifier function which formats Python object as SQL identifiers with
+    ``as``.
 
     >>> print identifier_as('column_name as c')
     "column_name" AS "c"
@@ -431,7 +440,8 @@ def identifier_as(s):
 
 @qualifier
 def identifier_dir(s):
-    '''A qualifier function which formats Python object as SQL identifiers with order direction.
+    '''A qualifier function which formats Python object as SQL identifiers with
+    order direction.
 
     >>> print identifier_dir('table_name ASC')
     "table_name" ASC
@@ -675,8 +685,8 @@ def build_where(x):
     count(person_id) > 10
 
     .. seealso ::
-        By default, the operators are limited. Check the :attr:`allowed_operators`
-        for more information.
+        By default, the operators are limited. Check the
+        :attr:`allowed_operators` for more information.
     '''
     return _build_condition(x, identifier, value)
 
