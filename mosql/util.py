@@ -9,7 +9,6 @@ SQL specs.  There are two available built-in patches: :mod:`mosql.mysql` and
 :mod:`mosql.sqlite`.
 
 .. autosummary::
-
     escape
     format_param
     stringify_bool
@@ -20,14 +19,12 @@ They are the subclasses of :class:`str`. You can use them to represent simple
 string but having special SQL meaning:
 
 .. autosummary::
-
     raw
     param
 
 The built-in :class:`raw` instances:
 
 .. autosummary::
-
     default
     star
 
@@ -35,7 +32,6 @@ The functions which are :func:`qualifier` functions format Python objects into
 SQL string:
 
 .. autosummary::
-
     value
     identifier
     identifier_as
@@ -45,7 +41,6 @@ SQL string:
 The functions which are :func:`joiner` functions concatenate the SQL strings:
 
 .. autosummary::
-
     concat_by_and
     concat_by_or
     concat_by_space
@@ -58,7 +53,6 @@ The functions which are :func:`joiner` functions concatenate the SQL strings:
 The helper functions below fill the gap between basic Python object and SQL:
 
 .. autosummary::
-
     or_
     and_
     dot
@@ -71,7 +65,6 @@ The helper functions below fill the gap between basic Python object and SQL:
 The main classes let you combine the bricks above to create a real SQL builder:
 
 .. autosummary::
-
     Clause
     Statement
     Query
