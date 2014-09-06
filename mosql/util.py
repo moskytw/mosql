@@ -16,8 +16,8 @@ SQL specs.  There are two available built-in patches: :mod:`mosql.mysql` and
     delimit_identifier
     escape_identifier
 
-They are the subclasses of `str`. You can use them to represent simple string
-but having special SQL meaning:
+They are the subclasses of :class:`str`. You can use them to represent simple
+string but having special SQL meaning:
 
 .. autosummary::
 
@@ -207,7 +207,7 @@ std_escape_identifier = escape_identifier
 
 class raw(str):
     '''The qualifier function does nothing when the input is an instance of this
-    class. This is a subclass of built-in `str` type.
+    class. This is a subclass of built-in :class:`str` type.
 
     .. warning ::
         It is your responsibility to ensure that your SQL queries are properly escaped if you use this class.
@@ -230,7 +230,7 @@ class param(str):
     >>> value(param('name'))
     '%(name)s'
 
-    This is just a subclass of built-in `str` type.
+    This is just a subclass of built-in :class:`str` type.
 
     The :class:`___` is an alias of it.
     '''
