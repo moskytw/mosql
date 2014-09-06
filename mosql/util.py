@@ -976,6 +976,12 @@ class Query(object):
     :param clause_args: the arguments of the clauses you want to predefine
     :type clause_args: dict
 
+    You can use a :class:`Query` instance like a function:
+
+    >>> from mosql.query import insert
+    >>> print insert
+    insert(table=None, set=None, *, insert_into=None, columns=None, values=None, returning=None, on_duplicate_key_update=None)
+
     .. versionadded :: 0.6
     '''
 
