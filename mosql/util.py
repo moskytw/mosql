@@ -825,6 +825,9 @@ def desc(s):
 def in_operand(x):
     '''It stringifies `x` as an right operand for ``IN``.
 
+    >>> print in_operand(['a', 'b', 'c'])
+    ('a', 'b', 'c')
+
     .. versionadded:: 0.9.2
     '''
 
