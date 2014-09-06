@@ -331,9 +331,9 @@ class DirectionError(Exception):
         return 'this direction is not allowed: %r' % self.op
 
 allowed_directions = set(['DESC', 'ASC'])
-'''The directions which are allowed by :func:`identifier`.
+'''The directions which are allowed by :func:`identifier_dir`.
 
-An :exc:`DirectionError` is raised if a direction not allowed is found.
+A :exc:`DirectionError` will be raised if a direction not allowed is found.
 
 .. versionchanged:: 0.9.2
     It's not disableable anymore. Use :class:`raw` instead.
@@ -390,7 +390,7 @@ def identifier(s):
 @qualifier
 def identifier_as(s):
     '''A qualifier function which formats Python object as SQL identifiers with
-    ``as``.
+    ``AS``.
 
     >>> print identifier_as('column_name as c')
     "column_name" AS "c"
@@ -398,7 +398,8 @@ def identifier_as(s):
     >>> print identifier_as('table_name.column_name as c')
     "table_name"."column_name" AS "c"
 
-    It also supports to use pair in pair-list format.
+    It also supports to use pair in pair-list format. It is a qualifier
+    function, so you have to put the pair in another list.
 
     >>> print identifier_as([('table_name.column_name', 'c')])[0]
     "table_name"."column_name" AS "c"
@@ -414,7 +415,7 @@ def identifier_as(s):
     >>> print identifier_as('table_name.column_name')
     "table_name"."column_name"
 
-    ..versionadded :: 0.9.2
+    .. versionadded:: 0.9.2
     '''
 
     # i: identifier part
@@ -449,6 +450,9 @@ def identifier_dir(s):
     >>> print identifier_dir('table_name.column_name DESC')
     "table_name"."column_name" DESC
 
+    It also supports to use pair in pair-list format. It is a qualifier
+    function, so you have to put the pair in another list.
+
     >>> print identifier_dir([('table_name.column_name', 'ASC')])[0]
     "table_name"."column_name" ASC
 
@@ -463,7 +467,7 @@ def identifier_dir(s):
     >>> print identifier_dir('table_name.column_name')
     "table_name"."column_name"
 
-    ..versionadded :: 0.9.2
+    .. versionadded:: 0.9.2
     '''
 
     # i: identifier part
@@ -550,7 +554,7 @@ allowed_operators = set([
 ])
 '''The operators which are allowed by :func:`build_where`.
 
-An :exc:`OperatorError` is raised if an operator not allowed is found.
+An :exc:`OperatorError` will be raised if an operator not allowed is found.
 
 .. versionchanged:: 0.9.2
     It's not disableable anymore. Use :class:`raw` instead.
@@ -755,7 +759,7 @@ def or_(conditions):
     .. versionchanged:: 0.7.2
         It helps you to add parens now.
 
-    .. versionadded :: 0.6
+    .. versionadded:: 0.6
     '''
 
     return concat_by_or(paren(build_where(c)) for c in conditions)
@@ -766,7 +770,7 @@ def and_(conditions):
     >>> print and_(({'person_id': 'andy'}, {'name': 'Andy'}))
     ("person_id" = 'andy') AND ("name" = 'Andy')
 
-    .. versionadded :: 0.7.3
+    .. versionadded:: 0.7.3
     '''
 
     return concat_by_and(paren(build_where(c)) for c in conditions)
@@ -778,7 +782,7 @@ def dot(s, t):
     >>> print dot('table', 'column')
     "table"."column"
 
-    ..versionadded :: 0.9.2
+    .. versionadded:: 0.9.2
     '''
     return raw('{}.{}'.format(identifier(s), identifier(t)))
 
@@ -792,7 +796,7 @@ def as_(s, t):
     >>> print as_('table.column', 'c')
     "table"."column" AS "c"
 
-    ..versionadded :: 0.9.2
+    .. versionadded:: 0.9.2
     '''
     return raw('{} AS {}'.format(identifier(s), identifier(t)))
 
@@ -803,7 +807,7 @@ def asc(s):
     >>> print asc('score')
     "score" ASC
 
-    ..versionadded :: 0.9.2
+    .. versionadded:: 0.9.2
     '''
     return raw('{} ASC'.format(identifier(s)))
 
@@ -814,14 +818,14 @@ def desc(s):
     >>> print desc('score')
     "score" DESC
 
-    ..versionadded :: 0.9.2
+    .. versionadded:: 0.9.2
     '''
     return raw('{} DESC'.format(identifier(s)))
 
 def in_operand(x):
     '''It stringifies `x` as an right operand for ``IN``.
 
-    ..versionadded :: 0.9.2
+    .. versionadded:: 0.9.2
     '''
 
     if not _is_iterable_not_str(x):
@@ -832,7 +836,7 @@ def in_operand(x):
 def subq(s):
     '''It adds parens and makes `s` as :class:`raw`.
 
-    ..versionadded :: 0.9.2
+    .. versionadded:: 0.9.2
     '''
     return raw(paren(s))
 
@@ -867,10 +871,10 @@ class Clause(object):
     >>> print values.format((raw('r'), 'b', 'c'))
     VALUES (r, 'b', 'c')
 
-    .. versionchanged :: 0.9
+    .. versionchanged:: 0.9
         Added `no_argument` and made `formatters` has default.
 
-    .. versionchanged :: 0.6
+    .. versionchanged:: 0.6
         Added two arguments, `alias` and `default`.
     '''
 
@@ -941,7 +945,7 @@ class Statement(object):
     ... })
     INSERT INTO "person" ("person_id", "name") VALUES ('daniel', 'Diane Leonard')
 
-    .. versionchanged :: 0.6
+    .. versionchanged:: 0.6
         Added `preprocessor`.
     '''
 
@@ -1007,7 +1011,7 @@ class Query(object):
     >>> print insert
     insert(table=None, set=None, *, insert_into=None, columns=None, values=None, returning=None, on_duplicate_key_update=None)
 
-    .. versionadded :: 0.6
+    .. versionadded:: 0.6
     '''
 
     def __init__(self, statement, positional_keys=None, clause_args=None):
