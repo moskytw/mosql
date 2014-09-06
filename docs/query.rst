@@ -61,7 +61,7 @@ If you want to build you own, there are all basic bricks you need -
     >>> print select('person', {'name like': 'Mosky%'}, order_by=('age ; DROP person; --', ))
     Traceback (most recent call last):
         ...
-    OptionError: this option is not allowed: '; DROP PERSON; --'
+    DirectionError: this direction is not allowed: '; DROP PERSON; --'
 
     .. seealso ::
         The options allowed --- :attr:`mosql.util.allowed_options`.

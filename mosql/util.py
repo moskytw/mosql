@@ -80,7 +80,7 @@ __all__ = [
     'delimit_identifier', 'escape_identifier',
     'raw', 'param', 'default', '___', 'star',
     'qualifier', 'paren', 'value',
-    'OptionError', 'allowed_options', 'identifier', 'identifier_as', 'identifier_dir',
+    'DirectionError', 'allowed_directions', 'identifier', 'identifier_as', 'identifier_dir',
     'joiner',
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
@@ -309,23 +309,23 @@ def value(x):
     else:
         return str(x)
 
-class OptionError(Exception):
+class DirectionError(Exception):
     '''The instance of it will be raised when :func:`identifier` detects an
-    invalid option.
+    invalid direction.
 
     .. seealso ::
-        The operators allowed --- :attr:`allowed_options`.'''
+        The operators allowed --- :attr:`allowed_directions`.'''
 
     def __init__(self, op):
         self.op = op
 
     def __str__(self):
-        return 'this option is not allowed: %r' % self.op
+        return 'this direction is not allowed: %r' % self.op
 
-allowed_options = set(['DESC', 'ASC'])
-'''The options which are allowed by :func:`identifier`.
+allowed_directions = set(['DESC', 'ASC'])
+'''The directions which are allowed by :func:`identifier`.
 
-An :exc:`OptionError` is raised if an option not allowed is found.
+An :exc:`DirectionError` is raised if a direction not allowed is found.
 
 .. versionchanged:: 0.9.2
     It's not disableable anymore. Use :class:`raw` instead.
@@ -472,8 +472,8 @@ def identifier_dir(s):
         # PostgreSQL supports ``USING operator``, ``NULLS FIRST``, ...
         if not isinstance(d, raw):
             d = d.upper()
-            if d not in allowed_options:
-                raise OptionError(d)
+            if d not in allowed_directions:
+                raise DirectionError(d)
         return identifier(i)+ ' '+d
 
 @qualifier

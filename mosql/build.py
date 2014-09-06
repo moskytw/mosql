@@ -164,7 +164,7 @@ def select(table, where=None, select=None, **clauses_args):
     >>> print select('person', {'name like': 'Mosky%'}, order_by=('age ; DROP person; --', ))
     Traceback (most recent call last):
         ...
-    OptionError: this option is not allowed: '; DROP PERSON; --'
+    DirectionError: this direction is not allowed: '; DROP PERSON; --'
 
     .. seealso::
         The options allowed --- :attr:`mosql.util.allowed_options`.
