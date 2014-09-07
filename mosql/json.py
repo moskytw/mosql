@@ -46,7 +46,7 @@ class ModelJSONEncoder(json.JSONEncoder):
 
         try:
             return json.JSONEncoder.default(self, obj)
-        except TypeError, e:
+        except TypeError as e:
             if isinstance(obj, (datetime, date)):
                 return obj.isoformat()
             elif isinstance(obj, Model):

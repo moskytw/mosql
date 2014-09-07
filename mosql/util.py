@@ -101,10 +101,10 @@ from functools import wraps
 from datetime import datetime, date, time
 
 def warning(s):
-    print >> sys.stderr, 'Warning: {}'.format(s)
+    print('Warning: {}'.format(s), file=sys.stderr)
 
 def debug(s):
-    print >> sys.stderr, 'Debug: {}'.format(s)
+    print(sys.stderr, 'Debug: {}'.format(s), file=sys.stderr)
 
 # core functions
 
@@ -251,7 +251,7 @@ ___ = param
 # qualifier functions
 
 def _is_iterable_not_str(x):
-    return not isinstance(x, basestring) and hasattr(x, '__iter__')
+    return not isinstance(x, (type, basestring)) and hasattr(x, '__iter__')
 
 def qualifier(f):
     '''A decorator which makes all items in an `iterable` apply a qualifier
