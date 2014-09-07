@@ -75,6 +75,8 @@ The main classes let you combine the bricks above to create a final SQL builder:
     It is rewritten and totally different from old version.
 '''
 
+from __future__ import unicode_literals
+
 __all__ = [
     'escape', 'format_param', 'stringify_bool',
     'delimit_identifier', 'escape_identifier',
@@ -269,8 +271,8 @@ def qualifier(f):
         elif _is_iterable_not_str(x):
             return [item if isinstance(item, raw) else f(item) for item in x]
         else:
-            if isinstance(x, unicode):
-                x = x.encode('utf-8')
+            if not isinstance(x, unicode):
+                x = x.decode('utf-8')
             return f(x)
 
     return qualifier_wrapper
