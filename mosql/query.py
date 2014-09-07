@@ -5,7 +5,8 @@
 
 __all__ = [
     'insert', 'select', 'update', 'delete',
-    'join', 'left_join', 'right_join', 'cross_join'
+    'join', 'left_join', 'right_join', 'cross_join',
+    'replace'
 ]
 
 from .util import Query
