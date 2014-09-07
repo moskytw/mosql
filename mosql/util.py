@@ -214,7 +214,8 @@ class raw(str):
     class. This is a subclass of built-in :class:`str` type.
 
     .. warning ::
-        It's your responsibility to ensure the security when you use :class:`raw` string.
+        It's your responsibility to ensure the security when you use
+        :class:`raw` string.
     '''
 
     def __repr__(self):
