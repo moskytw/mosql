@@ -104,7 +104,7 @@ def warning(s):
 def debug(s):
     print >> sys.stderr, 'Debug: {}'.format(s)
 
-# lowest-level
+# core functions
 
 def escape(s):
     '''It escapes the value.
@@ -207,6 +207,8 @@ def escape_identifier(s):
 
 std_escape_identifier = escape_identifier
 
+# special str subclass
+
 class raw(str):
     '''The qualifier functions do nothing when the input is an instance of this
     class. This is a subclass of built-in :class:`str` type.
@@ -243,7 +245,7 @@ class param(str):
 
 ___ = param
 
-# low-level
+# qualifier functions
 
 def _is_iterable_not_str(x):
     return not isinstance(x, basestring) and hasattr(x, '__iter__')
@@ -494,6 +496,8 @@ def identifier_dir(s):
 def paren(s):
     '''A qualifier function which encloses the input with ``()`` (paren).'''
     return '(%s)' % s
+
+# joiner functions
 
 def joiner(f):
     '''A decorator which makes the input apply this function only if the input
@@ -748,7 +752,7 @@ def build_on(x):
     '''
     return _build_condition(x, identifier, identifier)
 
-# high-level
+# helper functions
 
 def or_(conditions):
     '''It concats the conditions by ``OR``.
