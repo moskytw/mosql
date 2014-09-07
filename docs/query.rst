@@ -160,6 +160,15 @@ If you want to build you own, there are all basic bricks you need -
     >>> print insert('person', values=('mosky', 'Mosky Liu'), on_duplicate_key_update={'name': 'Mosky Liu'})
     INSERT INTO "person" VALUES ('mosky', 'Mosky Liu') ON DUPLICATE KEY UPDATE "name"='Mosky Liu'
 
+    Print it for the full usage:
+
+    ::
+
+        insert(table=None, set=None, *, insert_into=None, columns=None, values=None, returning=None, on_duplicate_key_update=None)
+
+    .. versionchanged:: 0.9.2
+        Support to use multiple values-tuple.
+
 .. py:function:: replace(table=None, set=None, **clause_args)
 
     It generates the SQL statement, ``REPLACE INTO...`` .
@@ -180,6 +189,12 @@ If you want to build you own, there are all basic bricks you need -
     >>> print replace('person', values=('mosky', 'Mosky Liu'))
     REPLACE INTO "person" VALUES ('mosky', 'Mosky Liu')
 
+    Print it for the full usage:
+
+    ::
+
+        replace(table=None, set=None, *, replace_into=None, columns=None, values=None)
+
 .. py:function:: update(table=None, where=None, set=None, **clause_args)
 
     It generates the SQL statement, ``UPDATE ...`` .
@@ -191,6 +206,12 @@ If you want to build you own, there are all basic bricks you need -
 
     >>> print update('person', (('person_id', 'mosky'), ), (('name', 'Mosky Liu'),) )
     UPDATE "person" SET "name"='Mosky Liu' WHERE "person_id" = 'mosky'
+
+    Print it for the full usage:
+
+    ::
+
+        update(table=None, where=None, set=None, *, update=None, set=None, where=None, returning=None)
 
     .. seealso::
         How it builds the where clause --- :func:`mosql.util.build_set`
@@ -206,6 +227,12 @@ If you want to build you own, there are all basic bricks you need -
 
     >>> print delete('person', (('person_id', 'mosky'), ))
     DELETE FROM "person" WHERE "person_id" = 'mosky'
+
+    Print it for the full usage:
+
+    ::
+
+        delete(table=None, where=None, *, delete_from=None, where=None, returning=None)
 
 .. py:function:: join(table=None, on=None, **clause_args)
 
@@ -225,6 +252,12 @@ If you want to build you own, there are all basic bricks you need -
 
     >>> print select('person', joins=join('detail', type='cross'))
     SELECT * FROM "person" CROSS JOIN "detail"
+
+    Print it for the full usage:
+
+    ::
+
+        join(table=None, on=None, *, type=None, join=None, on=None, using=None)
 
     .. seealso::
         How it builds the where clause --- :func:`mosql.util.build_on`
