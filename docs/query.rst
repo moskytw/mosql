@@ -62,12 +62,6 @@ If you want to build you own, there are all basic bricks you need -
     >>> print select('person', {'name like': 'Mosky%'}, limit=3, offset=1)
     SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' LIMIT 3 OFFSET 1
 
-    Print it for the full usage:
-
-    ::
-
-        select(table=None, where=None, *, select=None, from=None, joins=None, where=None, group_by=None, having=None, order_by=None, limit=None, offset=None, for=None, of=None, nowait=None, for_update=None, lock_in_share_mode=None)
-
     The operators are also supported:
 
     >>> print select('person', {'person_id': ('andy', 'bob')})
@@ -119,6 +113,12 @@ If you want to build you own, there are all basic bricks you need -
         <http://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html>`_ for
         more detail.
 
+    Print it for the full usage:
+
+    ::
+
+        select(table=None, where=None, *, select=None, from=None, joins=None, where=None, group_by=None, having=None, order_by=None, limit=None, offset=None, for=None, of=None, nowait=None, for_update=None, lock_in_share_mode=None)
+
     .. seealso::
         How it builds the where clause --- :func:`mosql.util.build_where`
 
@@ -140,10 +140,15 @@ If you want to build you own, there are all basic bricks you need -
     >>> print insert('person', columns=('person_id', 'name'), values=('mosky', 'Mosky Liu'))
     INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 
-    The columns is ignorable:
+    The `columns` is ignorable:
 
     >>> print insert('person', values=('mosky', 'Mosky Liu'))
     INSERT INTO "person" VALUES ('mosky', 'Mosky Liu')
+
+    It also supports to include multiple values-tuple.
+
+    >>> print insert('person', values=[('mosky', 'Mosky Liu'), ('yiyu', 'Yi-Yu Liu')])
+    INSERT INTO "person" VALUES ('mosky', 'Mosky Liu'), ('yiyu', 'Yi-Yu Liu')
 
     All of the :func:`insert`, :func:`update` and :func:`delete` support ``returning``.
 
