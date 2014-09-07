@@ -75,7 +75,7 @@ The main classes let you combine the bricks above to create a final SQL builder:
     It is rewritten and totally different from old version.
 '''
 
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 
 __all__ = [
     'escape', 'format_param', 'stringify_bool',
