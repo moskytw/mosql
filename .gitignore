@@ -4,4 +4,6 @@
 
 #
 /mosql.egg-info
+/build
 /dist
+
