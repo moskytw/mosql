@@ -8,8 +8,7 @@ If you want to build you own, there are all basic bricks you need -
 
 .. note::
 
-    If you are using non-standard SQL, such as MySQL, you need to patch the
-    :mod:`mosql.util`. For MySQL, an official patch is here - :doc:`/mysql`.
+    If you are using non-standard SQL, such as MySQL, check :doc:`patches`.
 
 .. versionadded:: v0.6
 
@@ -25,7 +24,7 @@ If you want to build you own, there are all basic bricks you need -
 
     It generates the SQL statement, ``SELECT ...`` .
 
-    The following usages generate the same SQL statement.
+    The following usages generate the same SQL statement:
 
     >>> print select('person', {'person_id': 'mosky'})
     SELECT * FROM "person" WHERE "person_id" = 'mosky'
@@ -38,9 +37,6 @@ If you want to build you own, there are all basic bricks you need -
     >>> print select('person', columns=('person.person_id', 'person.name'))
     SELECT "person"."person_id", "person"."name" FROM "person"
 
-    >>> print select('table', {'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
-    SELECT * FROM "table" WHERE "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
-
     The prepare statement is also available with :class:`mosql.util.param`:
 
     >>> print select('table', {'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
@@ -48,9 +44,6 @@ If you want to build you own, there are all basic bricks you need -
 
     You can also specify the ``group_by``, ``having``, ``order_by``, ``limit``
     and ``offset`` in the keyword arguments. Here are some examples:
-
-    >>> print select('person', {'name like': 'Mosky%'}, group_by=('age', ))
-    SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' GROUP BY "age"
 
     >>> print select('person', {'name like': 'Mosky%'}, order_by=('age', ))
     SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' ORDER BY "age"
@@ -63,11 +56,17 @@ If you want to build you own, there are all basic bricks you need -
         ...
     DirectionError: this direction is not allowed: '; DROP PERSON; --'
 
-    .. seealso ::
+    .. seealso::
         The directions allowed --- :attr:`mosql.util.allowed_directions`.
 
     >>> print select('person', {'name like': 'Mosky%'}, limit=3, offset=1)
     SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' LIMIT 3 OFFSET 1
+
+    Print it for the full usage:
+
+    ::
+
+        select(table=None, where=None, *, select=None, from=None, joins=None, where=None, group_by=None, having=None, order_by=None, limit=None, offset=None, for=None, of=None, nowait=None, for_update=None, lock_in_share_mode=None)
 
     The operators are also supported:
 
@@ -85,7 +84,7 @@ If you want to build you own, there are all basic bricks you need -
         ...
     OperatorError: this operator is not allowed: "= '' OR TRUE; --"
 
-    .. seealso ::
+    .. seealso::
         The operators allowed --- :attr:`mosql.util.allowed_operators`.
 
     If you want to use functions, wrap it with :class:`mosql.util.raw`:
@@ -93,12 +92,16 @@ If you want to build you own, there are all basic bricks you need -
     >>> print select('person', columns=raw('count(*)'), group_by=('age', ))
     SELECT count(*) FROM "person" GROUP BY "age"
 
+    .. warning::
+        It's your responsibility to ensure the security when you use
+        :class:`raw` string.
+
     The PostgreSQL-specific ``FOR``, ``OF`` and ``NOWAIT`` are also supported:
 
     >>> print select('person', {'person_id': 1}, for_='update', of=('person', ), nowait=True)
     SELECT * FROM "person" WHERE "person_id" = 1 FOR UPDATE OF "person" NOWAIT
 
-    .. seealso ::
+    .. seealso::
         Check `PostgreSQL SELECT - The locking Clause
         <http://www.postgresql.org/docs/9.3/static/sql-select.html#SQL-FOR-UPDATE-SHARE>`_
         for more detail.
@@ -111,15 +114,12 @@ If you want to build you own, there are all basic bricks you need -
     >>> print select('person', {'person_id': 1}, lock_in_share_mode=True)
     SELECT * FROM "person" WHERE "person_id" = 1 LOCK IN SHARE MODE
 
-    .. seealso ::
+    .. seealso::
         Check `MySQL Locking Reads
         <http://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html>`_ for
         more detail.
 
-    .. warning ::
-        It is your responsibility to ensure that your SQL queries are properly escaped if you use :class:`mosql.util.raw`.
-
-    .. seealso ::
+    .. seealso::
         How it builds the where clause --- :func:`mosql.util.build_where`
 
     .. versionchanged:: 0.9
@@ -187,7 +187,7 @@ If you want to build you own, there are all basic bricks you need -
     >>> print update('person', (('person_id', 'mosky'), ), (('name', 'Mosky Liu'),) )
     UPDATE "person" SET "name"='Mosky Liu' WHERE "person_id" = 'mosky'
 
-    .. seealso ::
+    .. seealso::
         How it builds the where clause --- :func:`mosql.util.build_set`
 
 .. py:function:: delete(table=None, where=None, **clause_args)
@@ -221,7 +221,7 @@ If you want to build you own, there are all basic bricks you need -
     >>> print select('person', joins=join('detail', type='cross'))
     SELECT * FROM "person" CROSS JOIN "detail"
 
-    .. seealso ::
+    .. seealso::
         How it builds the where clause --- :func:`mosql.util.build_on`
 
 .. py:function:: left_join(table=None, on=None, **clause_args)
