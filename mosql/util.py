@@ -150,11 +150,11 @@ def format_param(s=''):
     By default, it formats the parameter in `pyformat
     <http://www.python.org/dev/peps/pep-0249/#paramstyle>`_.
 
-    >>> format_param('name')
-    '%(name)s'
+    >>> print(format_param('name'))
+    %(name)s
 
-    >>> format_param()
-    '%s'
+    >>> print(format_param())
+    %s
     '''
     return '%%(%s)s' % s if s else '%s'
 
@@ -211,7 +211,7 @@ std_escape_identifier = escape_identifier
 
 # special str subclass
 
-class raw(str):
+class raw(unicode):
     '''The qualifier functions do nothing when the input is an instance of this
     class. This is a subclass of built-in :class:`str` type.
 
@@ -229,14 +229,14 @@ default = raw('DEFAULT')
 star = raw('*')
 'The ``*`` keyword in SQL.'
 
-class param(str):
+class param(unicode):
     '''The :func:`value` builds this type as a parameter for the prepared
     statement.
 
-    >>> value(param(''))
-    '%s'
-    >>> value(param('name'))
-    '%(name)s'
+    >>> print(value(param('')))
+    %s
+    >>> print(value(param('name')))
+    %(name)s
 
     This is just a subclass of built-in :class:`str` type.
 
@@ -271,7 +271,7 @@ def qualifier(f):
         elif _is_iterable_not_str(x):
             return [item if isinstance(item, raw) else f(item) for item in x]
         else:
-            if not isinstance(x, unicode):
+            if isinstance(x, basestring) and not isinstance(x, unicode):
                 x = x.decode('utf-8')
             return f(x)
 
