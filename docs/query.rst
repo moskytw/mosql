@@ -64,7 +64,7 @@ If you want to build you own, there are all basic bricks you need -
     DirectionError: this direction is not allowed: '; DROP PERSON; --'
 
     .. seealso ::
-        The options allowed --- :attr:`mosql.util.allowed_options`.
+        The directions allowed --- :attr:`mosql.util.allowed_directions`.
 
     >>> print select('person', {'name like': 'Mosky%'}, limit=3, offset=1)
     SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' LIMIT 3 OFFSET 1
