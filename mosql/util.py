@@ -994,7 +994,7 @@ class Statement(object):
             if arg:
                 pieces.append(clause.format(arg))
 
-        return ' '.join(pieces).encode('utf-8')
+        return ' '.join(pieces)
 
     def __repr__(self):
         return 'Statement(%r)' % self.clauses
