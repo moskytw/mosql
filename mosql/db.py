@@ -20,6 +20,7 @@ The functions designed for cursor:
 
 from itertools import groupby, izip
 from collections import deque
+from threading import Lock
 
 class Database(object):
     '''It is a context manager which manages the creation and destruction of a
@@ -96,38 +97,44 @@ class Database(object):
         self._conn = None
         self._cur_stack = deque()
 
+        self._lock = Lock()
+
     def __enter__(self):
 
-        # check if we need to create connection
-        if not self._conn:
-            assert callable(self.getconn), "You must set getconn if you don't \
-                specify a module."
-            self._conn = self.getconn()
+        with self._lock:
 
-        # get the cursor
-        cur = self.getcur(self._conn)
+            # check if we need to create connection
+            if not self._conn:
+                assert callable(self.getconn), "You must set getconn if you \
+                don't specify a module."
+                self._conn = self.getconn()
 
-        # push it into stack
-        self._cur_stack.append(cur)
+            # get the cursor
+            cur = self.getcur(self._conn)
 
-        return cur
+            # push it into stack
+            self._cur_stack.append(cur)
+
+            return cur
 
     def __exit__(self, exc_type, exc_val, exc_tb):
 
-        # close the cursor
-        cur = self._cur_stack.pop()
-        self.putcur(cur)
+        with self._lock:
 
-        # rollback or commit
-        if exc_type:
-            self._conn.rollback()
-        else:
-            self._conn.commit()
+            # close the cursor
+            cur = self._cur_stack.pop()
+            self.putcur(cur)
 
-        # close the connection if all cursors are closed
-        if not self._cur_stack and not self.to_keep_conn:
-            self.putconn(self._conn)
-            self._conn = None
+            # rollback or commit
+            if exc_type:
+                self._conn.rollback()
+            else:
+                self._conn.commit()
+
+            # close the connection if all cursors are closed and not to keep
+            if self._conn and not self._cur_stack and not self.to_keep_conn:
+                self.putconn(self._conn)
+                self._conn = None
 
 def extact_col_names(cur):
     '''Extracts the column names from a cursor.
