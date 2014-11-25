@@ -21,6 +21,7 @@ def insert_preprocessor(clause_args):
             pairs = clause_args['set'].items()
         else:
             pairs = clause_args['set']
+        del clause_args['set']
 
         if pairs:
             clause_args['columns'], clause_args['values'] = zip(*pairs)

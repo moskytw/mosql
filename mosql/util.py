@@ -974,6 +974,11 @@ class Statement(object):
             clause_args = clause_args.copy()
             self.preprocessor(clause_args)
 
+        # it is for checking unused clause args
+        # e.g., select(wehere={})
+        # ca: clause_args
+        unused_ca_count = len(clause_args)
+
         pieces = []
         for clause in self.clauses:
 
@@ -982,6 +987,7 @@ class Statement(object):
             for possible in clause.possibles:
                 if possible in clause_args:
                     arg = clause_args[possible]
+                    unused_ca_count -= 1
                     break
 
             # if not found and have default, use default
@@ -991,6 +997,18 @@ class Statement(object):
             # if not found or len(arg) == 0
             if arg:
                 pieces.append(clause.format(arg))
+
+        if unused_ca_count:
+            all_possibles = set(
+                p
+                for p in clause.possibles
+                for clause in self.clauses
+            )
+            raise TypeError('unused clause args: {}'.format(', '.join(
+                k
+                for k in clause_args
+                if k not in all_possibles
+            )))
 
         return ' '.join(pieces)
 
