@@ -69,6 +69,14 @@ class Database(object):
         db.putconn = lambda conn: pool.putconn(conn)
         db.getcur  = lambda conn: conn.cursor('named-cusor')
         db.putcur  = lambda cur : cur.close()
+
+    If you want to keep connection after leave with-block, use:
+
+    ::
+
+        db.to_keep_conn = True
+
+    It is useful for the single-thread environment.
     '''
 
     def __init__(self, module=None, *conn_args, **conn_kargs):
@@ -82,13 +90,16 @@ class Database(object):
         self.getcur  = lambda conn: conn.cursor()
         self.putcur  = lambda cur : cur.close()
 
+        # cache conn or not
+        self.to_keep_conn = False
+
         self._conn = None
         self._cur_stack = deque()
 
     def __enter__(self):
 
         # check if we need to create connection
-        if not self._cur_stack:
+        if not self._conn:
             assert callable(self.getconn), "You must set getconn if you don't \
                 specify a module."
             self._conn = self.getconn()
@@ -114,8 +125,9 @@ class Database(object):
             self._conn.commit()
 
         # close the connection if all cursors are closed
-        if not self._cur_stack:
+        if not self._cur_stack and not self.to_keep_conn:
             self.putconn(self._conn)
+            self._conn = None
 
 def extact_col_names(cur):
     '''Extracts the column names from a cursor.
