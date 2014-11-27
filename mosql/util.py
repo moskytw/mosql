@@ -104,6 +104,9 @@ def warning(s):
 def debug(s):
     print >> sys.stderr, 'Debug: {}'.format(s)
 
+def echo(s):
+    print >> sys.stderr, s
+
 # core functions
 
 def escape(s):
@@ -1100,6 +1103,21 @@ class Query(object):
                 for clause in self.statement.clauses
             )
         )
+
+    _format = format
+
+    def _format_n_echo(self, clause_args=None):
+        sql = self._format(clause_args)
+        echo(sql)
+        return sql
+
+    @classmethod
+    def enable_echo(cls):
+        cls.format = cls._format_n_echo
+
+    @classmethod
+    def disable_echo(cls):
+        cls.format = cls._format
 
 if __name__ == '__main__':
     import doctest
