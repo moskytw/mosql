@@ -24,7 +24,8 @@ If you want to build you own, there are all basic bricks you need -
 
     It generates the SQL statement, ``SELECT ...`` .
 
-    The following usages generate the same SQL statement:
+
+    Use `dict` or `pairs` to represent a where condition:
 
     >>> print select('person', {'person_id': 'mosky'})
     SELECT * FROM "person" WHERE "person_id" = 'mosky'
@@ -32,35 +33,9 @@ If you want to build you own, there are all basic bricks you need -
     >>> print select('person', (('person_id', 'mosky'), ))
     SELECT * FROM "person" WHERE "person_id" = 'mosky'
 
-    It also can handle the dot in an identifier:
-
-    >>> print select('person', columns=('person.person_id', 'person.name'))
-    SELECT "person"."person_id", "person"."name" FROM "person"
-
-    The prepare statement is also available with :class:`mosql.util.param`:
-
-    >>> print select('table', {'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
-    SELECT * FROM "table" WHERE "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
-
-    You can also specify the ``group_by``, ``having``, ``order_by``, ``limit``
-    and ``offset`` in the keyword arguments. Here are some examples:
-
-    >>> print select('person', {'name like': 'Mosky%'}, order_by=('age', ))
-    SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' ORDER BY "age"
-
-    >>> print select('person', {'name like': 'Mosky%'}, order_by=('age desc', ))
-    SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' ORDER BY "age" DESC
-
-    >>> print select('person', {'name like': 'Mosky%'}, order_by=('age ; DROP person; --', ))
-    Traceback (most recent call last):
-        ...
-    DirectionError: this direction is not allowed: '; DROP PERSON; --'
-
-    .. seealso::
-        The directions allowed --- :attr:`mosql.util.allowed_directions`.
-
     >>> print select('person', {'name like': 'Mosky%'}, limit=3, offset=1)
     SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' LIMIT 3 OFFSET 1
+
 
     The operators are also supported:
 
@@ -84,7 +59,8 @@ If you want to build you own, there are all basic bricks you need -
     .. seealso::
         The operators allowed --- :attr:`mosql.util.allowed_operators`.
 
-    Some special cases:
+
+    Some special cases that :class:`~mosql.util.Query` works around for you:
 
     >>> print select('person', {'person_id': ()})
     SELECT * FROM "person" WHERE FALSE
@@ -95,6 +71,51 @@ If you want to build you own, there are all basic bricks you need -
     >>> print select('person', where={})
     SELECT * FROM "person"
 
+    .. seealso::
+        How MoSQL builds where clause --- :func:`mosql.util.build_where`
+
+
+    The `columns` is an alias of standard clause argument, `select`. Any simple
+    `iterable` represents the list in SQL. It also understands the ``.`` (dot)
+    and even ``AS`` in your `str`.
+
+    >>> print select('person', select=('person.person_id', 'person.name'))
+    SELECT "person"."person_id", "person"."name" FROM "person"
+
+    >>> print select('person', columns=('person.person_id', 'person.name'))
+    SELECT "person"."person_id", "person"."name" FROM "person"
+
+    >>> print select('person', columns=('person.person_id as id', 'person.name'))
+    SELECT "person"."person_id" AS "id", "person"."name" FROM "person"
+
+    .. seealso::
+        How MoSQL handles identifier allowed as --- :func:`mosql.util.identifier_as`
+
+
+    Specify `group_by`, `having`, `order_by`, `limit` and `offset` in keyword
+    arguments:
+
+    >>> print select('person', {'name like': 'Mosky%'}, order_by=('age', ))
+    SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' ORDER BY "age"
+
+    >>> print select('person', {'name like': 'Mosky%'}, order_by=('age desc', ))
+    SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' ORDER BY "age" DESC
+
+    >>> print select('person', {'name like': 'Mosky%'}, order_by=('age ; DROP person; --', ))
+    Traceback (most recent call last):
+        ...
+    DirectionError: this direction is not allowed: '; DROP PERSON; --'
+
+    .. seealso::
+        The directions allowed --- :attr:`mosql.util.allowed_directions`.
+
+
+    The prepare statement is also available with :class:`mosql.util.param`:
+
+    >>> print select('table', {'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
+    SELECT * FROM "table" WHERE "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
+
+
     If you want to use functions, wrap it with :class:`mosql.util.raw`:
 
     >>> print select('person', columns=raw('count(*)'), group_by=('age', ))
@@ -103,6 +124,7 @@ If you want to build you own, there are all basic bricks you need -
     .. warning::
         It's your responsibility to ensure the security when you use
         :class:`raw` string.
+
 
     The PostgreSQL-specific ``FOR``, ``OF`` and ``NOWAIT`` are also supported:
 
@@ -113,6 +135,7 @@ If you want to build you own, there are all basic bricks you need -
         Check `PostgreSQL SELECT - The locking Clause
         <http://www.postgresql.org/docs/9.3/static/sql-select.html#SQL-FOR-UPDATE-SHARE>`_
         for more detail.
+
 
     The MySQL-specific ``FOR UPDATE`` and ``LOCK IN SHARE MODE`` are also available:
 
@@ -127,13 +150,15 @@ If you want to build you own, there are all basic bricks you need -
         <http://dev.mysql.com/doc/refman/5.7/en/innodb-locking-reads.html>`_ for
         more detail.
 
+
     Print it for the full usage:
 
     ::
 
         select(table=None, where=None, *, select=None, from=None, joins=None, where=None, group_by=None, having=None, order_by=None, limit=None, offset=None, for=None, of=None, nowait=None, for_update=None, lock_in_share_mode=None)
 
-    Echo the SQL:
+
+    The last tip, echo the SQL to debug:
 
     ::
 
@@ -143,8 +168,6 @@ If you want to build you own, there are all basic bricks you need -
         >>> print sql
         SELECT *
 
-    .. seealso::
-        How it builds the where clause --- :func:`mosql.util.build_where`
 
     .. versionchanged:: 0.9
         Added ``FOR UPDATE`` and ``LOCK IN SHARE MODE``.
