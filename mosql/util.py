@@ -1111,13 +1111,13 @@ class Query(object):
         echo(sql)
         return sql
 
-    @classmethod
-    def enable_echo(cls):
-        cls.format = cls._format_n_echo
+    def enable_echo(self):
+        '''Enables echo.'''
+        self.format = self._format_n_echo
 
-    @classmethod
-    def disable_echo(cls):
-        cls.format = cls._format
+    def disable_echo(self):
+        '''Disables echo.'''
+        self.format = self._format
 
 if __name__ == '__main__':
     import doctest
