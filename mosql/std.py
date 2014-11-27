@@ -23,6 +23,7 @@ It will replace the functions in :mod:`mosql.util` with original standard functi
 import mosql.util
 
 def patch():
+    '''Applies the standard functions again.'''
     mosql.util.escape = mosql.util.std_escape
     mosql.util.format_param = mosql.util.std_format_param
     mosql.util.delimit_identifier = mosql.util.std_delimit_identifier

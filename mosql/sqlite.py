@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''It applies the sqlite-specific stuff to :mod:`mosql.util`.
+'''It applies the SQLite-specific stuff to :mod:`mosql.util`.
 
 The usage:
 
@@ -15,8 +15,6 @@ If you want to patch again:
 
     mosql.sqlite.patch()
 
-.. versionadded:: 0.9.2
-
 It will replace the functions in :mod:`mosql.util` with its functions.
 '''
 
@@ -27,6 +25,10 @@ def format_param(s=''):
 import mosql.util
 
 def patch():
+    '''Applies the SQLite-specific functions again.
+
+    .. versionadded:: 0.9.2
+    '''
     mosql.util.format_param = format_param
 
 patch() # patch it when load this module

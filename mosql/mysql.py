@@ -15,8 +15,6 @@ If you want to patch again:
 
     mosql.mysql.patch()
 
-.. versionadded:: 0.9.2
-
 It will replace the functions in :mod:`mosql.util` with its functions.
 '''
 
@@ -59,13 +57,13 @@ def fast_escape(s):
 
     It is enough for security and correctness, and it is faster 50x than using
     the :func:`escape`, so it is used for replacing the
-    :func:`mosql.util.escape` after you import this moudle.
+    :func:`mosql.util.escape` after you import this module.
     '''
     return s.replace('\\', '\\\\').replace("'", r"\'")
 
 def format_param(s=''):
-    '''This function always returns '%s', so it makes you can use the prepare
-    statement with MySQLdb.'''
+    '''This function always returns ``'%s'``, so it makes you can use the
+    prepare statement with MySQLdb.'''
     return '%s'
 
 def delimit_identifier(s):
@@ -79,6 +77,10 @@ def escape_identifier(s):
 import mosql.util
 
 def patch():
+    '''Applies the MySQL-specific functions again.
+
+    .. versionadded:: 0.9.2
+    '''
     mosql.util.escape = fast_escape
     mosql.util.format_param = format_param
     mosql.util.delimit_identifier = delimit_identifier
