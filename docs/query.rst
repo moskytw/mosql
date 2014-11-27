@@ -73,6 +73,9 @@ If you want to build you own, there are all basic bricks you need -
     >>> print select('person', {'name like': 'Mosky%', 'age >': 20})
     SELECT * FROM "person" WHERE "age" > 20 AND "name" LIKE 'Mosky%'
 
+    >>> print select('person', {('name', 'like'): 'Mosky%', ('age', '>'): 20})
+    SELECT * FROM "person" WHERE "age" > 20 AND "name" LIKE 'Mosky%'
+
     >>> print select('person', {"person_id = '' OR true; --": 'mosky'})
     Traceback (most recent call last):
         ...
@@ -80,6 +83,17 @@ If you want to build you own, there are all basic bricks you need -
 
     .. seealso::
         The operators allowed --- :attr:`mosql.util.allowed_operators`.
+
+    Some special cases:
+
+    >>> print select('person', {'person_id': ()})
+    SELECT * FROM "person" WHERE FALSE
+
+    >>> print select('person', where=None)
+    SELECT * FROM "person"
+
+    >>> print select('person', where={})
+    SELECT * FROM "person"
 
     If you want to use functions, wrap it with :class:`mosql.util.raw`:
 
@@ -118,6 +132,16 @@ If you want to build you own, there are all basic bricks you need -
     ::
 
         select(table=None, where=None, *, select=None, from=None, joins=None, where=None, group_by=None, having=None, order_by=None, limit=None, offset=None, for=None, of=None, nowait=None, for_update=None, lock_in_share_mode=None)
+
+    Echo the SQL:
+
+    ::
+
+        >>> select.enable_echo()
+        >>> sql = select()
+        SELECT *
+        >>> print sql
+        SELECT *
 
     .. seealso::
         How it builds the where clause --- :func:`mosql.util.build_where`
