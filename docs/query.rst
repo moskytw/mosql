@@ -187,7 +187,8 @@ If you want to build you own, there are all basic bricks you need -
 
 
     .. versionchanged:: 0.9
-        Added ``FOR UPDATE`` and ``LOCK IN SHARE MODE``.
+        Added ``FOR UPDATE``, ``LOCK IN SHARE MODE``, ``FOR``, ``OF``, and
+        ``NOWAIT``.
 
 .. py:function:: insert(table=None, set=None, **clause_args)
 
