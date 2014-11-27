@@ -413,7 +413,7 @@ def identifier_as(s):
     >>> print identifier_as([(raw('count(table_name.column_name)'), 'c')])[0]
     count(table_name.column_name) AS "c"
 
-    It builds a normal identifier string without ``as``.
+    It uses :func:`identifier` to build normal identifier string without ``as``.
 
     >>> print identifier_as('column_name')
     "column_name"
@@ -465,7 +465,7 @@ def identifier_dir(s):
     >>> print identifier_dir([(raw('count(table_name.column_name)'), 'DESC')])[0]
     count(table_name.column_name) DESC
 
-    It builds a normal identifier string without order direction.
+    It uses :func:`identifier` to build normal identifier string without order direction.
 
     >>> print identifier_dir('column_name')
     "column_name"
@@ -670,7 +670,12 @@ def build_where(x):
     >>> print build_where((('detail_id', 1), ('age >= ', 20), ('created', date(2013, 4, 16))))
     "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
 
-    Building prepared where:
+    Use `pair` as key to include operator:
+
+    >>> print build_where({'detail_id': 1, ('age', '>='): 20, 'created': date(2013, 4, 16)})
+    "age" >= 20 AND "detail_id" = 1 AND "created" = '2013-04-16'
+
+    Build prepared where:
 
     >>> print build_where({'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
     "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
@@ -688,6 +693,9 @@ def build_where(x):
     >>> print build_where({'person_id': ['andy', 'bob']})
     "person_id" IN ('andy', 'bob')
 
+    >>> print build_where({'person_id': []})
+    FALSE
+
     It is possible to customize your operators:
 
     >>> print build_where({'email like': '%@gmail.com%'})
@@ -696,9 +704,17 @@ def build_where(x):
     >>> print build_where({raw('count(person_id) >'): 10})
     count(person_id) > 10
 
+    .. versionadded: 0.9.2
+        If the value is empty iterable, it translates it into ``FALSE`` rather
+        than ``IN ()`` which caused syntax error.
+
+    .. versionadded: 0.9.2
+        Supports to use `pair` key to include operator.
+
     .. seealso ::
         By default, the operators are limited. Check the
         :attr:`allowed_operators` for more information.
+
     '''
     return _build_condition(x, identifier, value)
 
@@ -974,6 +990,13 @@ class Statement(object):
         :type clause_args: dict
 
         :rtype: str
+
+        .. versionchanged:: 0.9.2
+            Now it raises `TypeError` if there is any unused clause argument.
+
+        .. versionchanged:: 0.9.2
+            Now if an argument's value is false in boolean context, it will
+            ignore that argument.
         '''
 
         if self.preprocessor:
@@ -1112,11 +1135,15 @@ class Query(object):
         return sql
 
     def enable_echo(self):
-        '''Enables echo.'''
+        '''Enables echo.
+
+        ..versionadded: 0.9.2'''
         self.format = self._format_n_echo
 
     def disable_echo(self):
-        '''Disables echo.'''
+        '''Disables echo.
+
+        ..versionadded: 0.9.2'''
         self.format = self._format
 
 if __name__ == '__main__':
