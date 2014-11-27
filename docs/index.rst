@@ -108,7 +108,7 @@ Or clone the source code from `GitHub <https://github.com/moskytw/mosql>`_:
     $ git clone git://github.com/moskytw/mosql.git
 
 Read More
-=========
+---------
 
 .. toctree::
     :maxdepth: 2
@@ -118,11 +118,17 @@ Read More
     patches
     db
 
-and here is :doc:`/changes`.
-
 .. note::
     Some of the modules are deprecated after v0.6, check :doc:`/deprecated` for
     more information.
+
+The Changes
+-----------
+
+.. toctree::
+    :maxdepth: 2
+
+    changes
 
 Indices and tables
 ==================
