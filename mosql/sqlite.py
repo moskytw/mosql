@@ -15,6 +15,8 @@ If you want to patch again:
 
     mosql.sqlite.patch()
 
+.. versionadded:: 0.9.2
+
 It will replace the functions in :mod:`mosql.util` with its functions.
 '''
 

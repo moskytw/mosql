@@ -16,6 +16,8 @@ If you want to patch again:
     mosql.std.patch()
 
 It will replace the functions in :mod:`mosql.util` with original standard functions.
+
+.. versionadded:: 0.9.2
 '''
 
 import mosql.util
