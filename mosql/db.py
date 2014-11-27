@@ -11,7 +11,7 @@ The context manager for both connection and cursor:
 The functions designed for cursor:
 
 .. autosummary::
-    extact_col_names
+    extract_col_names
     one_to_dict
     all_to_dicts
     group
@@ -46,8 +46,8 @@ class Database(object):
             cur.execute('select 1')
 
     The connection and cursor are created when you enter the with-block, and
-    they will be closed when you leave. Also, the changes will be committed when
-    you leave, or be rollbacked if there is any exception.
+    they will be closed when you leave. Also, the changes will be committed at
+    the same time, or be rollbacked if there is any exception.
 
     If you need multiple cursors, just say:
 
@@ -73,11 +73,19 @@ class Database(object):
 
     If you want to keep connection after leave with-block, use:
 
+    By default, the connection will be closed when you leave with-block. If you
+    want to keep the connection open, set `to_keep_conn` as ``True``. It is
+    useful in single threading environment.
+
     ::
 
         db.to_keep_conn = True
 
-    It is useful for the single-thread environment.
+    .. versionadded:: 0.9.2
+        the `to_keep_conn`.
+
+    .. versionchanged:: 0.9.2
+        This class is thread-safe now.
     '''
 
     def __init__(self, module=None, *conn_args, **conn_kargs):
@@ -136,7 +144,7 @@ class Database(object):
                 self.putconn(self._conn)
                 self._conn = None
 
-def extact_col_names(cur):
+def extract_col_names(cur):
     '''Extracts the column names from a cursor.
 
     :rtype: list
@@ -153,7 +161,7 @@ def one_to_dict(cur=None, row=None, col_names=None):
 
     if col_names is None:
         assert cur is not None, 'You must specify cur or col_names.'
-        col_names = extact_col_names(cur)
+        col_names = extract_col_names(cur)
 
     if row is None:
         assert cur is not None, 'You must specify cur or row.'
@@ -171,7 +179,7 @@ def all_to_dicts(cur=None, rows=None, col_names=None):
 
     if col_names is None:
         assert cur is not None, 'You must specify cur or col_names.'
-        col_names = extact_col_names(cur)
+        col_names = extract_col_names(cur)
 
     if rows is None:
         assert cur is not None, 'You must specify cur or rows.'
@@ -180,7 +188,7 @@ def all_to_dicts(cur=None, rows=None, col_names=None):
     return [dict(izip(col_names, row)) for row in rows]
 
 def group(by_col_names, cur=None, rows=None, col_names=None, to_dict=False):
-    '''Group the rows in application-level.
+    '''Groups the rows in application-level.
 
     If `col_names` or `rows` is provided, it will be used first.
 
@@ -215,7 +223,7 @@ def group(by_col_names, cur=None, rows=None, col_names=None, to_dict=False):
 
     if col_names is None:
         assert cur is not None, 'You must specify cur or col_names.'
-        col_names = extact_col_names(cur)
+        col_names = extract_col_names(cur)
 
     if rows is None:
         assert cur is not None, 'You must specify cur or rows.'
