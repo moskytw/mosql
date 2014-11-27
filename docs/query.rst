@@ -3,6 +3,22 @@ The Common Queries --- :mod:`mosql.query`
 
 This module provides the common :class:`~mosql.util.Query` instances for you.
 
+- :func:`~mosql.query.select`
+- :func:`~mosql.query.insert`
+- :func:`~mosql.query.update`
+- :func:`~mosql.query.delete`
+
+If you need to join:
+
+- :func:`~mosql.query.join`
+- :func:`~mosql.query.left_join`
+- :func:`~mosql.query.right_join`
+- :func:`~mosql.query.cross_join`
+
+Non-standard :class:`~mosql.util.Query` instance:
+
+- :func:`~mosql.query.replace`
+
 If you want to build you own, there are all basic bricks you need -
 :doc:`/util`.
 
