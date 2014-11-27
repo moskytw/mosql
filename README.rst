@@ -17,7 +17,7 @@ It lets you use the common Python's data structures to build SQLs. Here are the
 main features:
 
 1. Easy-to-learn --- Everything is just plain data structure or SQL keyword.
-2. Flexible --- The queries it builds fully depends on the structure you provide.
+2. Flexible --- The query it builds fully depends on the structure you provide.
 3. Secure --- It prevents the SQL injection from both identifier and value.
 4. Fast --- It just builds the SQLs from Python's data structures.
 
@@ -37,7 +37,7 @@ Here we have a dictionary which includes the information of a person:
 ... }
 
 And we want to insert it into a table named person. It is easy with `mosql.query
-<http://mosql.mosky.tw/query.html#module-mosql.query>`_.
+<http://mosql.mosky.tw/query.html#module-mosql.query>`_:
 
 >>> from mosql.query import insert
 >>> print insert('person', mosky)

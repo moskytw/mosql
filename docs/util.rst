@@ -1,4 +1,4 @@
-The Basic Utilities --- :mod:`mosql.util`
+All Bricks You Need --- :mod:`mosql.util`
 -----------------------------------------
 
 .. testsetup::

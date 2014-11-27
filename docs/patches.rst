@@ -24,8 +24,8 @@ For SQLite --- :mod:`mosql.sqlite`
 .. automodule:: mosql.sqlite
     :members:
 
-For Resetting --- :mod:`mosql.std`
-----------------------------------
+Back to Standard --- :mod:`mosql.std`
+-------------------------------------
 
 .. automodule:: mosql.std
     :members:
