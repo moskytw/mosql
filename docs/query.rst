@@ -204,12 +204,12 @@ If you want to build you own, there are all basic bricks you need -
     >>> print insert('person', columns=('person_id', 'name'), values=('mosky', 'Mosky Liu'))
     INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 
-    The `columns` is ignorable:
+    Sometimes we don't need `columns`:
 
     >>> print insert('person', values=('mosky', 'Mosky Liu'))
     INSERT INTO "person" VALUES ('mosky', 'Mosky Liu')
 
-    It also supports to include multiple values-tuple.
+    The `values` allows values-list:
 
     >>> print insert('person', values=[('mosky', 'Mosky Liu'), ('yiyu', 'Yi-Yu Liu')])
     INSERT INTO "person" VALUES ('mosky', 'Mosky Liu'), ('yiyu', 'Yi-Yu Liu')
@@ -232,7 +232,7 @@ If you want to build you own, there are all basic bricks you need -
         insert(table=None, set=None, *, insert_into=None, columns=None, values=None, returning=None, on_duplicate_key_update=None)
 
     .. versionchanged:: 0.9.2
-        Support to use multiple values-tuple.
+        Let `values` supports values-list.
 
 .. py:function:: replace(table=None, set=None, **clause_args)
 
