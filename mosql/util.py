@@ -372,6 +372,9 @@ def identifier(s):
     .. versionchanged:: 0.9.2
         It doesn't support ``as`` and order directon anymore. Use
         :func:`identifier_as` or :func:`identifier_dir` instead.
+
+    .. seealso ::
+        There is also :func:`dot` function.
     '''
 
     # t: table name
@@ -420,6 +423,9 @@ def identifier_as(s):
 
     >>> print identifier_as('table_name.column_name')
     "table_name"."column_name"
+
+    .. seealso ::
+        There is also :func:`as_` function.
 
     .. versionadded:: 0.9.2
     '''
@@ -472,6 +478,9 @@ def identifier_dir(s):
 
     >>> print identifier_dir('table_name.column_name')
     "table_name"."column_name"
+
+    .. seealso ::
+        There are also :func:`asc` and :func:`desc` functions.
 
     .. versionadded:: 0.9.2
     '''
@@ -704,16 +713,22 @@ def build_where(x):
     >>> print build_where({raw('count(person_id) >'): 10})
     count(person_id) > 10
 
-    .. versionadded: 0.9.2
+    .. versionchanged:: 0.9.2
+        Supports to use `pair` key to include operator.
+
+    .. versionchanged:: 0.9.2
         If the value is empty iterable, it translates it into ``FALSE`` rather
         than ``IN ()`` which caused syntax error.
-
-    .. versionadded: 0.9.2
-        Supports to use `pair` key to include operator.
 
     .. seealso ::
         By default, the operators are limited. Check the
         :attr:`allowed_operators` for more information.
+
+    .. seealso ::
+        Use :func:`or_` and :func:`and_` to build complex condition.
+
+    .. seealso ::
+        There are also :func:`in_operand` and :func:`subq` function.
 
     '''
     return _build_condition(x, identifier, value)
