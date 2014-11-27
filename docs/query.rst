@@ -155,6 +155,7 @@ If you want to build you own, there are all basic bricks you need -
 
     ::
 
+        >>> print select
         select(table=None, where=None, *, select=None, from=None, joins=None, where=None, group_by=None, having=None, order_by=None, limit=None, offset=None, for=None, of=None, nowait=None, for_update=None, lock_in_share_mode=None)
 
 
@@ -211,6 +212,7 @@ If you want to build you own, there are all basic bricks you need -
 
     ::
 
+        >>> print insert
         insert(table=None, set=None, *, insert_into=None, columns=None, values=None, returning=None, on_duplicate_key_update=None)
 
     .. versionchanged:: 0.9.2
@@ -229,6 +231,7 @@ If you want to build you own, there are all basic bricks you need -
 
     ::
 
+        >>> print replace
         replace(table=None, set=None, *, replace_into=None, columns=None, values=None)
 
 .. py:function:: update(table=None, where=None, set=None, **clause_args)
@@ -247,6 +250,7 @@ If you want to build you own, there are all basic bricks you need -
 
     ::
 
+        >>> print update
         update(table=None, where=None, set=None, *, update=None, set=None, where=None, returning=None)
 
     .. seealso::
@@ -268,6 +272,7 @@ If you want to build you own, there are all basic bricks you need -
 
     ::
 
+        >>> print delete
         delete(table=None, where=None, *, delete_from=None, where=None, returning=None)
 
 .. py:function:: join(table=None, on=None, **clause_args)
@@ -296,6 +301,7 @@ If you want to build you own, there are all basic bricks you need -
 
     ::
 
+        >>> print join
         join(table=None, on=None, *, type=None, join=None, on=None, using=None)
 
     .. seealso::
