@@ -844,6 +844,9 @@ def in_operand(x):
 def subq(s):
     '''It adds parens and makes `s` as :class:`raw`.
 
+    >>> print subq("select person_id from person where join_ts >= '2014-11-27'")
+    (select person_id from person where join_ts >= '2014-11-27')
+
     .. versionadded:: 0.9.2
     '''
     return raw(paren(s))
