@@ -57,7 +57,7 @@ It is available on PyPI:
 
     $ sudo pip install mosql
 
-Or clone the source code from `Github <https://github.com/moskytw/mosql>`_:
+Or clone the source code from `GitHub <https://github.com/moskytw/mosql>`_:
 
 ::
 
