@@ -131,7 +131,7 @@ def escape(s):
         secuirty risk if you use double-byte connection encoding, such as Big5
         or GBK.
 
-    .. versionchanged:: 0.9.2
+    .. versionchanged:: 0.10
         It will raise a ValueError if `s` contains a null byte (\\x00).
     '''
 
@@ -177,7 +177,7 @@ def delimit_identifier(s):
     By default, it conforms the standard to encloses the identifier, `s`, by
     ``"`` (double quote).
 
-    .. versionchanged:: 0.9.2
+    .. versionchanged:: 0.10
         It's not disableable anymore. Use :class:`raw` instead.
     '''
     return '"%s"' % s
@@ -341,7 +341,7 @@ allowed_directions = set(['DESC', 'ASC'])
 
 A :exc:`DirectionError` will be raised if a direction not allowed is found.
 
-.. versionchanged:: 0.9.2
+.. versionchanged:: 0.10
     It's not disableable anymore. Use :class:`raw` instead.
 '''
 
@@ -366,10 +366,10 @@ def identifier(s):
     >>> print identifier([('table_name', 'column_name')])[0]
     "table_name"."column_name"
 
-    .. versionchanged:: 0.9.2
+    .. versionchanged:: 0.10
         Support to use pair-list to represent dot.
 
-    .. versionchanged:: 0.9.2
+    .. versionchanged:: 0.10
         It doesn't support ``as`` and order directon anymore. Use
         :func:`identifier_as` or :func:`identifier_dir` instead.
 
@@ -427,7 +427,7 @@ def identifier_as(s):
     .. seealso ::
         There is also :func:`as_` function.
 
-    .. versionadded:: 0.9.2
+    .. versionadded:: 0.10
     '''
 
     # i: identifier part
@@ -482,7 +482,7 @@ def identifier_dir(s):
     .. seealso ::
         There are also :func:`asc` and :func:`desc` functions.
 
-    .. versionadded:: 0.9.2
+    .. versionadded:: 0.10
     '''
 
     # i: identifier part
@@ -573,7 +573,7 @@ allowed_operators = set([
 
 An :exc:`OperatorError` will be raised if an operator not allowed is found.
 
-.. versionchanged:: 0.9.2
+.. versionchanged:: 0.10
     It's not disableable anymore. Use :class:`raw` instead.
 '''
 
@@ -586,7 +586,7 @@ def build_values_list(x):
     1. iterable values; or
     2. iterable values in another iterable.
 
-    .. versionadded:: 0.9.2
+    .. versionadded:: 0.10
     '''
 
     if hasattr(x, '__getitem__') and _is_iterable_not_str(x[0]):
@@ -713,10 +713,10 @@ def build_where(x):
     >>> print build_where({raw('count(person_id) >'): 10})
     count(person_id) > 10
 
-    .. versionchanged:: 0.9.2
+    .. versionchanged:: 0.10
         Supports to use `pair` key to include operator.
 
-    .. versionchanged:: 0.9.2
+    .. versionchanged:: 0.10
         If the value is empty iterable, it translates it into ``FALSE`` rather
         than ``IN ()`` which caused syntax error.
 
@@ -821,7 +821,7 @@ def dot(s, t):
     >>> print dot('table', 'column')
     "table"."column"
 
-    .. versionadded:: 0.9.2
+    .. versionadded:: 0.10
     '''
     return raw('{}.{}'.format(identifier(s), identifier(t)))
 
@@ -835,7 +835,7 @@ def as_(s, t):
     >>> print as_('table.column', 'c')
     "table"."column" AS "c"
 
-    .. versionadded:: 0.9.2
+    .. versionadded:: 0.10
     '''
     return raw('{} AS {}'.format(identifier(s), identifier(t)))
 
@@ -846,7 +846,7 @@ def asc(s):
     >>> print asc('score')
     "score" ASC
 
-    .. versionadded:: 0.9.2
+    .. versionadded:: 0.10
     '''
     return raw('{} ASC'.format(identifier(s)))
 
@@ -857,7 +857,7 @@ def desc(s):
     >>> print desc('score')
     "score" DESC
 
-    .. versionadded:: 0.9.2
+    .. versionadded:: 0.10
     '''
     return raw('{} DESC'.format(identifier(s)))
 
@@ -867,7 +867,7 @@ def in_operand(x):
     >>> print in_operand(['a', 'b', 'c'])
     ('a', 'b', 'c')
 
-    .. versionadded:: 0.9.2
+    .. versionadded:: 0.10
     '''
 
     if not _is_iterable_not_str(x):
@@ -881,7 +881,7 @@ def subq(s):
     >>> print subq("select person_id from person where join_ts >= '2014-11-27'")
     (select person_id from person where join_ts >= '2014-11-27')
 
-    .. versionadded:: 0.9.2
+    .. versionadded:: 0.10
     '''
     return raw(paren(s))
 
@@ -1006,10 +1006,10 @@ class Statement(object):
 
         :rtype: str
 
-        .. versionchanged:: 0.9.2
+        .. versionchanged:: 0.10
             Now it raises `TypeError` if there is any unused clause argument.
 
-        .. versionchanged:: 0.9.2
+        .. versionchanged:: 0.10
             Now if an argument's value is false in boolean context, it will
             ignore that argument.
         '''
@@ -1152,13 +1152,13 @@ class Query(object):
     def enable_echo(self):
         '''Enables echo.
 
-        ..versionadded: 0.9.2'''
+        ..versionadded: 0.10'''
         self.format = self._format_n_echo
 
     def disable_echo(self):
         '''Disables echo.
 
-        ..versionadded: 0.9.2'''
+        ..versionadded: 0.10'''
         self.format = self._format
 
 if __name__ == '__main__':

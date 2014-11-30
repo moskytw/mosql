@@ -17,7 +17,7 @@ If you want to patch again:
 
 It will replace the functions in :mod:`mosql.util` with original standard functions.
 
-.. versionadded:: 0.9.2
+.. versionadded:: 0.10
 '''
 
 import mosql.util

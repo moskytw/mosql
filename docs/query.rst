@@ -234,7 +234,7 @@ If you want to build you own, there are all basic bricks you need -
         >>> print insert
         insert(table=None, set=None, *, insert_into=None, columns=None, values=None, returning=None, on_duplicate_key_update=None)
 
-    .. versionchanged:: 0.9.2
+    .. versionchanged:: 0.10
         Let `values` supports values-list.
 
 .. py:function:: replace(table=None, set=None, **clause_args)

@@ -27,7 +27,7 @@ import mosql.util
 def patch():
     '''Applies the SQLite-specific functions again.
 
-    .. versionadded:: 0.9.2
+    .. versionadded:: 0.10
     '''
     mosql.util.format_param = format_param
 

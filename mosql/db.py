@@ -81,10 +81,10 @@ class Database(object):
 
         db.to_keep_conn = True
 
-    .. versionadded:: 0.9.2
+    .. versionadded:: 0.10
         the `to_keep_conn`.
 
-    .. versionchanged:: 0.9.2
+    .. versionchanged:: 0.10
         This class is thread-safe now.
     '''
 
