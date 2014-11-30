@@ -3,19 +3,21 @@ The Common Queries --- :mod:`mosql.query`
 
 This module provides the common :class:`~mosql.util.Query` instances for you.
 
+The basic queries are here:
+
 - :func:`~mosql.query.select`
 - :func:`~mosql.query.insert`
 - :func:`~mosql.query.update`
 - :func:`~mosql.query.delete`
 
-If you need to join:
+It also provides various join queries, use them with the above queries:
 
 - :func:`~mosql.query.join`
 - :func:`~mosql.query.left_join`
 - :func:`~mosql.query.right_join`
 - :func:`~mosql.query.cross_join`
 
-Non-standard :class:`~mosql.util.Query` instance:
+The non-standard queries are also available:
 
 - :func:`~mosql.query.replace`
 
@@ -88,7 +90,7 @@ If you want to build you own, there are all basic bricks you need -
     SELECT * FROM "person"
 
     .. seealso::
-        How MoSQL builds where clause --- :func:`mosql.util.build_where`
+        How it builds where clause --- :func:`mosql.util.build_where`
 
 
     The `columns` is an alias of standard clause argument, `select`. Any simple
@@ -105,7 +107,7 @@ If you want to build you own, there are all basic bricks you need -
     SELECT "person"."person_id" AS "id", "person"."name" FROM "person"
 
     .. seealso::
-        How MoSQL handles identifier allowed as --- :func:`mosql.util.identifier_as`
+        How it handles identifier allowed ``AS`` --- :func:`mosql.util.identifier_as`
 
 
     Specify `group_by`, `having`, `order_by`, `limit` and `offset` in keyword
