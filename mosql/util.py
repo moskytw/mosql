@@ -109,6 +109,13 @@ def echo(s):
 
 # core functions
 
+def _check_null_byte(s):
+    if s.find('\x00') != -1:
+        raise ValueError(
+            r'unable to escape \x00. '
+            r'It will truncate your SQL, is it an attack?'
+        )
+
 def escape(s):
     '''It escapes the value.
 
@@ -135,12 +142,7 @@ def escape(s):
         It will raise a ValueError if `s` contains a null byte (``\\x00``).
     '''
 
-    if s.find('\x00') != -1:
-        raise ValueError(
-            r'unable to escape \x00. '
-            r'It will truncate your SQL, is it an attack?'
-        )
-
+    _check_null_byte(s)
     return s.replace("'", "''")
 
 std_escape = escape
@@ -206,6 +208,8 @@ def escape_identifier(s):
         secuirty risk if you use double-byte connection encoding, such as Big5
         or GBK.
     '''
+
+    _check_null_byte(s)
     return s.replace('"', '""')
 
 std_escape_identifier = escape_identifier
