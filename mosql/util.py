@@ -207,6 +207,9 @@ def escape_identifier(s):
         Please use UTF-8 as your connection encoing. Simple escaping will have
         secuirty risk if you use double-byte connection encoding, such as Big5
         or GBK.
+
+    .. versionchanged:: 0.10
+        It will raise a ValueError if `s` contains a null byte (``\x00``).
     '''
 
     raise_for_null_byte(s)
