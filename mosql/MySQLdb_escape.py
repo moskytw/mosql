@@ -7,7 +7,7 @@
     removed in a future release.
 
 .. warning::
-    This module will be removed in version 1.0.
+    This module will be removed in version 0.11.
 
 It applies the escape function in MySQLdb to :mod:`mosql.util`.
 
@@ -25,7 +25,7 @@ It will replace the escape functions in :mod:`mosql.util`.
 
 # --- the removal warning ---
 from .util import warning
-warning('mosql.MySQL_escape will be removed in version 1.0.')
+warning('mosql.MySQL_escape will be removed in version 0.11.')
 # --- end ---
 
 import MySQLdb

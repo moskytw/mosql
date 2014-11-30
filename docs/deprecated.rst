@@ -11,7 +11,7 @@ future release:
 5. :mod:`mosql.MySQLdb_escape`
 
 .. warning::
-    The modules here will be removed in version 1.0.
+    The modules here will be removed in version 0.11.
 
 .. testsetup::
 

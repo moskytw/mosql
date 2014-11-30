@@ -7,7 +7,7 @@
     removed in a future release.
 
 .. warning::
-    This module will be removed in version 1.0.
+    This module will be removed in version 0.11.
 
 It applies the escape function in psycopg2 to :mod:`mosql.util`.
 
@@ -25,7 +25,7 @@ It will replace the escape functions in :mod:`mosql.util`.
 
 # --- the removal warning ---
 from .util import warning
-warning('mosql.psycopg2_escape will be removed in version 1.0.')
+warning('mosql.psycopg2_escape will be removed in version 0.11.')
 # --- end ---
 
 from psycopg2.extensions import QuotedString

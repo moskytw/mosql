@@ -6,7 +6,7 @@
     Use :mod:`mosql.query` instead.
 
 .. warning::
-    This module will be removed in version 1.0.
+    This module will be removed in version 0.11.
 
 It contains the common SQL builders.
 
@@ -33,7 +33,7 @@ It is designed for building the standard SQL statement and tested in PostgreSQL.
 
 # --- the removal warning ---
 from .util import warning
-warning('mosql.build will be removed in version 1.0.')
+warning('mosql.build will be removed in version 0.11.')
 # --- end ---
 
 __all__ = ['select', 'insert', 'delete', 'update', 'join', 'or_']

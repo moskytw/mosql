@@ -7,7 +7,7 @@
     model, just write a class with :mod:`mosql.query` instead.
 
 .. warning::
-    This module will be removed in version 1.0.
+    This module will be removed in version 0.11.
 
 It provides useful :class:`Model` which let you commuicate with database
 smoothly.
@@ -19,7 +19,7 @@ smoothly.
 
 # --- the removal warning ---
 from .util import warning
-warning('mosql.result will be removed in version 1.0.')
+warning('mosql.result will be removed in version 0.11.')
 # --- end ---
 
 __all__ = ['Model']
