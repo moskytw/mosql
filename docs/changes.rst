@@ -1,6 +1,67 @@
 The Change Log
 ==============
 
+v0.10
+-----
+
+Security
+~~~~~~~~
+
+#. The standard :func:`~mosql.util.escape` raises :exc:`ValueError` if the
+   string has a null byte. The null byte will truncate SQL in some databases.
+   The databases include PostgreSQL, but don't include MySQL. Thanks `Orange
+   <http://blog.orange.tw>`_ for finding this issue.
+#. Removed the support to use subquery directly. Use :func:`~mosql.util.subq`
+   instead.
+
+As far as we know, the two weaknesses can't be exploited, but we still strongly
+recommend you to upgrade to this version.
+
+The Majoy Changes
+~~~~~~~~~~~~~~~~~
+
+#. The :class:`~mosql.db.Database` supports to keep connection open.
+#. The :class:`~mosql.db.Database` is thread-safe now.
+#. The :func:`~mosql.query.insert` supports multi-value.
+#. The :func:`~mosql.util.build_where` translates ``x IN ()`` into simple
+   ``FALSE``.
+#. The :func:`~mosql.util.build_where` allows to use `pair` as key to include
+   operator.
+#. The :class:`mosql.util.Statement.format` ignores false clause argument in
+   bool context.
+#. The :class:`mosql.util.Statement.format` raises :exc:`TypeError` if there is
+   any unused clause argument.
+#. Added :meth:`mosql.util.Query.enable_echo` to echo the SQL it builds.
+
+You can find most of the examples in :func:`~mosql.query.select`.
+
+The Minor Changes
+~~~~~~~~~~~~~~~~~
+
+#. Added :func:`~mosql.util.dot`, :func:`~mosql.util.as_`,
+   :func:`~mosql.util.asc`, :func:`~mosql.util.desc`, :func:`~mosql.util.subq`,
+   and :func:`~mosql.util.in_operand`.
+#. All of the patch modules in :doc:`/patches` have a ``.patch()`` method to
+   apply the patch again.
+#. The :func:`~mosql.util.identifier` was split into
+   :func:`~mosql.util.identifier`, :func:`~mosql.util.identifier_as`, and
+   :func:`~mosql.util.identifier_dir`.
+#. The :func:`~mosql.util.identifier` supports to use `pair` to include table
+   and column name; and
+#. The :func:`~mosql.util.identifier_as` and :func:`~mosql.util.identifier_dir`
+   also supports to use `pair` to include alias or direction.
+#. Renamed :exc:`~mosql.util.OptionError` to :exc:`~mosql.util.DirectionError`.
+#. The :func:`~mosql.util.delimit_identifier`,
+   :data:`~mosql.util.allowed_operators`, and
+   :data:`~mosql.util.allowed_directions` don't allow to disable anymore. Use
+   :class:`~mosql.util.raw` instead.
+
+Misc.
+~~~~~
+
+#. The deprecated modules in :doc:`/depreacted` will be removed in 0.11.
+#. Refined all the documentation.
+
 v0.9.1
 ------
 
