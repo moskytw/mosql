@@ -19,7 +19,7 @@ main features:
 1. Easy-to-learn --- Everything is just plain data structure or SQL keyword.
 2. Flexible --- The query it builds fully depends on the structure you provide.
 3. Secure --- It prevents the SQL injection from both identifier and value.
-4. Fast --- It just builds the SQLs from Python's data structures.
+4. Fast --- It just translates Python data structure into SQL.
 
 It is just more than SQL.
 
@@ -43,10 +43,10 @@ And we want to insert it into a table named person. It is easy with `mosql.query
 >>> print insert('person', mosky)
 INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 
-You can check `The Common Queries — mosql.query
-<http://mosql.mosky.tw/query.html>`_ for the detail usage, or there are also
-many `examples <https://github.com/moskytw/mosql/tree/dev/examples>`_ which
-really interact with database.
+Check `The Common Queries — mosql.query <http://mosql.mosky.tw/query.html>`_ for
+detail, or there are `examples
+<https://github.com/moskytw/mosql/tree/dev/examples>`_ which interact with real
+database.
 
 Like it?
 --------
