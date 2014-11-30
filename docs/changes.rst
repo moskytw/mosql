@@ -65,10 +65,6 @@ The Minor Changes
    :data:`~mosql.util.allowed_operators`, and
    :data:`~mosql.util.allowed_directions` don't allow to disable anymore. Use
    :class:`~mosql.util.raw` instead.
-
-Misc.
-~~~~~
-
 #. The deprecated modules in :doc:`/depreacted` will be removed in 0.11.
 #. Refined all the documentation.
 
