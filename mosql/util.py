@@ -727,7 +727,7 @@ def build_where(x):
 
     .. versionchanged:: 0.10
         If the value is empty iterable, it translates it into ``FALSE`` rather
-        than ``IN ()`` which caused syntax error in SQL.
+        than ``x IN ()`` which caused syntax error in SQL.
     '''
     return _build_condition(x, identifier, value)
 
