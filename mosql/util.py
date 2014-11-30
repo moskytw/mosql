@@ -1153,13 +1153,13 @@ class Query(object):
     def enable_echo(self):
         '''Enables echo.
 
-        ..versionadded: 0.10'''
+        .. versionadded:: 0.10'''
         self.format = self._format_n_echo
 
     def disable_echo(self):
         '''Disables echo.
 
-        ..versionadded: 0.10'''
+        .. versionadded:: 0.10'''
         self.format = self._format
 
 if __name__ == '__main__':
