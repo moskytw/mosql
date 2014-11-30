@@ -4,8 +4,8 @@ The Change Log
 v0.10
 -----
 
-Security
-~~~~~~~~
+The Security-related Changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #. The standard :func:`~mosql.util.escape` and
    :func:`~mosql.util.escape_identifier` raises :exc:`ValueError` if the string
