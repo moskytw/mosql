@@ -61,6 +61,10 @@ def fast_escape(s):
     the :func:`escape`, so it is used for replacing the
     :func:`mosql.util.escape` after you import this module.
     '''
+
+    # We don't need to check the null byte here, because MySQL can handle the
+    # null byte in value correctly.
+
     return s.replace('\\', '\\\\').replace("'", r"\'")
 
 def format_param(s=''):
