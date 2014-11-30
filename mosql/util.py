@@ -109,8 +109,8 @@ def echo(s):
 
 # core functions
 
-def _check_null_byte(s):
-    if s.find('\x00') != -1:
+def raise_for_null_byte(s):
+    if '\x00' in s:
         raise ValueError(
             r'unable to escape \x00. '
             r'It will truncate your SQL, is it an attack?'
@@ -142,7 +142,7 @@ def escape(s):
         It will raise a ValueError if `s` contains a null byte (``\\x00``).
     '''
 
-    _check_null_byte(s)
+    raise_for_null_byte(s)
     return s.replace("'", "''")
 
 std_escape = escape
@@ -209,7 +209,7 @@ def escape_identifier(s):
         or GBK.
     '''
 
-    _check_null_byte(s)
+    raise_for_null_byte(s)
     return s.replace('"', '""')
 
 std_escape_identifier = escape_identifier
