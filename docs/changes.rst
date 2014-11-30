@@ -9,9 +9,9 @@ Security
 
 #. The standard :func:`~mosql.util.escape` and
    :func:`~mosql.util.escape_identifier` raises :exc:`ValueError` if the string
-   has a null byte. The null byte may truncate SQL, but it still depends on how
-   database handls it. Thanks `Orange <http://blog.orange.tw>`_ for finding this
-   issue.
+   has a null byte now. The null byte may truncate SQL, but it still depends on
+   how database handls it. Thanks `Orange <http://blog.orange.tw>`_ for finding
+   this issue.
 #. Removed the support to use subquery directly. Use :func:`~mosql.util.subq`
    instead.
 
