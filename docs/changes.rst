@@ -8,9 +8,9 @@ The Security-related Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #. The standard :func:`~mosql.util.escape` and
-   :func:`~mosql.util.escape_identifier` raises :exc:`ValueError` if the string
-   has a null byte now. The null byte may truncate SQL, but it still depends on
-   how database handls it. Thanks `Orange <http://blog.orange.tw>`_ for
+   :func:`~mosql.util.escape_identifier` now raises :exc:`ValueError` if the
+   string has a null byte. The null byte may truncate SQL, but it still depends
+   on how database handls it. Thanks `Orange <http://blog.orange.tw>`_ for
    reporting this issue.
 #. Removed the support to use subquery directly. Use the new
    :func:`~mosql.util.subq` instead.
@@ -24,8 +24,7 @@ The Majoy Changes
 #. The :class:`~mosql.db.Database` supports to keep connection open.
 #. The :class:`~mosql.db.Database` is thread-safe now.
 #. The :func:`~mosql.query.insert` supports multi-value.
-#. The :func:`~mosql.util.build_where` translates ``x IN ()`` into simple
-   ``FALSE``.
+#. The :func:`~mosql.util.build_where` translates ``x IN ()`` into ``FALSE``.
 #. The :func:`~mosql.util.build_where` allows to use `pair` as key to include
    operator.
 #. The :class:`mosql.util.Statement.format` ignores false clause argument in
@@ -34,7 +33,8 @@ The Majoy Changes
    any unused clause argument.
 #. Added :meth:`mosql.util.Query.enable_echo` to echo the SQL it builds.
 
-You can find most of the examples in :func:`~mosql.query.select`.
+Check details in both :class:`~mosql.db.Database` and
+:func:`~mosql.query.select`.
 
 The Minor Changes
 ~~~~~~~~~~~~~~~~~
