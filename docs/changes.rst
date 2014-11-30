@@ -10,10 +10,10 @@ The Security-related Changes
 #. The standard :func:`~mosql.util.escape` and
    :func:`~mosql.util.escape_identifier` raises :exc:`ValueError` if the string
    has a null byte now. The null byte may truncate SQL, but it still depends on
-   how database handls it. Thanks `Orange <http://blog.orange.tw>`_ for finding
-   this issue.
-#. Removed the support to use subquery directly. Use :func:`~mosql.util.subq`
-   instead.
+   how database handls it. Thanks `Orange <http://blog.orange.tw>`_ for
+   reporting this issue.
+#. Removed the support to use subquery directly. Use the new
+   :func:`~mosql.util.subq` instead.
 
 As far as we know, the two weaknesses can't be exploited, but we still strongly
 recommend you to upgrade to this version.
