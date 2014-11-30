@@ -18,6 +18,15 @@ The Security-related Changes
 As far as we know, the two weaknesses can't be exploited, but we still strongly
 recommend you to upgrade to this version.
 
+This version, v0.10, re-passed the strictest (level=5, risk=3) `sqlmap
+<http://sqlmap.org>`_ tests in the cases:
+
+- MySQL 5.6.21 with `MySQLdb <https://pypi.python.org/pypi/MySQL-python/>`_
+  1.2.5
+- MySQL 5.6.21 with `MySQL Connector/Python
+  <https://pypi.python.org/pypi/mysql-connector-python>`_ 2.0.2
+- PostgreSQL 9.3.5 with `Psycopg <https://pypi.python.org/pypi/psycopg2>`_ 2.5.4
+
 The Majoy Changes
 ~~~~~~~~~~~~~~~~~
 
