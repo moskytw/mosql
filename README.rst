@@ -13,13 +13,13 @@ The full version of this documentation is at `mosql.mosky.tw
 MoSQL --- More than SQL
 =======================
 
-It lets you use the common Python's data structures to build SQLs. Here are the
+It lets you use the common Python data structures to build SQLs. Here are the
 main features:
 
-1. Easy-to-learn --- Everything is just plain data structure or SQL keyword.
+1. Easy-to-learn --- Everything is just a plain Python object or SQL keyword.
 2. Flexible --- The query it builds fully depends on the structure you provide.
 3. Secure --- It prevents the SQL injection from both identifier and value.
-4. Fast --- It just translates Python data structure into SQL.
+4. Fast --- It simply translates the Python data structures into SQLs.
 
 It is just more than SQL.
 

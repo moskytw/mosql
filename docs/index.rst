@@ -15,7 +15,7 @@ MoSQL --- More than SQL
 .. image:: https://pypip.in/d/mosql/badge.png
    :target: https://pypi.python.org/pypi/mosql
 
-It lets you use the common Python's data structures to build SQLs.
+It lets you use the common Python data structures to build SQLs.
 
 It is the slide of the talk, "MoSQL: More than SQL, but Less than ORM", at
 `PyCon APAC 2013 <http://apac-2013.pycon.jp/>`_. It introduces MoSQL after v0.6.
@@ -28,10 +28,10 @@ It is the slide of the talk, "MoSQL: More than SQL, but Less than ORM", at
 
 The main features:
 
-1. Easy-to-learn --- Everything is just plain data structure or SQL keyword.
+1. Easy-to-learn --- Everything is just a plain Python object or SQL keyword.
 2. Flexible --- The query it builds fully depends on the structure you provide.
 3. Secure --- It prevents the SQL injection from both identifier and value.
-4. Fast --- It just translates Python data structure into SQL.
+4. Fast --- It simply translates the Python data structures into SQLs.
 
 It is just more than SQL.
 

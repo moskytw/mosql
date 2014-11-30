@@ -55,13 +55,15 @@ If you want to build you own, there are all basic bricks you need -
     SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' LIMIT 3 OFFSET 1
 
 
-    The operators are also supported:
+    The operator will be decided automatically:
 
     >>> print select('person', {'person_id': ('andy', 'bob')})
     SELECT * FROM "person" WHERE "person_id" IN ('andy', 'bob')
 
     >>> print select('person', {'name': None})
     SELECT * FROM "person" WHERE "name" IS NULL
+
+    And also allow to customize:
 
     >>> print select('person', {'name like': 'Mosky%', 'age >': 20})
     SELECT * FROM "person" WHERE "age" > 20 AND "name" LIKE 'Mosky%'
@@ -77,8 +79,7 @@ If you want to build you own, there are all basic bricks you need -
     .. seealso::
         The operators allowed --- :attr:`mosql.util.allowed_operators`.
 
-
-    Some special cases that :class:`~mosql.util.Query` works around for you:
+    The ambiguous cases that :class:`~mosql.util.Query` works around for you:
 
     >>> print select('person', {'person_id': ()})
     SELECT * FROM "person" WHERE FALSE
@@ -95,7 +96,7 @@ If you want to build you own, there are all basic bricks you need -
 
     The `columns` is an alias of standard clause argument, `select`. Any simple
     `iterable` represents the list in SQL. It also understands the ``.`` (dot)
-    and even ``AS`` in your `str`.
+    and even ``AS`` in your string.
 
     >>> print select('person', select=('person.person_id', 'person.name'))
     SELECT "person"."person_id", "person"."name" FROM "person"
@@ -107,10 +108,10 @@ If you want to build you own, there are all basic bricks you need -
     SELECT "person"."person_id" AS "id", "person"."name" FROM "person"
 
     .. seealso::
-        How it handles identifier allowed ``AS`` --- :func:`mosql.util.identifier_as`
+        How it handles identifier including ``AS`` --- :func:`mosql.util.identifier_as`
 
 
-    Specify `group_by`, `having`, `order_by`, `limit` and `offset` in keyword
+    Specify `group_by`, `having`, `order_by`, `limit`, and `offset` in keyword
     arguments:
 
     >>> print select('person', {'name like': 'Mosky%'}, order_by=('age', ))
@@ -207,7 +208,7 @@ If you want to build you own, there are all basic bricks you need -
     >>> print insert('person', columns=('person_id', 'name'), values=('mosky', 'Mosky Liu'))
     INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 
-    Sometimes we don't need `columns`:
+    Sometimes we don't need the `columns`:
 
     >>> print insert('person', values=('mosky', 'Mosky Liu'))
     INSERT INTO "person" VALUES ('mosky', 'Mosky Liu')
@@ -273,7 +274,7 @@ If you want to build you own, there are all basic bricks you need -
         update(table=None, where=None, set=None, *, update=None, set=None, where=None, returning=None)
 
     .. seealso::
-        How it builds the where clause --- :func:`mosql.util.build_set`
+        How it builds the set clause --- :func:`mosql.util.build_set`
 
 .. py:function:: delete(table=None, where=None, **clause_args)
 
@@ -324,7 +325,7 @@ If you want to build you own, there are all basic bricks you need -
         join(table=None, on=None, *, type=None, join=None, on=None, using=None)
 
     .. seealso::
-        How it builds the where clause --- :func:`mosql.util.build_on`
+        How it builds the on clause --- :func:`mosql.util.build_on`
 
 .. py:function:: left_join(table=None, on=None, **clause_args)
 

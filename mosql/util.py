@@ -7,15 +7,15 @@ The five functions below are the core functions of MoSQL and abstract the
 variety of SQL specs. You can override them to let MoSQL support non-standard
 SQL specs.
 
-.. note::
-    There are two built-in patches: :mod:`mosql.mysql` and :mod:`mosql.sqlite`.
-
 .. autosummary::
     escape
     format_param
     stringify_bool
     delimit_identifier
     escape_identifier
+
+.. note::
+    There are two built-in patches: :mod:`mosql.mysql` and :mod:`mosql.sqlite`.
 
 They are the subclasses of :class:`str`. You can use them to represent simple
 string but having special SQL meaning:
@@ -30,8 +30,8 @@ The built-in :class:`raw` instances:
     default
     star
 
-The functions which are :func:`qualifier` functions format Python objects into
-SQL string:
+The functions which are :func:`qualifier` functions format the Python objects
+into SQL strings:
 
 .. autosummary::
     value
@@ -52,7 +52,7 @@ The functions which are :func:`joiner` functions concatenate the SQL strings:
     build_set
     build_on
 
-The helper functions below fill the gap between basic Python object and SQL:
+The helper functions below fill the gap between the Python objects and SQL:
 
 .. autosummary::
     or_
@@ -61,8 +61,8 @@ The helper functions below fill the gap between basic Python object and SQL:
     as_
     asc
     desc
-    in_operand
     subq
+    in_operand
 
 The main classes let you combine the bricks above to create a final SQL builder:
 
@@ -86,7 +86,7 @@ __all__ = [
     'concat_by_comma', 'concat_by_and', 'concat_by_space', 'concat_by_or',
     'OperatorError', 'allowed_operators',
     'build_values_list', 'build_where', 'build_set', 'build_on',
-    'or_', 'and_', 'dot', 'as_', 'asc', 'desc', 'in_operand', 'subq',
+    'or_', 'and_', 'dot', 'as_', 'asc', 'desc', 'subq', 'in_operand',
     'Clause', 'Statement', 'Query'
 ]
 
@@ -164,8 +164,8 @@ std_format_param = format_param
 def stringify_bool(b):
     '''It stringifies the bool.
 
-    By default, it returns ``'TRUE'`` if `b` is true, otherwise it returns
-    ``'FALSE'``.
+    By default, it returns ``TRUE`` if `b` is true, otherwise it returns
+    ``FALSE``.
     '''
     return 'TRUE' if b else 'FALSE'
 
@@ -370,11 +370,11 @@ def identifier(s):
         Support to use pair-list to represent dot.
 
     .. versionchanged:: 0.10
-        It doesn't support ``as`` and order directon anymore. Use
+        It doesn't support ``AS`` and order directon anymore. Use
         :func:`identifier_as` or :func:`identifier_dir` instead.
 
     .. seealso ::
-        There is also :func:`dot` function.
+        There is also a :func:`dot` function.
     '''
 
     # t: table name
@@ -416,7 +416,7 @@ def identifier_as(s):
     >>> print identifier_as([(raw('count(table_name.column_name)'), 'c')])[0]
     count(table_name.column_name) AS "c"
 
-    It uses :func:`identifier` to build normal identifier string without ``as``.
+    It uses :func:`identifier` to build normal identifier string without ``AS``.
 
     >>> print identifier_as('column_name')
     "column_name"
@@ -425,7 +425,7 @@ def identifier_as(s):
     "table_name"."column_name"
 
     .. seealso ::
-        There is also :func:`as_` function.
+        There is also an :func:`as_` function.
 
     .. versionadded:: 0.10
     '''
@@ -671,7 +671,7 @@ def build_where(x):
     r'''A joiner function which builds the where-list of SQL from a `dict` or
     `pairs`.
 
-    If input is a `dict` or `pairs`:
+    The `x` can be a `dict` or `pairs`:
 
     >>> print build_where({'detail_id': 1, 'age >= ': 20, 'created': date(2013, 4, 16)})
     "created" = '2013-04-16' AND "detail_id" = 1 AND "age" >= 20
@@ -679,22 +679,12 @@ def build_where(x):
     >>> print build_where((('detail_id', 1), ('age >= ', 20), ('created', date(2013, 4, 16))))
     "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
 
-    Use `pair` as key to include operator:
+    The key can be a `pair` to include an operator:
 
     >>> print build_where({'detail_id': 1, ('age', '>='): 20, 'created': date(2013, 4, 16)})
     "age" >= 20 AND "detail_id" = 1 AND "created" = '2013-04-16'
 
-    Build prepared where:
-
-    >>> print build_where({'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
-    "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
-
-    It does noting if input is a string:
-
-    >>> print build_where('"detail_id" = 1 AND "age" >= 20 AND "created" = \'2013-04-16\'')
-    "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
-
-    The default operator will be changed by the value.
+    The default operator will be decided by the value.
 
     >>> print build_where({'name': None})
     "name" IS NULL
@@ -705,31 +695,39 @@ def build_where(x):
     >>> print build_where({'person_id': []})
     FALSE
 
-    It is possible to customize your operators:
+    .. seealso ::
+        There are also :func:`subq` and :func:`in_operand` functions.
+
+    It supports all common operators, such as ``LIKE``:
 
     >>> print build_where({'email like': '%@gmail.com%'})
     "email" LIKE '%@gmail.com%'
 
+    .. seealso ::
+        By default, the operators are limited. Check the
+        :attr:`allowed_operators` for more information.
+
+    If need, wrap key with :func:`raw` to use function:
+
     >>> print build_where({raw('count(person_id) >'): 10})
     count(person_id) > 10
+
+    Build prepared where:
+
+    >>> print build_where({'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
+    "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
+
+    It does noting if `x` is a string:
+
+    >>> print build_where('"detail_id" = 1 AND "age" >= 20 AND "created" = \'2013-04-16\'')
+    "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
 
     .. versionchanged:: 0.10
         Supports to use `pair` key to include operator.
 
     .. versionchanged:: 0.10
         If the value is empty iterable, it translates it into ``FALSE`` rather
-        than ``IN ()`` which caused syntax error.
-
-    .. seealso ::
-        By default, the operators are limited. Check the
-        :attr:`allowed_operators` for more information.
-
-    .. seealso ::
-        Use :func:`or_` and :func:`and_` to build complex condition.
-
-    .. seealso ::
-        There are also :func:`in_operand` and :func:`subq` function.
-
+        than ``IN ()`` which caused syntax error in SQL.
     '''
     return _build_condition(x, identifier, value)
 
@@ -738,7 +736,7 @@ def build_set(x):
     r'''A joiner function which builds the set-list of SQL from a `dict` or
     pairs.
 
-    If input is a `dict` or `pairs`:
+    The `x` can be a `dict` or `pairs`:
 
     >>> print build_set({'a': 1, 'b': True, 'c': date(2013, 4, 16)})
     "a"=1, "c"='2013-04-16', "b"=TRUE
@@ -751,7 +749,7 @@ def build_set(x):
     >>> print build_set({'custom_param': param('myparam'), 'auto_param': param})
     "auto_param"=%(auto_param)s, "custom_param"=%(myparam)s
 
-    It does noting if input is a string:
+    It does noting if `x` is a string:
 
     >>> print build_set('"a"=1, "b"=TRUE, "c"=\'2013-04-16\'')
     "a"=1, "b"=TRUE, "c"='2013-04-16'
@@ -816,7 +814,7 @@ def and_(conditions):
 
 def dot(s, t):
     '''It treats `s` and `t` as identifiers, concats them by ``.``, and then
-    makes whole string as :class:`raw`.
+    makes the whole string as :class:`raw`.
 
     >>> print dot('table', 'column')
     "table"."column"
@@ -827,7 +825,7 @@ def dot(s, t):
 
 def as_(s, t):
     '''It treats `s` and `t` as identifiers, concats them by ``AS``, and then
-    makes whole string as :class:`raw`.
+    makes the whole string as :class:`raw`.
 
     >>> print as_('column', 'c')
     "column" AS "c"
@@ -841,7 +839,7 @@ def as_(s, t):
 
 def asc(s):
     '''It treats `s` as an identifier, adds ``ASC`` after `s`, and then makes
-    whole string as :class:`raw`.
+    the whole string as :class:`raw`.
 
     >>> print asc('score')
     "score" ASC
@@ -852,7 +850,7 @@ def asc(s):
 
 def desc(s):
     '''It treats `s` as an identifier, adds ``DESC`` after `s`, and then makes
-    whole string as :class:`raw`.
+    the whole string as :class:`raw`.
 
     >>> print desc('score')
     "score" DESC
@@ -860,20 +858,6 @@ def desc(s):
     .. versionadded:: 0.10
     '''
     return raw('{} DESC'.format(identifier(s)))
-
-def in_operand(x):
-    '''It stringifies `x` as an right operand for ``IN``.
-
-    >>> print in_operand(['a', 'b', 'c'])
-    ('a', 'b', 'c')
-
-    .. versionadded:: 0.10
-    '''
-
-    if not _is_iterable_not_str(x):
-        x = (x, )
-
-    return paren(concat_by_comma(value(x)))
 
 def subq(s):
     '''It adds parens and makes `s` as :class:`raw`.
@@ -884,6 +868,23 @@ def subq(s):
     .. versionadded:: 0.10
     '''
     return raw(paren(s))
+
+def in_operand(x):
+    '''It stringifies `x` as an right operand for ``IN``.
+
+    >>> print in_operand(['a', 'b', 'c'])
+    ('a', 'b', 'c')
+
+    If you use MoSQL's :class:`Query`, please just put `x` as value. This
+    function is designed for the case which doesn't use MoSQL's :class:`Query`.
+
+    .. versionadded:: 0.10
+    '''
+
+    if not _is_iterable_not_str(x):
+        x = (x, )
+
+    return paren(concat_by_comma(value(x)))
 
 # NOTE: To keep simple, the below classes shouldn't rely on the above functions
 
