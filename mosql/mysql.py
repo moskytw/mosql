@@ -18,6 +18,8 @@ If you want to patch again:
 It will replace the functions in :mod:`mosql.util` with its functions.
 '''
 
+import mosql.util
+
 char_escape_map = {
     # The following 7 chars is escaped in MySQL Connector/C (0.6.2)
     '\0' : r'\0',
@@ -68,13 +70,12 @@ def format_param(s=''):
 
 def delimit_identifier(s):
     '''It encloses the identifier, `s`, by ````` (back-quote).'''
+    mosql.util.raise_for_null_byte(s)
     return '`%s`' % s
 
 def escape_identifier(s):
     '''It escapes the ````` (back-quote) in the identifier, `s`.'''
     return s.replace('`', '``')
-
-import mosql.util
 
 def patch():
     '''Applies the MySQL-specific functions again.
