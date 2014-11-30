@@ -8,8 +8,7 @@ Security
 ~~~~~~~~
 
 #. The standard :func:`~mosql.util.escape` raises :exc:`ValueError` if the
-   string has a null byte. The null byte will truncate SQL in some databases.
-   The databases include PostgreSQL, but don't include MySQL. Thanks `Orange
+   string has a null byte. The null byte will truncate SQL. Thanks `Orange
    <http://blog.orange.tw>`_ for finding this issue.
 #. Removed the support to use subquery directly. Use :func:`~mosql.util.subq`
    instead.
