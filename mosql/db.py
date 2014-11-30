@@ -71,8 +71,6 @@ class Database(object):
         db.getcur  = lambda conn: conn.cursor('named-cusor')
         db.putcur  = lambda cur : cur.close()
 
-    If you want to keep connection after leave with-block, use:
-
     By default, the connection will be closed when you leave with-block. If you
     want to keep the connection open, set `to_keep_conn` as ``True``. It is
     useful in single threading environment.
