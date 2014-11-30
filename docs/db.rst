@@ -1,5 +1,5 @@
-Make DB API 2.0 More Easy to Use  --- :mod:`mosql.db`
------------------------------------------------------
+Make DB API 2.0 Easier to Use  --- :mod:`mosql.db`
+--------------------------------------------------
 
 .. versionadded :: 0.7
 
