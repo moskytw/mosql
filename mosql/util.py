@@ -132,7 +132,7 @@ def escape(s):
         or GBK.
 
     .. versionchanged:: 0.10
-        It will raise a ValueError if `s` contains a null byte (\\x00).
+        It will raise a ValueError if `s` contains a null byte (``\\x00``).
     '''
 
     if s.find('\x00') != -1:
