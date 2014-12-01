@@ -19,7 +19,7 @@ As far as we know, the two weaknesses can't be exploited, but we still strongly
 recommend you to upgrade to this version.
 
 This version, v0.10, re-passed the strictest (level=5, risk=3) `sqlmap
-<http://sqlmap.org>`_ tests in the cases:
+<http://sqlmap.org>`_ tests on both value and identitifer-side in the cases:
 
 - MySQL 5.6.21 with `MySQLdb <https://pypi.python.org/pypi/MySQL-python/>`_
   1.2.5
