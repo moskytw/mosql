@@ -138,6 +138,7 @@ def test_value_in_postgresql():
 
     assert fetched_sample_text == expected_sample_text
 
+
     cur.close()
     conn.close()
 
@@ -268,6 +269,7 @@ def test_value_in_mysql():
     fetched_sample_text = fetched_sample_bytes.decode('utf-8')
 
     assert fetched_sample_text == expected_sample_text
+
 
     cur.close()
     conn.close()
