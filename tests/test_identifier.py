@@ -78,7 +78,7 @@ def test_identifier_in_postgresql():
             from
                 information_schema.columns
             where
-                table_name   = '_test_identifier_in_postgresql'
+                table_name = '_test_identifier_in_postgresql'
         ''')
 
         fetched_sample_bytes, = cur.fetchone()
@@ -111,7 +111,7 @@ def test_identifier_in_postgresql():
             from
                 information_schema.columns
             where
-                table_name   = '_test_identifier_in_postgresql'
+                table_name = '_test_identifier_in_postgresql'
         ''')
 
         fetched_sample_bytes, = cur.fetchone()
