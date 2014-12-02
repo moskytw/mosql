@@ -52,8 +52,8 @@ def test_value_in_postgresql():
     #
     # ref: http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html
 
-    expected_sample_text = u''.join(unichr(i) for i in xrange(0x0001, 0xd800))
-    expected_sample_text += u''.join(unichr(i) for i in xrange(0xe000, 0xffff+1))
+    expected_text = u''.join(unichr(i) for i in xrange(0x0001, 0xd800))
+    expected_text += u''.join(unichr(i) for i in xrange(0xe000, 0xffff+1))
 
     # Test V-P-1-1: Value - PostgreSQL - BMP Chars - Raw SQL
 
@@ -64,13 +64,13 @@ def test_value_in_postgresql():
             'raw-sql-bmp',
             %s
         )
-    ''', (expected_sample_text, ))
+    ''', (expected_text, ))
 
     cur.execute('''select v from _test_value_in_postgresql where k = 'raw-sql-bmp' ''')
-    fetched_sample_bytes, = cur.fetchone()
-    fetched_sample_text = fetched_sample_bytes.decode('utf-8')
+    fetched_bytes, = cur.fetchone()
+    fetched_text = fetched_bytes.decode('utf-8')
 
-    assert fetched_sample_text == expected_sample_text
+    assert fetched_text == expected_text
 
 
     # Test V-P-1-2: Value - PostgreSQL BMP Chars - MoSQL's value function
@@ -82,13 +82,13 @@ def test_value_in_postgresql():
             'mosql-bmp',
             {}
         )
-    '''.format(mosql.util.value(expected_sample_text)))
+    '''.format(mosql.util.value(expected_text)))
 
     cur.execute('''select v from _test_value_in_postgresql where k = 'mosql-bmp' ''')
-    fetched_sample_bytes, = cur.fetchone()
-    fetched_sample_text = fetched_sample_bytes.decode('utf-8')
+    fetched_bytes, = cur.fetchone()
+    fetched_text = fetched_bytes.decode('utf-8')
 
-    assert fetched_sample_text == expected_sample_text
+    assert fetched_text == expected_text
 
 
     # Test V-P-2: Value - PostgreSQL - Double ASCII Char's Dot Product
@@ -98,7 +98,7 @@ def test_value_in_postgresql():
     # dot product: dot_producr(XY, AB) = XAXBYAYB
 
     ascii_chars = [unichr(i) for i in xrange(0x01, 0x7f+1)]
-    expected_sample_text = u''.join(a+b for a, b in product(ascii_chars, ascii_chars))
+    expected_text = u''.join(a+b for a, b in product(ascii_chars, ascii_chars))
 
 
     # Test V-P-2-1: Value - PostgreSQL - Double ASCII Char's Dot Product - Raw SQL
@@ -110,13 +110,13 @@ def test_value_in_postgresql():
             'raw-sql-2-ascii',
             %s
         )
-    ''', (expected_sample_text, ))
+    ''', (expected_text, ))
 
     cur.execute('''select v from _test_value_in_postgresql where k = 'raw-sql-2-ascii' ''')
-    fetched_sample_bytes, = cur.fetchone()
-    fetched_sample_text = fetched_sample_bytes.decode('utf-8')
+    fetched_bytes, = cur.fetchone()
+    fetched_text = fetched_bytes.decode('utf-8')
 
-    assert fetched_sample_text == expected_sample_text
+    assert fetched_text == expected_text
 
 
     # Test V-P-2-2: Value - PostgreSQL - Double ASCII Char's Dot Product - MoSQL's value function
@@ -128,13 +128,13 @@ def test_value_in_postgresql():
             'mosql-2-ascii',
             {}
         )
-    '''.format(mosql.util.value(expected_sample_text)))
+    '''.format(mosql.util.value(expected_text)))
 
     cur.execute('''select v from _test_value_in_postgresql where k = 'mosql-2-ascii' ''')
-    fetched_sample_bytes, = cur.fetchone()
-    fetched_sample_text = fetched_sample_bytes.decode('utf-8')
+    fetched_bytes, = cur.fetchone()
+    fetched_text = fetched_bytes.decode('utf-8')
 
-    assert fetched_sample_text == expected_sample_text
+    assert fetched_text == expected_text
 
 
     cur.close()
@@ -189,8 +189,8 @@ def test_value_in_mysql():
     # ref: http://dev.mysql.com/doc/refman/5.7/en/string-literals.html
 
 
-    expected_sample_text = u''.join(unichr(i) for i in xrange(0x0000, 0xdc00))
-    expected_sample_text += u''.join(unichr(i) for i in xrange(0xe000, 0xffff+1))
+    expected_text = u''.join(unichr(i) for i in xrange(0x0000, 0xdc00))
+    expected_text += u''.join(unichr(i) for i in xrange(0xe000, 0xffff+1))
 
 
     # Test V-M-1-1: Value - MySQL - BMP Chars - Raw SQL
@@ -202,13 +202,13 @@ def test_value_in_mysql():
             'raw-sql-bmp',
             %s
         )
-    ''', (expected_sample_text, ))
+    ''', (expected_text, ))
 
     cur.execute('''select v from _test_value_in_mysql where k = 'raw-sql-bmp' ''')
-    fetched_sample_bytes, = cur.fetchone()
-    fetched_sample_text = fetched_sample_bytes.decode('utf-8')
+    fetched_bytes, = cur.fetchone()
+    fetched_text = fetched_bytes.decode('utf-8')
 
-    assert fetched_sample_text == expected_sample_text
+    assert fetched_text == expected_text
 
 
     # Test V-M-1-2: Value - MySQL - BMP Chars - MoSQL's value function
@@ -220,13 +220,13 @@ def test_value_in_mysql():
             'mosql-bmp',
             {}
         )
-    '''.format(mosql.util.value(expected_sample_text)))
+    '''.format(mosql.util.value(expected_text)))
 
     cur.execute('''select v from _test_value_in_mysql where k = 'mosql-bmp' ''')
-    fetched_sample_bytes, = cur.fetchone()
-    fetched_sample_text = fetched_sample_bytes.decode('utf-8')
+    fetched_bytes, = cur.fetchone()
+    fetched_text = fetched_bytes.decode('utf-8')
 
-    assert fetched_sample_text == expected_sample_text
+    assert fetched_text == expected_text
 
 
     # Test V-M-2: Value - MySQL - Double ASCII Char's Dot Product
@@ -236,7 +236,7 @@ def test_value_in_mysql():
     # dot product: dot_producr(XY, AB) = XAXBYAYB
 
     ascii_chars = [unichr(i) for i in xrange(0x01, 0x7f+1)]
-    expected_sample_text = u''.join(a+b for a, b in product(ascii_chars, ascii_chars))
+    expected_text = u''.join(a+b for a, b in product(ascii_chars, ascii_chars))
 
 
     # Test V-M-2-1: Value - MySQL - Double ASCII Char's Dot Product - Raw SQL
@@ -248,13 +248,13 @@ def test_value_in_mysql():
             'raw-sql-2-ascii',
             %s
         )
-    ''', (expected_sample_text, ))
+    ''', (expected_text, ))
 
     cur.execute('''select v from _test_value_in_mysql where k = 'raw-sql-2-ascii' ''')
-    fetched_sample_bytes, = cur.fetchone()
-    fetched_sample_text = fetched_sample_bytes.decode('utf-8')
+    fetched_bytes, = cur.fetchone()
+    fetched_text = fetched_bytes.decode('utf-8')
 
-    assert fetched_sample_text == expected_sample_text
+    assert fetched_text == expected_text
 
 
     # Test V-M-2-2: Value - MySQL - Double ASCII Char's Dot Product - MoSQL's value function
@@ -266,13 +266,13 @@ def test_value_in_mysql():
             'mosql-2-ascii',
             {}
         )
-    '''.format(mosql.util.value(expected_sample_text)))
+    '''.format(mosql.util.value(expected_text)))
 
     cur.execute('''select v from _test_value_in_mysql where k = 'mosql-2-ascii' ''')
-    fetched_sample_bytes, = cur.fetchone()
-    fetched_sample_text = fetched_sample_bytes.decode('utf-8')
+    fetched_bytes, = cur.fetchone()
+    fetched_text = fetched_bytes.decode('utf-8')
 
-    assert fetched_sample_text == expected_sample_text
+    assert fetched_text == expected_text
 
 
     cur.close()
