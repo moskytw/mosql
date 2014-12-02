@@ -147,3 +147,131 @@ def test_identifier_in_postgresql():
 
     cur.close()
     conn.close()
+
+def connect_to_mysql():
+
+    import MySQLdb
+    conn = MySQLdb.connect(user='root', db='root')
+
+    cur = conn.cursor()
+
+    # the columns: variable_name, value
+    cur.execute('''show variables where variable_name = 'character_set_connection' ''')
+    _, character_set_connection = cur.fetchone()
+    assert character_set_connection == 'utf8'
+
+    cur.close()
+
+    return conn
+
+# The maximum identifier length in MySQL is 64 characters, and identifier is
+# stored in unicode.
+#
+# ref: http://dev.mysql.com/doc/refman/5.7/en/identifiers.html
+
+MYSQL_SLICE_SIZE = 64
+
+def gen_slice_for_mysql(s):
+
+    for i in xrange(0, len(s), MYSQL_SLICE_SIZE):
+        yield s[i:i+MYSQL_SLICE_SIZE]
+
+# The MySQL's space chars which was found out by hand.
+MYSQL_SPACE_CHAR_SET = set(u' \t\n\x0b\x0c\r')
+
+def fix_mysql_space_char(s):
+
+    # MySQL's database, table, and column names cannot end with space
+    # characters.
+    #
+    # ref: http://dev.mysql.com/doc/refman/5.7/en/identifiers.html
+
+    to_check_pos = -1
+    while s[to_check_pos] in MYSQL_SPACE_CHAR_SET:
+        to_check_pos -= 1
+
+    # if no trailing space char
+    if to_check_pos == -1:
+        return s
+
+    # the first pos of the trailing space chars
+    pos = to_check_pos+1
+
+    # move them to the starting
+    return s[pos:]+s[:pos]
+
+def test_identifier_in_mysql():
+
+    # enable the MySQL mode
+    mosql.mysql.patch()
+
+    conn = connect_to_mysql()
+    cur = conn.cursor()
+
+    # Test I-M-1: Identifier - MySQL - BMP Chars with MoSQL's identifier function
+    #
+    # It will include all BMP chars, except
+    #
+    # 1. the null byte (U+0000)
+    # 2. the utf-16 low surrogates (U+DC00-U+DFFF)
+    #
+    # which are not valid identifier in MySQL.
+
+    expected_text = u''.join(unichr(i) for i in xrange(0x0001, 0xdc00))
+    expected_text += u''.join(unichr(i) for i in xrange(0xe000, 0xffff+1))
+
+    for sliced_expected_text in gen_slice_for_mysql(expected_text):
+
+        if randrange(DENO) != 0: continue
+
+        sliced_expected_text = fix_mysql_space_char(sliced_expected_text)
+
+        cur.execute('''
+            create temporary table _test_identifier_in_mysql (
+                {} varchar(128) primary key
+            )
+        '''.format(make_identifier(sliced_expected_text)))
+
+        # ref: http://dev.mysql.com/doc/refman/5.7/en/explain.html
+        cur.execute('desc _test_identifier_in_mysql')
+
+        fetched_bytes, _, _, _, _, _ = cur.fetchone()
+        fetched_text = fetched_bytes.decode('utf-8')
+
+        assert fetched_text == sliced_expected_text
+
+        cur.execute('drop table _test_identifier_in_mysql')
+
+
+    # Test I-M-2: Identifier - MySQL - Double ASCII Char's Dot Product
+    #
+    # It will include '\' + any ASCII char, and '`' + any ASCII char.
+    #
+    # dot product: dot_product(XY, AB) = XAXBYAYB
+
+    ascii_chars = [unichr(i) for i in xrange(0x01, 0x7f+1)]
+    expected_text = u''.join(a+b for a, b in product(ascii_chars, ascii_chars))
+
+    for sliced_expected_text in gen_slice_for_mysql(expected_text):
+
+        if randrange(DENO) != 0: continue
+
+        sliced_expected_text = fix_mysql_space_char(sliced_expected_text)
+
+        cur.execute('''
+            create temporary table _test_identifier_in_mysql (
+                {} varchar(128) primary key
+            )
+        '''.format(make_identifier(sliced_expected_text)))
+
+        cur.execute('desc _test_identifier_in_mysql')
+
+        fetched_bytes, _, _, _, _, _ = cur.fetchone()
+        fetched_text = fetched_bytes.decode('utf-8')
+
+        assert fetched_text == sliced_expected_text
+
+        cur.execute('drop table _test_identifier_in_mysql')
+
+    cur.close()
+    conn.close()
