@@ -50,7 +50,7 @@ def test_value_in_postgresql():
     #
     # which are not valid string constant in PostgreSQL.
     #
-    # ref: http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html
+    # ref: http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-STRINGS-ESCAPE
 
     expected_text = u''.join(unichr(i) for i in xrange(0x0001, 0xd800))
     expected_text += u''.join(unichr(i) for i in xrange(0xe000, 0xffff+1))
