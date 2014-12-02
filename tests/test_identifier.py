@@ -41,10 +41,12 @@ def make_identifier(s):
         mosql.util.escape_identifier(s)
     )
 
-# A `test_identifer_` covers 79,616 characters. The databases all have the
+# A `test_identifer_` covers around 80k characters. The databases all have the
 # limitation on identifier's length, so we have to slice it to fit. It will take
-# around 35 seconds to cover all slices. For making the routine unit test
-# faster, set DENO (denominator) to skip part of the slices randomly.
+# around 25 seconds to cover all slices. For making the routine unit test faster,
+# set DENO (denominator) to skip part of the slices randomly.
+#
+# Set DENO as 1 to cover the all slices.
 
 DENO = 100
 
