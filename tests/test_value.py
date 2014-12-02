@@ -14,12 +14,6 @@ def connect_to_postgresql():
 
     cur = conn.cursor()
 
-    # We will use the MoSQL in standard mode, so check it.
-    # After PostgreSQL 9.1, the default is on.
-    cur.execute('show standard_conforming_strings')
-    standard_conforming_strings, = cur.fetchone()
-    assert standard_conforming_strings == 'on'
-
     # We will try to insert all chars from U+0001 to U+FFFF.
     cur.execute('show server_encoding')
     server_encoding, = cur.fetchone()
