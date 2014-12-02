@@ -141,14 +141,10 @@ def connect_to_mysql():
 
     cur = conn.cursor()
 
-    # We will try to insert all chars from U+0000 to U+FFFF.
     cur.execute('''show variables where variable_name = 'character_set_database' ''')
     _, character_set_database = cur.fetchone()
     assert character_set_database == 'utf8'
 
-    # MoSQL builds utf-8 string for now.
-    # It should be utf8 to avoid the issue which will be introduced by the
-    # encodings which allow ASCII \ within a multibyte character, e.g., big5.
     cur.execute('''show variables where variable_name = 'character_set_connection' ''')
     _, character_set_connection = cur.fetchone()
     assert character_set_connection == 'utf8'
