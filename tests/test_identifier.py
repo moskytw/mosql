@@ -242,7 +242,6 @@ def test_identifier_in_mysql():
 
         cur.execute('drop table _test_identifier_in_mysql')
 
-
     # Test I-M-2: Identifier - MySQL - Double ASCII Char's Dot Product
     #
     # It will include '\' + any ASCII char, and '`' + any ASCII char.
