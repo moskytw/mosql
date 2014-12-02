@@ -4,8 +4,8 @@
 from getpass import getuser
 from itertools import product
 import mosql.util
-import mosql.std
 import mosql.mysql
+import mosql.std
 
 def connect_to_postgresql():
 
