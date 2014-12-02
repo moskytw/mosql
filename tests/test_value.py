@@ -14,12 +14,10 @@ def connect_to_postgresql():
 
     cur = conn.cursor()
 
-    # We will try to insert all chars from U+0001 to U+FFFF.
     cur.execute('show server_encoding')
     server_encoding, = cur.fetchone()
     assert server_encoding == 'UTF8'
 
-    # MoSQL builds utf-8 string for now.
     cur.execute('show client_encoding')
     client_encoding, = cur.fetchone()
     assert client_encoding == 'UTF8'
@@ -30,7 +28,6 @@ def connect_to_postgresql():
 
 def test_value_in_postgresql():
 
-    # ensure we are in standard mode
     mosql.std.patch()
 
     conn = connect_to_postgresql()
@@ -44,14 +41,19 @@ def test_value_in_postgresql():
     ''')
 
 
-    # Test V-P-1: Value - PostgreSQL - BMP Chars
+    # Test V-P-1: Value - PostgreSQL - All BMP Chars
+    #
+    # It will include all BMP chars, except
+    #
+    # 1. the null byte (U+0000)
+    # 2. utf-16 surrogates (U+D800-U+DBFF, U+DC00-U+DFFF)
+    #
+    # which are not valid string constant in PostgreSQL.
+    #
+    # ref: http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html
 
     expected_sample_text = u''.join(unichr(i) for i in xrange(0x0001, 0xd800))
-    # skip UTF-16 surrogates (U+D800-U+DBFF, U+DC00-U+DFFF) which cause
-    # DataError in PostgreSQL.
-    # ref: http://en.wikipedia.org/wiki/Plane_%28Unicode%29#Basic_Multilingual_Plane
     expected_sample_text += u''.join(unichr(i) for i in xrange(0xe000, 0xffff+1))
-
 
     # Test V-P-1-1: Value - PostgreSQL - BMP Chars - Raw SQL
 
@@ -90,7 +92,9 @@ def test_value_in_postgresql():
 
 
     # Test V-P-2: Value - PostgreSQL - Double ASCII Char's Dot Product
+    #
     # It will include '\' + any ASCII char, and "'" + any ASCII char.
+    #
     # dot product: dot_producr(XY, AB) = XAXBYAYB
 
     ascii_chars = [unichr(i) for i in xrange(0x01, 0x7f+1)]
@@ -161,7 +165,6 @@ def connect_to_mysql():
 
 def test_value_in_mysql():
 
-    # enable MySQL mode
     mosql.mysql.patch()
 
     conn = connect_to_mysql()
@@ -176,11 +179,16 @@ def test_value_in_mysql():
 
 
     # Test V-M-1: Value - MySQL - BMP Chars
-    # ref: http://en.wikipedia.org/wiki/Plane_(Unicode)#Basic_Multilingual_Plane
+    #
+    # It will include all BMP chars, except
+    #
+    # 1. the utf-16 high surrogates (U+D800-U+DBFF)
+    #
+    # which are not valid string constant in PostgreSQL.
+    #
+    # ref: http://dev.mysql.com/doc/refman/5.7/en/string-literals.html
 
-    # MySQL's first range is larger than PostgreSQL. MySQL's range includes
-    # 1. the null byte (U+0000)
-    # 2. the UTF-16's high surrogates (U+D800-U+DBFF)
+
     expected_sample_text = u''.join(unichr(i) for i in xrange(0x0000, 0xdc00))
     expected_sample_text += u''.join(unichr(i) for i in xrange(0xe000, 0xffff+1))
 
@@ -222,7 +230,9 @@ def test_value_in_mysql():
 
 
     # Test V-M-2: Value - MySQL - Double ASCII Char's Dot Product
+    #
     # It will include '\' + any ASCII char, and "'" + any ASCII char.
+    #
     # dot product: dot_producr(XY, AB) = XAXBYAYB
 
     ascii_chars = [unichr(i) for i in xrange(0x01, 0x7f+1)]
