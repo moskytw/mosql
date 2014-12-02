@@ -95,7 +95,7 @@ def test_value_in_postgresql():
     #
     # It will include '\' + any ASCII char, and "'" + any ASCII char.
     #
-    # dot product: dot_producr(XY, AB) = XAXBYAYB
+    # dot product: dot_product(XY, AB) = XAXBYAYB
 
     ascii_chars = [unichr(i) for i in xrange(0x01, 0x7f+1)]
     expected_text = u''.join(a+b for a, b in product(ascii_chars, ascii_chars))
@@ -182,9 +182,9 @@ def test_value_in_mysql():
     #
     # It will include all BMP chars, except
     #
-    # 1. the utf-16 high surrogates (U+D800-U+DBFF)
+    # 1. the utf-16 low surrogates (U+DC00-U+DFFF)
     #
-    # which are not valid string constant in PostgreSQL.
+    # which are not valid string in MySQL.
     #
     # ref: http://dev.mysql.com/doc/refman/5.7/en/string-literals.html
 
@@ -233,7 +233,7 @@ def test_value_in_mysql():
     #
     # It will include '\' + any ASCII char, and "'" + any ASCII char.
     #
-    # dot product: dot_producr(XY, AB) = XAXBYAYB
+    # dot product: dot_product(XY, AB) = XAXBYAYB
 
     ascii_chars = [unichr(i) for i in xrange(0x01, 0x7f+1)]
     expected_text = u''.join(a+b for a, b in product(ascii_chars, ascii_chars))

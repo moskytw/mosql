@@ -75,7 +75,7 @@ def test_identifier_in_postgresql():
     # 1. the null byte (U+0000)
     # 2. utf-16 surrogates (U+D800-U+DBFF, U+DC00-U+DFFF)
     #
-    # which are not valid string constant in PostgreSQL.
+    # which are not valid identifier in PostgreSQL.
     #
     # ref: http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
 
@@ -112,7 +112,7 @@ def test_identifier_in_postgresql():
     #
     # It will include '\' + any ASCII char, and '"' + any ASCII char.
     #
-    # dot product: dot_producr(XY, AB) = XAXBYAYB
+    # dot product: dot_product(XY, AB) = XAXBYAYB
 
     ascii_chars = [unichr(i) for i in xrange(0x01, 0x7f+1)]
     expected_text = u''.join(a+b for a, b in product(ascii_chars, ascii_chars))
@@ -136,10 +136,10 @@ def test_identifier_in_postgresql():
                 table_name = '_test_identifier_in_postgresql'
         ''')
 
-        fetched_sample_bytes, = cur.fetchone()
-        fetched_sample_text = fetched_sample_bytes.decode('utf-8')
+        fetched_bytes, = cur.fetchone()
+        fetched_text = fetched_bytes.decode('utf-8')
 
-        assert fetched_sample_text == sliced_expected_sample_text
+        assert fetched_text == sliced_expected_text
 
         conn.rollback()
 
