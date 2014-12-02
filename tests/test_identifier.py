@@ -57,9 +57,9 @@ def test_identifier_in_postgresql():
     cur = conn.cursor()
 
     # The maximum identifier length in PostgreSQL is 63 bytes.
-    # U+FFFF in utf-8 will have 3 bytes, so the best size each time is 10.
+    # U+FFFF in utf-8 will have 3 bytes, so the best size each time is 21.
     # ref: http://www.postgresql.org/docs/9.3/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
-    slice_size = 10
+    slice_size = 21
 
     # Test I-P-1: Identifier - PostgreSQL - BMP Chars with MoSQL's identifier function
 
