@@ -148,15 +148,10 @@ def connect_to_mysql():
     _, character_set_database = cur.fetchone()
     assert character_set_database == 'utf8'
 
-    # MoSQL builds utf-8 string for now, and
-    # it should be utf8 to avoid the issue which will be introduced by the
+    # MoSQL builds utf-8 string for now.
+    # It should be utf8 to avoid the issue which will be introduced by the
     # encodings which allow ASCII \ within a multibyte character, e.g., big5.
-
-    # PostgreSQL doesn't need to cosider it. Because, by default, PostgreSQL's
-    # backslash_quote is safe_encoding which allows to use \ to escape quotes in
-    # string literal only if client encoding does not allow ASCII \ within a
-    # multibyte character.
-
+    # PostgreSQL, by default, uses ' and ", so it is safe from this issue.
     cur.execute('''show variables where variable_name = 'character_set_connection' ''')
     _, character_set_connection = cur.fetchone()
     assert character_set_connection == 'utf8'
