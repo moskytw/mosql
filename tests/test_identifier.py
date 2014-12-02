@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from getpass import getuser
+from random import randrange
 from itertools import product
 import mosql.util
 import mosql.mysql
@@ -41,6 +42,12 @@ def make_identifier(s):
         mosql.util.escape_identifier(s)
     )
 
+# A `test_identifer_` covers 79,616 characters. The databases all have the
+# limitation on identifier's length, so we have to slice it to fit. It will take
+# around 35 seconds to cover all slices. For making the routine unit test
+# faster, set DENO (denominator) to skip part of the slices randomly.
+DENO = 100
+
 def test_identifier_in_postgresql():
 
     # ensure we are in standard mode
@@ -63,6 +70,8 @@ def test_identifier_in_postgresql():
     expected_sample_text += u''.join(unichr(i) for i in xrange(0xe000, 0xffff+1))
 
     for i in xrange(0, len(expected_sample_text), slice_size):
+
+        if randrange(DENO) != 0: continue
 
         sliced_expected_sample_text = expected_sample_text[i:i+slice_size]
 
@@ -96,6 +105,8 @@ def test_identifier_in_postgresql():
     expected_sample_text = u''.join(a+b for a, b in product(ascii_chars, ascii_chars))
 
     for i in xrange(0, len(expected_sample_text), slice_size):
+
+        if randrange(DENO) != 0: continue
 
         sliced_expected_sample_text = expected_sample_text[i:i+slice_size]
 
