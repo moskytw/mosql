@@ -54,7 +54,7 @@ def test_value_in_postgresql():
     expected_text = u''.join(unichr(i) for i in xrange(0x0001, 0xd800))
     expected_text += u''.join(unichr(i) for i in xrange(0xe000, 0xffff+1))
 
-    # Test V-P-1-1: Value - PostgreSQL - BMP Chars - Raw SQL
+    # Test V-P-1-1: Value - PostgreSQL - All BMP Chars - Raw SQL
 
     cur.execute('''
         insert into
@@ -71,7 +71,7 @@ def test_value_in_postgresql():
 
     assert fetched_text == expected_text
 
-    # Test V-P-1-2: Value - PostgreSQL BMP Chars - MoSQL's value function
+    # Test V-P-1-2: Value - PostgreSQL - All BMP Chars - MoSQL's Value Function
 
     cur.execute('''
         insert into
@@ -88,16 +88,16 @@ def test_value_in_postgresql():
 
     assert fetched_text == expected_text
 
-    # Test V-P-2: Value - PostgreSQL - Double ASCII Char's Dot Product
+    # Test V-P-2: Value - PostgreSQL - The Double ASCII Char's Dot Product
     #
     # It will include '\' + any ASCII char, and "'" + any ASCII char.
     #
-    # dot product: dot_product(XY, AB) = XAXBYAYB
+    # dot product: dot_product(XY, AB) -> XAXBYAYB
 
     ascii_chars = [unichr(i) for i in xrange(0x01, 0x7f+1)]
     expected_text = u''.join(a+b for a, b in product(ascii_chars, ascii_chars))
 
-    # Test V-P-2-1: Value - PostgreSQL - Double ASCII Char's Dot Product - Raw SQL
+    # Test V-P-2-1: Value - PostgreSQL - The Double ASCII Char's Dot Product - Raw SQL
 
     cur.execute('''
         insert into
@@ -114,7 +114,7 @@ def test_value_in_postgresql():
 
     assert fetched_text == expected_text
 
-    # Test V-P-2-2: Value - PostgreSQL - Double ASCII Char's Dot Product - MoSQL's value function
+    # Test V-P-2-2: Value - PostgreSQL - The Double ASCII Char's Dot Product - MoSQL's Value Function
 
     cur.execute('''
         insert into
@@ -167,7 +167,7 @@ def test_value_in_mysql():
         )
     ''')
 
-    # Test V-M-1: Value - MySQL - BMP Chars
+    # Test V-M-1: Value - MySQL - All BMP Chars
     #
     # It will include all BMP chars, except
     #
@@ -180,7 +180,7 @@ def test_value_in_mysql():
     expected_text = u''.join(unichr(i) for i in xrange(0x0000, 0xdc00))
     expected_text += u''.join(unichr(i) for i in xrange(0xe000, 0xffff+1))
 
-    # Test V-M-1-1: Value - MySQL - BMP Chars - Raw SQL
+    # Test V-M-1-1: Value - MySQL - All BMP Chars - Raw SQL
 
     cur.execute('''
         insert into
@@ -197,7 +197,7 @@ def test_value_in_mysql():
 
     assert fetched_text == expected_text
 
-    # Test V-M-1-2: Value - MySQL - BMP Chars - MoSQL's value function
+    # Test V-M-1-2: Value - MySQL - All BMP Chars - MoSQL's Value Function
 
     cur.execute('''
         insert into
@@ -214,16 +214,16 @@ def test_value_in_mysql():
 
     assert fetched_text == expected_text
 
-    # Test V-M-2: Value - MySQL - Double ASCII Char's Dot Product
+    # Test V-M-2: Value - MySQL - The Double ASCII Char's Dot Product
     #
     # It will include '\' + any ASCII char, and "'" + any ASCII char.
     #
-    # dot product: dot_product(XY, AB) = XAXBYAYB
+    # dot product: dot_product(XY, AB) -> XAXBYAYB
 
     ascii_chars = [unichr(i) for i in xrange(0x01, 0x7f+1)]
     expected_text = u''.join(a+b for a, b in product(ascii_chars, ascii_chars))
 
-    # Test V-M-2-1: Value - MySQL - Double ASCII Char's Dot Product - Raw SQL
+    # Test V-M-2-1: Value - MySQL - The Double ASCII Char's Dot Product - Raw SQL
 
     cur.execute('''
         insert into
@@ -240,7 +240,7 @@ def test_value_in_mysql():
 
     assert fetched_text == expected_text
 
-    # Test V-M-2-2: Value - MySQL - Double ASCII Char's Dot Product - MoSQL's value function
+    # Test V-M-2-2: Value - MySQL - The Double ASCII Char's Dot Product - MoSQL's Value Function
 
     cur.execute('''
         insert into

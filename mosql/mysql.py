@@ -55,7 +55,8 @@ def escape(s):
     return ''.join(char_escape_map.get(c) or c for c in s)
 
 def fast_escape(s):
-    '''This function only escapes the ``'`` (single-quote) and ``\`` (backslash).
+    '''This function only escapes the ``\`` (backslash) and ``'``
+    (single-quote).
 
     It is enough for security and correctness, and it is faster 50x than using
     the :func:`escape`, so it is used for replacing the
@@ -64,7 +65,6 @@ def fast_escape(s):
 
     # We don't need to check the null byte here, because MySQL can handle the
     # null byte in value correctly.
-
     return s.replace('\\', '\\\\').replace("'", r"\'")
 
 def format_param(s=''):

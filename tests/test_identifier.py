@@ -32,7 +32,7 @@ def make_identifier(s):
     # The mosql.util.identifier splits the input into table and column
     # identifier by . (dot), but here we want it to be a single identifier.
 
-    # It the default behavior of MoSQL: mosql.util.qualifier encodes all the
+    # It is the default behavior of MoSQL: mosql.util.qualifier encodes all the
     # string into utf-8.
     if isinstance(s, unicode):
         s = s.encode('utf-8')
@@ -70,7 +70,7 @@ def test_identifier_in_postgresql():
     conn = connect_to_postgresql()
     cur = conn.cursor()
 
-    # Test I-P-1: Identifier - PostgreSQL - BMP Chars with MoSQL's identifier function
+    # Test I-P-1: Identifier - PostgreSQL - The BMP Chars with MoSQL's Identifier Function
     #
     # It will include all BMP chars, except
     #
@@ -110,11 +110,11 @@ def test_identifier_in_postgresql():
 
         conn.rollback()
 
-    # Test I-P-2: Identifier - PostgreSQL - Double ASCII Char's Dot Product
+    # Test I-P-2: Identifier - PostgreSQL - The Double ASCII Char's Dot Product
     #
     # It will include '\' + any ASCII char, and '"' + any ASCII char.
     #
-    # dot product: dot_product(XY, AB) = XAXBYAYB
+    # dot product: dot_product(XY, AB) -> XAXBYAYB
 
     ascii_chars = [unichr(i) for i in xrange(0x01, 0x7f+1)]
     expected_text = u''.join(a+b for a, b in product(ascii_chars, ascii_chars))
@@ -208,7 +208,7 @@ def test_identifier_in_mysql():
     conn = connect_to_mysql()
     cur = conn.cursor()
 
-    # Test I-M-1: Identifier - MySQL - BMP Chars with MoSQL's identifier function
+    # Test I-M-1: Identifier - MySQL - The BMP Chars with MoSQL's Identifier Function
     #
     # It will include all BMP chars, except
     #
@@ -242,11 +242,11 @@ def test_identifier_in_mysql():
 
         cur.execute('drop table _test_identifier_in_mysql')
 
-    # Test I-M-2: Identifier - MySQL - Double ASCII Char's Dot Product
+    # Test I-M-2: Identifier - MySQL - The Double ASCII Char's Dot Product
     #
     # It will include '\' + any ASCII char, and '`' + any ASCII char.
     #
-    # dot product: dot_product(XY, AB) = XAXBYAYB
+    # dot product: dot_product(XY, AB) -> XAXBYAYB
 
     ascii_chars = [unichr(i) for i in xrange(0x01, 0x7f+1)]
     expected_text = u''.join(a+b for a, b in product(ascii_chars, ascii_chars))
