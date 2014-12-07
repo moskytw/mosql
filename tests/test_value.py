@@ -141,6 +141,7 @@ def connect_to_mysql():
 
     cur = conn.cursor()
 
+    # the columns: variable_name, value
     cur.execute('''show variables where variable_name = 'character_set_database' ''')
     _, character_set_database = cur.fetchone()
     assert character_set_database == 'utf8'
