@@ -1053,8 +1053,8 @@ class Statement(object):
         if unused_ca_count:
             all_possibles = set(
                 p
-                for p in clause.possibles
                 for clause in self.clauses
+                for p in clause.possibles
             )
             raise TypeError('unused clause args: {}'.format(', '.join(
                 k
