@@ -75,6 +75,8 @@ The main classes let you combine the bricks above to create a final SQL builder:
     It is rewritten and totally different from old version.
 '''
 
+from __future__ import unicode_literals, print_function
+
 __all__ = [
     'escape', 'format_param', 'stringify_bool',
     'delimit_identifier', 'escape_identifier',
@@ -99,10 +101,10 @@ from functools import wraps
 from datetime import datetime, date, time
 
 def warning(s):
-    print >> sys.stderr, 'Warning: {}'.format(s)
+    print('Warning: {}'.format(s), file=sys.stderr)
 
 def debug(s):
-    print >> sys.stderr, 'Debug: {}'.format(s)
+    print(sys.stderr, 'Debug: {}'.format(s), file=sys.stderr)
 
 def echo(s):
     print >> sys.stderr, s
@@ -153,11 +155,11 @@ def format_param(s=''):
     By default, it formats the parameter in `pyformat
     <http://www.python.org/dev/peps/pep-0249/#paramstyle>`_.
 
-    >>> format_param('name')
-    '%(name)s'
+    >>> print(format_param('name'))
+    %(name)s
 
-    >>> format_param()
-    '%s'
+    >>> print(format_param())
+    %s
     '''
     return '%%(%s)s' % s if s else '%s'
 
@@ -219,7 +221,7 @@ std_escape_identifier = escape_identifier
 
 # special str subclass
 
-class raw(str):
+class raw(unicode):
     '''The qualifier functions do nothing when the input is an instance of this
     class. This is a subclass of built-in :class:`str` type.
 
@@ -237,14 +239,14 @@ default = raw('DEFAULT')
 star = raw('*')
 'The ``*`` keyword in SQL.'
 
-class param(str):
+class param(unicode):
     '''The :func:`value` builds this type as a parameter for the prepared
     statement.
 
-    >>> value(param(''))
-    '%s'
-    >>> value(param('name'))
-    '%(name)s'
+    >>> print(value(param('')))
+    %s
+    >>> print(value(param('name')))
+    %(name)s
 
     This is just a subclass of built-in :class:`str` type.
 
@@ -259,7 +261,7 @@ ___ = param
 # qualifier functions
 
 def _is_iterable_not_str(x):
-    return not isinstance(x, basestring) and hasattr(x, '__iter__')
+    return not isinstance(x, (type, basestring)) and hasattr(x, '__iter__')
 
 def qualifier(f):
     '''A decorator which makes all items in an `iterable` apply a qualifier
@@ -279,8 +281,8 @@ def qualifier(f):
         elif _is_iterable_not_str(x):
             return [item if isinstance(item, raw) else f(item) for item in x]
         else:
-            if isinstance(x, unicode):
-                x = x.encode('utf-8')
+            if isinstance(x, basestring) and not isinstance(x, unicode):
+                x = x.decode('utf-8')
             return f(x)
 
     return qualifier_wrapper

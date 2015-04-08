@@ -18,7 +18,11 @@ The functions designed for cursor:
 
 '''
 
-from itertools import groupby, izip
+from itertools import groupby
+try:
+    from itertools import izip
+except ImportError:
+    izip = zip
 from collections import deque
 from threading import Lock
 
