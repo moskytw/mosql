@@ -653,8 +653,8 @@ def _build_condition(x, key_qualifier=identifier, value_qualifier=value):
                     raise OperatorError(op)
 
         # feature of autoparam
-        if v == param:
-            v = param(k)
+        if isinstance(v, compat.class_types) and issubclass(v, param):
+            v = v(k)
 
         # qualify the k
         k = key_qualifier(k)
