@@ -18,8 +18,7 @@ The Security-related Changes
 As far as we know, the two flaws can't be exploited, but we still strongly
 recommend you to upgrade to this version.
 
-This version, v0.10, re-passed the strictest (level=5, risk=3) `sqlmap
-<http://sqlmap.org>`_ tests on both value and identitifer-side in the cases:
+This version, v0.10, re-passed the strictest (level=5, risk=3) sqlmap_ tests on both value and identitifer-side in the cases:
 
 - MySQL 5.6.21 with `MySQLdb <https://pypi.python.org/pypi/MySQL-python/>`_
   1.2.5
@@ -233,7 +232,7 @@ v0.2
 4. The :func:`mosql.build.insert` uses `set` instead of `pairs_or_columns`.
 5. The :func:`mosql.build.insert` supports "on duplicate key update" now.
 6. The :mod:`mosql.select` uses `*` if user pass ``None`` in.
-7. MoSQL passed all of the injection tests from `sqlmap <http://sqlmap.org/>`_
+7. MoSQL passed all of the injection tests from sqlmap_
    on value and identifier with PostgreSQL and MySQL.
 
 v0.1.6
@@ -252,8 +251,7 @@ v0.1.5
 ------
 
 1. This version refined the :py:mod:`mosql.mysql`.
-2. MoSQL with PostgreSQL or MySQL passed all of the injection tests from `sqlmap
-   <http://sqlmap.org/>`_.
+2. MoSQL with PostgreSQL or MySQL passed all of the injection tests from sqlmap_.
 
 v0.1.4
 ------
@@ -289,3 +287,6 @@ v0.1.1
 6. Fixed the wrong sql without specifying ``identify_by``.
 7. Fixed the SQL dumped with None. (issue `#1
    <https://github.com/moskytw/mosql/issues/1>`_)
+
+
+.. _sqlmap: http://sqlmap.org/
