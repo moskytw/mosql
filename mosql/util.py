@@ -398,8 +398,8 @@ def identifier(s):
         return delimit_identifier(escape_identifier(c))
     else:
         return (
-            delimit_identifier(escape_identifier(t))+
-            '.'+
+            delimit_identifier(escape_identifier(t)) +
+            '.' +
             delimit_identifier(escape_identifier(c))
         )
 
@@ -453,8 +453,8 @@ def identifier_as(s):
         return identifier(i)
     else:
         return (
-            identifier(i)+
-            ' AS '+
+            identifier(i) +
+            ' AS ' +
             delimit_identifier(escape_identifier(a))
         )
 
@@ -510,7 +510,7 @@ def identifier_dir(s):
             d = d.upper()
             if d not in allowed_directions:
                 raise DirectionError(d)
-        return identifier(i)+ ' '+d
+        return identifier(i) + ' ' + d
 
 @qualifier
 def paren(s):
