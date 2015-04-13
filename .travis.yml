@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 language: python
 
 python:
   - "2.7"
+  - "3.4"
 
-install: pip install sphinx --use-mirrors
+install: pip install -rrequirements/test.txt
 
-script: make -C docs/ doctest
+script: make test
