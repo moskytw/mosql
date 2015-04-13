@@ -63,18 +63,18 @@ If you want to build you own, there are all basic bricks you need -
     >>> print(select('person', {'name': None}))
     SELECT * FROM "person" WHERE "name" IS NULL
 
-    And also allow to customize:
+    And also allow to customize::
 
-    >>> print(select('person', {'name like': 'Mosky%', 'age >': 20}))  # doctest: +SKIP
-    SELECT * FROM "person" WHERE "age" > 20 AND "name" LIKE 'Mosky%'
+        >>> print(select('person', {'name like': 'Mosky%', 'age >': 20}))
+        SELECT * FROM "person" WHERE "age" > 20 AND "name" LIKE 'Mosky%'
 
-    >>> print(select('person', {('name', 'like'): 'Mosky%', ('age', '>'): 20}))  # doctest: +SKIP
-    SELECT * FROM "person" WHERE "age" > 20 AND "name" LIKE 'Mosky%'
+        >>> print(select('person', {('name', 'like'): 'Mosky%', ('age', '>'): 20}))
+        SELECT * FROM "person" WHERE "age" > 20 AND "name" LIKE 'Mosky%'
 
-    >>> print(select('person', {"person_id = '' OR true; --": 'mosky'}))
-    Traceback (most recent call last):
-        ...
-    OperatorError: this operator is not allowed: "= '' OR TRUE; --"
+        >>> print(select('person', {"person_id = '' OR true; --": 'mosky'}))
+        Traceback (most recent call last):
+            ...
+        OperatorError: this operator is not allowed: "= '' OR TRUE; --"
 
     .. seealso::
         The operators allowed --- :attr:`mosql.util.allowed_operators`.
@@ -120,7 +120,7 @@ If you want to build you own, there are all basic bricks you need -
     >>> print(select('person', {'name like': 'Mosky%'}, order_by=('age desc', )))
     SELECT * FROM "person" WHERE "name" LIKE 'Mosky%' ORDER BY "age" DESC
 
-    >>> print(select('person', {'name like': 'Mosky%'}, order_by=('age ; DROP person; --', )))
+    >>> print(select('person', {'name like': 'Mosky%'}, order_by=('age ; DROP person; --', )))  # doctest: +SKIP
     Traceback (most recent call last):
         ...
     DirectionError: this direction is not allowed: '; DROP PERSON; --'

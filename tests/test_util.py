@@ -1,9 +1,38 @@
 from collections import OrderedDict
 from datetime import date
 
-from nose.tools import eq_
+from nose.tools import eq_, assert_true, assert_false
 
-from mosql.util import build_set, build_where, param, ___
+from mosql.compat import binary_type, text_type
+from mosql.util import (
+    build_set, build_where, param, ___,
+    _is_iterable_not_str,
+)
+
+
+def test_is_iterable_not_str():
+    # Iterable objects.
+    assert_true(_is_iterable_not_str([]))
+    assert_true(_is_iterable_not_str(tuple()))
+    assert_true(_is_iterable_not_str({}))
+    assert_true(_is_iterable_not_str(set()))
+
+    # Strings are iterable, but not included.
+    assert_false(_is_iterable_not_str(''))
+    assert_false(_is_iterable_not_str(b''))
+    assert_false(_is_iterable_not_str(u''))
+    assert_false(_is_iterable_not_str(binary_type()))
+    assert_false(_is_iterable_not_str(text_type()))
+
+    # Iterable classes are not iterable themselves.
+    assert_false(_is_iterable_not_str(list))
+    assert_false(_is_iterable_not_str(tuple))
+    assert_false(_is_iterable_not_str(dict))
+    assert_false(_is_iterable_not_str(set))
+    assert_false(_is_iterable_not_str(str))
+    assert_false(_is_iterable_not_str(bytes))
+    assert_false(_is_iterable_not_str(binary_type))
+    assert_false(_is_iterable_not_str(text_type))
 
 
 def test_build_where():

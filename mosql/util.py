@@ -75,7 +75,7 @@ The main classes let you combine the bricks above to create a final SQL builder:
     It is rewritten and totally different from old version.
 '''
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 __all__ = [
     'escape', 'format_param', 'stringify_bool',
@@ -93,12 +93,10 @@ __all__ = [
 ]
 
 import sys
-if sys.version_info >= (3,):
-    unicode = str
-    basestring = str
-
-from functools import wraps
 from datetime import datetime, date, time
+from functools import wraps
+
+from . import compat
 
 def warning(s):
     print('Warning: {}'.format(s), file=sys.stderr)
@@ -157,11 +155,11 @@ def format_param(s=''):
     By default, it formats the parameter in `pyformat
     <http://www.python.org/dev/peps/pep-0249/#paramstyle>`_.
 
-    >>> format_param('name')
-    '%(name)s'
+    >>> print(format_param('name'))
+    %(name)s
 
-    >>> format_param()
-    '%s'
+    >>> print(format_param())
+    %s
     '''
     return '%%(%s)s' % s if s else '%s'
 
@@ -225,9 +223,9 @@ std_escape_identifier = escape_identifier
 
 # special str subclass
 
-class raw(str):
+class raw(compat.text_type):
     '''The qualifier functions do nothing when the input is an instance of this
-    class. This is a subclass of built-in :class:`str` type.
+    class. This is a subclass of the built-in text type.
 
     .. warning ::
         It's your responsibility to ensure the security when you use
@@ -235,7 +233,7 @@ class raw(str):
     '''
 
     def __repr__(self):
-        return 'raw(%r)' % str(self)
+        return str('raw(%r)') % super(raw, self).__repr__()
 
 default = raw('DEFAULT')
 'The ``DEFAULT`` keyword in SQL.'
@@ -243,29 +241,31 @@ default = raw('DEFAULT')
 star = raw('*')
 'The ``*`` keyword in SQL.'
 
-class param(str):
+class param(compat.text_type):
     '''The :func:`value` builds this type as a parameter for the prepared
     statement.
 
-    >>> value(param(''))
-    '%s'
-    >>> value(param('name'))
-    '%(name)s'
+    >>> print(value(param('')))
+    %s
+    >>> print(value(param('name')))
+    %(name)s
 
-    This is just a subclass of built-in :class:`str` type.
+    This is a subclass of the built-in text type.
 
     The :class:`___` is an alias of it.
     '''
 
     def __repr__(self):
-        return 'param(%r)' % self
+        return str('param(%r)') % super(param, self).__repr__()
 
 ___ = param
 
 # qualifier functions
 
 def _is_iterable_not_str(x):
-    return not isinstance(x, basestring) and hasattr(x, '__iter__')
+    return (not isinstance(x, compat.class_types)
+            and not isinstance(x, compat.string_types + (bytes,))
+            and hasattr(x, '__iter__'))
 
 def qualifier(f):
     '''A decorator which makes all items in an `iterable` apply a qualifier
@@ -285,8 +285,8 @@ def qualifier(f):
         elif _is_iterable_not_str(x):
             return [item if isinstance(item, raw) else f(item) for item in x]
         else:
-            if isinstance(x, unicode):
-                x = x.encode('utf-8')
+            if isinstance(x, compat.binary_type):
+                x = x.decode('utf-8')
             return f(x)
 
     return qualifier_wrapper
@@ -327,14 +327,14 @@ def value(x):
         return 'NULL'
     elif isinstance(x, param):
         return format_param(x)
-    elif isinstance(x, basestring):
+    elif isinstance(x, compat.string_types):
         return "'%s'" % escape(x)
     elif isinstance(x, (datetime, date, time)):
         return "'%s'" % x
     elif isinstance(x, bool):
         return stringify_bool(x)
     else:
-        return str(x)
+        return compat.text_type(x)
 
 class DirectionError(Exception):
     '''The instance of it will be raised when :func:`identifier` detects an
@@ -347,7 +347,7 @@ class DirectionError(Exception):
         self.op = op
 
     def __str__(self):
-        return 'this direction is not allowed: %r' % self.op
+        return "this direction is not allowed: '%s'" % compat.text_type(self.op)
 
 allowed_directions = set(['DESC', 'ASC'])
 '''The directions which are allowed by :func:`identifier_dir`.
@@ -572,7 +572,7 @@ class OperatorError(Exception):
         self.op = op
 
     def __str__(self):
-        return 'this operator is not allowed: %r' % self.op
+        return 'this operator is not allowed: "%s"' % compat.text_type(self.op)
 
 allowed_operators = set([
     '<', '>', '<=', '>=', '=', '<>', '!=',
@@ -633,7 +633,6 @@ def _build_condition(x, key_qualifier=identifier, value_qualifier=value):
         # TODO: let user use subquery with operator in first (key) part
         # if k is raw, it means we can't modify the k and op
         if not isinstance(k, raw):
-
             if _is_pair(k):
                 # unpack the op out
                 k, op = k

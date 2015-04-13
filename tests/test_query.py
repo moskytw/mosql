@@ -1,9 +1,9 @@
 from collections import OrderedDict
 
-from nose.tools import eq_
+from nose.tools import eq_, assert_raises
 
 from mosql.query import select, insert, replace
-from mosql.util import param, ___, raw
+from mosql.util import param, ___, raw, DirectionError, OperatorError
 
 
 def test_select_customize():
@@ -20,6 +20,21 @@ def test_select_customize_operator():
     ]))
     exp = 'SELECT * FROM "person" WHERE "name" LIKE \'Mosky%\' AND "age" > 20'
     eq_(gen, exp)
+
+
+def test_select_operationerror():
+    with assert_raises(OperatorError) as cxt:
+        select('person', {"person_id = '' OR true; --": 'mosky'})
+    exp = "this operator is not allowed: \"= '' OR TRUE; --\""
+    eq_(str(cxt.exception), exp)
+
+
+def test_select_directionerror():
+    with assert_raises(DirectionError) as cxt:
+        select('person', {'name like': 'Mosky%'},
+               order_by=('age ; DROP person; --', ))
+    exp = "this direction is not allowed: '; DROP PERSON; --'"
+    eq_(str(cxt.exception), exp)
 
 
 def test_select_param():
