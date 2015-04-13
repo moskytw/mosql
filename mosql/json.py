@@ -7,7 +7,7 @@
     will not be needed once :mod:`~mosql.result` is removed.
 
 .. warning::
-    This module will be removed in version 0.11.
+    This module does not work on Python 3, and will be removed in version 0.11.
 
 An alternative of built-in `json`.
 

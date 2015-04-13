@@ -12,7 +12,7 @@ future release:
 
 ..
 .. warning::
-    The modules here will be removed in version 0.11.
+    The modules here are no longer maintained, and will be removed in version 0.11.
 
 .. testsetup::
 

@@ -7,7 +7,7 @@
     removed in a future release.
 
 .. warning::
-    This module will be removed in version 0.11.
+    This module does not work on Python 3, and will be removed in version 0.11.
 
 It applies the escape function in psycopg2 to :mod:`mosql.util`.
 
