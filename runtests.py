@@ -13,9 +13,10 @@ sphinxtests = SphinxDoctest()
 
 
 if __name__ == '__main__':
-    ok = nose.run(
-        argv=[__file__, '--with-sphinx', '--exclude-dir=oldtests'],
-        plugins=[exclude, sphinxtests],
-    )
+    argv = [
+        __file__, '--with-sphinx', '--exclude-dir=oldtests',
+        '--sphinx-exclude=deprecated.rst',
+    ]
+    ok = nose.run(argv=argv, plugins=[exclude, sphinxtests])
     if not ok:
         sys.exit(1)

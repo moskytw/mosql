@@ -1,4 +1,3 @@
-coverage
 nose
 nose-exclude
 sphinx
