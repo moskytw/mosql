@@ -42,13 +42,13 @@ char_escape_map = {
 def escape(s):
     r'''This function escapes the `s` into a executable SQL.
 
-    >>> print escape('\0\n\r\\\'\"\x1A\b\t')
+    >>> print(escape('\0\n\r\\\'\"\x1A\b\t'))
     \0\n\r\\\'\"\Z\b\t
 
     >>> tmpl = "select * from person where person_id = '%s';"
     >>> evil_value = "' or true; --"
 
-    >>> print tmpl % escape(evil_value)
+    >>> print(tmpl % escape(evil_value))
     select * from person where person_id = '\' or true; --';
     '''
     global char_escape_map

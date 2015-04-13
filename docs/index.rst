@@ -72,19 +72,19 @@ It is just more than SQL.
 MoSQL is Elegant
 ----------------
 
-Here we have a dictionary which includes the information of a person:
+Here we have a dictionary which includes the information of a person::
 
->>> mosky = {
-...    'person_id': 'mosky',
-...    'name'     : 'Mosky Liu',
-... }
+    >>> mosky = {
+    ...    'person_id': 'mosky',
+    ...    'name'     : 'Mosky Liu',
+    ... }
 
 And we want to insert it into a table named person. It is easy with
-:mod:`mosql.query`:
+:mod:`mosql.query`::
 
->>> from mosql.query import insert
->>> print insert('person', mosky)
-INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
+    >>> from mosql.query import insert
+    >>> print(insert('person', mosky))
+    INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 
 .. seealso::
 
@@ -95,15 +95,11 @@ INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 Like it?
 --------
 
-It is available on PyPI:
-
-::
+It is available on PyPI::
 
     $ sudo pip install mosql
 
-Or clone the source code from `GitHub <https://github.com/moskytw/mosql>`_:
-
-::
+Or clone the source code from `GitHub <https://github.com/moskytw/mosql>`_::
 
     $ git clone git://github.com/moskytw/mosql.git
 
@@ -119,7 +115,7 @@ Read More
     db
 
 .. note::
-    Some of the modules are deprecated after v0.6, check :doc:`/deprecated` for
+    Some of the modules are deprecated after v0.6, check :doc:`deprecated` for
     more information.
 
 The Changes

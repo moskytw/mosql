@@ -1,0 +1,5 @@
+coverage
+nose
+nose-exclude
+sphinx
+sphinx-nose>=0.3.1

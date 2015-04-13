@@ -40,7 +40,7 @@ And we want to insert it into a table named person. It is easy with `mosql.query
 <http://mosql.mosky.tw/query.html#module-mosql.query>`_:
 
 >>> from mosql.query import insert
->>> print insert('person', mosky)
+>>> print(insert('person', mosky))
 INSERT INTO "person" ("person_id", "name") VALUES ('mosky', 'Mosky Liu')
 
 Check `The Common Queries — mosql.query <http://mosql.mosky.tw/query.html>`_ for

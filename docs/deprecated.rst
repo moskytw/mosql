@@ -10,6 +10,7 @@ future release:
 4. :mod:`mosql.psycopg2_escape`
 5. :mod:`mosql.MySQLdb_escape`
 
+..
 .. warning::
     The modules here will be removed in version 0.11.
 
