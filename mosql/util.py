@@ -267,6 +267,11 @@ def _is_iterable_not_str(x):
             and not isinstance(x, compat.string_types + (bytes,))
             and hasattr(x, '__iter__'))
 
+def _coerce_str(x):
+    if isinstance(x, compat.binary_type):
+        x = x.decode('utf-8')
+    return x
+
 def qualifier(f):
     '''A decorator which makes all items in an `iterable` apply a qualifier
     function, `f`, or simply apply the qualifier function to the input if the
@@ -283,11 +288,12 @@ def qualifier(f):
         if isinstance(x, raw):
             return x
         elif _is_iterable_not_str(x):
-            return [item if isinstance(item, raw) else f(item) for item in x]
+            return [
+                item if isinstance(item, raw) else f(_coerce_str(item))
+                for item in x
+            ]
         else:
-            if isinstance(x, compat.binary_type):
-                x = x.decode('utf-8')
-            return f(x)
+            return f(_coerce_str(x))
 
     return qualifier_wrapper
 

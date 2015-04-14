@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
 from collections import OrderedDict
 
 from nose.tools import eq_, assert_raises
