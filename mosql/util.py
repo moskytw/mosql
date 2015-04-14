@@ -729,7 +729,7 @@ def build_where(x):
         >>> print(build_where({'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___}))
         "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
 
-    It does noting if `x` is a string:
+    It does nothing if `x` is a string:
 
     >>> print(build_where('"detail_id" = 1 AND "age" >= 20 AND "created" = \'2013-04-16\''))
     "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
@@ -761,7 +761,7 @@ def build_set(x):
         >>> print(build_set({'custom_param': param('myparam'), 'auto_param': param}))
         "auto_param"=%(auto_param)s, "custom_param"=%(myparam)s
 
-    It does noting if `x` is a string:
+    It does nothing if `x` is a string:
 
     >>> print(build_set('"a"=1, "b"=TRUE, "c"=\'2013-04-16\''))
     "a"=1, "b"=TRUE, "c"='2013-04-16'
