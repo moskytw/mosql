@@ -36,6 +36,6 @@ setup(
         'Topic :: Database :: Front-Ends',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    packages=find_packages(),
+    packages=find_packages(exclude=['oldtests']),
     zip_safe=True,
 )

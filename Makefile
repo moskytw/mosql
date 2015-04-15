@@ -1,4 +1,7 @@
-.PHONY: docs open prepare test test-all
+.PHONY: docs open prepare-test release test test-all
+
+all:
+	python setup.py sdist bdist_wheel
 
 docs:
 	$(MAKE) -C docs html
@@ -6,11 +9,14 @@ docs:
 open: docs
 	open docs/_build/html/index.html
 
-prepare:
+prepare-test:
 	$(MAKE) -C docs pickle >/dev/null 2>&1
 
-test: prepare
+release: all
+	upload
+
+test: prepare-test
 	python runtests.py
 
-test-all: prepare
+test-all: prepare-test
 	tox
