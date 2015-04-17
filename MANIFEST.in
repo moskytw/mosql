@@ -1,6 +1,6 @@
 global-include README* LICENSE*
 graft examples
-graph oldtests
+graft oldtests
 graft tests
 graft docs
 prune docs/_build
