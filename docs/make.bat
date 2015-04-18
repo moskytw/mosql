@@ -1,6 +1,7 @@
 @ECHO OFF
 
 REM Command file for Sphinx documentation
+REM https://github.com/sphinx-doc/sphinx/blob/1.3.1/sphinx/quickstart.py
 
 if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
