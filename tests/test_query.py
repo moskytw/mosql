@@ -7,7 +7,7 @@ from collections import OrderedDict
 from nose.tools import eq_, assert_raises
 
 from mosql.query import select, insert, replace
-from mosql.util import param, ___, raw, DirectionError, OperatorError
+from mosql.util import param, ___, raw, DirectionError, OperatorError, autoparam
 
 
 def test_select_customize():
@@ -43,7 +43,7 @@ def test_select_directionerror():
 
 def test_select_param():
     gen = select('table', OrderedDict([
-        ('custom_param', param('my_param')), ('auto_param', param),
+        ('custom_param', param('my_param')), ('auto_param', autoparam),
         ('using_alias', ___),
     ]))
     exp = (

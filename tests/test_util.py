@@ -5,7 +5,7 @@ from nose.tools import eq_, assert_true, assert_false
 
 from mosql.compat import binary_type, text_type
 from mosql.util import (
-    build_set, build_where, param, ___,
+    autoparam, build_set, build_where, param, ___,
     _is_iterable_not_str,
 )
 
@@ -24,16 +24,6 @@ def test_is_iterable_not_str():
     assert_false(_is_iterable_not_str(binary_type()))
     assert_false(_is_iterable_not_str(text_type()))
 
-    # Iterable classes are not iterable themselves.
-    assert_false(_is_iterable_not_str(list))
-    assert_false(_is_iterable_not_str(tuple))
-    assert_false(_is_iterable_not_str(dict))
-    assert_false(_is_iterable_not_str(set))
-    assert_false(_is_iterable_not_str(str))
-    assert_false(_is_iterable_not_str(bytes))
-    assert_false(_is_iterable_not_str(binary_type))
-    assert_false(_is_iterable_not_str(text_type))
-
 
 def test_build_where():
     gen = build_where(OrderedDict([
@@ -51,7 +41,7 @@ def test_build_where_operator():
 
 def test_build_where_prepared():
     gen = build_where(OrderedDict([
-        ('custom_param', param('my_param')), ('auto_param', param),
+        ('custom_param', param('my_param')), ('auto_param', autoparam),
         ('using_alias', ___),
     ]))
     exp = ('"custom_param" = %(my_param)s AND "auto_param" = %(auto_param)s '
@@ -68,6 +58,6 @@ def test_build_set():
 
 def test_build_set_prepared():
     gen = build_set(OrderedDict([
-        ('custom_param', param('myparam')), ('auto_param', param),
+        ('custom_param', param('myparam')), ('auto_param', autoparam),
     ]))
     eq_(gen, '"custom_param"=%(myparam)s, "auto_param"=%(auto_param)s')

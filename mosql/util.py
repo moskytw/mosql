@@ -80,7 +80,7 @@ from __future__ import print_function, unicode_literals
 __all__ = [
     'escape', 'format_param', 'stringify_bool',
     'delimit_identifier', 'escape_identifier',
-    'raw', 'param', 'default', '___', 'star',
+    'raw', 'param', 'default', '___', 'star', 'autoparam',
     'qualifier', 'paren', 'value',
     'DirectionError', 'allowed_directions',
     'identifier', 'identifier_as', 'identifier_dir',
@@ -233,7 +233,7 @@ class raw(compat.text_type):
     '''
 
     def __repr__(self):
-        return str('raw(%r)') % super(raw, self).__repr__()
+        return str('raw(%s)' % super(raw, self).__repr__())
 
 default = raw('DEFAULT')
 'The ``DEFAULT`` keyword in SQL.'
@@ -256,46 +256,66 @@ class param(compat.text_type):
     '''
 
     def __repr__(self):
-        return str('param(%r)') % super(param, self).__repr__()
+        return str('param(%s)' % super(param, self).__repr__())
 
-___ = param
+___ = autoparam = object()
+'''A special token that is converted to a parameter automatically by
+:func:`value` in a prepared statement.'''
 
 # qualifier functions
 
-def _is_iterable_not_str(x):
-    return (not isinstance(x, compat.class_types)
-            and not isinstance(x, compat.string_types + (bytes,))
-            and hasattr(x, '__iter__'))
+if compat.PY2:
+    def _is_iterable_not_str(x):
+        return hasattr(x, '__iter__')
 
-def _coerce_str(x):
-    if isinstance(x, compat.binary_type):
-        x = x.decode('utf-8')
-    return x
+    def _coerce_str(x):
+        if isinstance(x, compat.binary_type):
+            x = x.decode('utf-8')
+        return x
 
-def qualifier(f):
-    '''A decorator which makes all items in an `iterable` apply a qualifier
-    function, `f`, or simply apply the qualifier function to the input if the
-    input is not an `iterable`.
+    def _qualifier(f):
+        @wraps(f)
+        def qualifier_wrapper(x):
+            if isinstance(x, raw):
+                return x
+            elif _is_iterable_not_str(x):
+                return [
+                    item if isinstance(item, raw) else f(_coerce_str(item))
+                    for item in x
+                ]
+            else:
+                return f(_coerce_str(x))
 
-    The `iterable` here means the iterable except string.
+        return qualifier_wrapper
+else:
+    def _is_iterable_not_str(x):
+        return not isinstance(x, (str, bytes,)) and hasattr(x, '__iter__')
 
-    It also makes a qualifier function returns the input without changes if the
-    input is an instance of :class:`raw`.
-    '''
+    def _qualifier(f):
+        @wraps(f)
+        def qualifier_wrapper(x):
+            if isinstance(x, raw):
+                return x
+            elif _is_iterable_not_str(x):
+                return [
+                    item if isinstance(item, raw) else f(item)
+                    for item in x
+                ]
+            else:
+                return f(x)
 
-    @wraps(f)
-    def qualifier_wrapper(x):
-        if isinstance(x, raw):
-            return x
-        elif _is_iterable_not_str(x):
-            return [
-                item if isinstance(item, raw) else f(_coerce_str(item))
-                for item in x
-            ]
-        else:
-            return f(_coerce_str(x))
+        return qualifier_wrapper
 
-    return qualifier_wrapper
+qualifier = _qualifier
+'''A decorator which makes all items in an `iterable` apply a qualifier
+function, `f`, or simply apply the qualifier function to the input if the input
+is not an `iterable`.
+
+The `iterable` here means the iterable except string.
+
+It also makes a qualifier function returns the input without changes if the
+input is an instance of :class:`raw`.
+'''
 
 @qualifier
 def value(x):
@@ -664,8 +684,8 @@ def _build_condition(x, key_qualifier=identifier, value_qualifier=value):
                     raise OperatorError(op)
 
         # feature of autoparam
-        if isinstance(v, compat.class_types) and issubclass(v, param):
-            v = v(k)
+        if v is autoparam:
+            v = param(k)
 
         # qualify the k
         k = key_qualifier(k)
@@ -779,7 +799,7 @@ def build_set(x):
     for k, v in ps:
 
         # feature of autoparam
-        if isinstance(v, type) and v.__name__ == 'param':
+        if v is autoparam:
             v = param(k)
 
         pieces.append('%s=%s' % (identifier(k), value(v)))

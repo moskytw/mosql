@@ -129,9 +129,9 @@ If you want to build you own, there are all basic bricks you need -
         The directions allowed --- :attr:`mosql.util.allowed_directions`.
 
 
-    The prepare statement is also available with :class:`mosql.util.param`::
+    The prepare statement is also available with :class:`mosql.util.param`. If you want to build a named parameter with the same name of the column, you can use a special token, :const:`mosql.util.autoparam`. It also has a shortcut, :const:`mosql.util.___`::
 
-        >>> print(select('table', {'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___}))
+        >>> print(select('table', {'custom_param': param('my_param'), 'auto_param': autoparam, 'using_alias': ___}))
         SELECT * FROM "table" WHERE "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
 
 
