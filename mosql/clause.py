@@ -6,7 +6,7 @@
 from .util import Clause, star
 from .chain import identifier_as_list, where_list
 from .chain import single_identifier, column_list, values_list, set_list
-from .chain import statement_list, identifier_list, where_list, identifier_dir_list, single_value
+from .chain import statement_list, identifier_list, identifier_dir_list, single_value
 from .chain import single_identifier_as, on_list
 
 # common clauses

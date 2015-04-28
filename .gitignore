@@ -1,9 +1,11 @@
-#
-*.pyc
+# Temp files.
+*.py[co]
+__pycache__
 /docs/_build
 
-#
+# Generated files.
+/.coverage
+/.tox
 /mosql.egg-info
 /build
 /dist
-

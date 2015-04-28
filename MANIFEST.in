@@ -1,6 +1,8 @@
 global-include README* LICENSE*
 graft examples
+graft oldtests
 graft tests
 graft docs
 prune docs/_build
 global-exclude *.pyc
+global-exclude __pycache__

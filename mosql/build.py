@@ -6,7 +6,7 @@
     Use :mod:`mosql.query` instead.
 
 .. warning::
-    This module will be removed in version 0.11.
+    This module does not work on Python 3, and will be removed in version 0.11.
 
 It contains the common SQL builders.
 

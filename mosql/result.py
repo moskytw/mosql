@@ -7,7 +7,7 @@
     model, just write a class with :mod:`mosql.query` instead.
 
 .. warning::
-    This module will be removed in version 0.11.
+    This module does not work on Python 3, and will be removed in version 0.11.
 
 It provides useful :class:`Model` which let you commuicate with database
 smoothly.
@@ -484,7 +484,7 @@ class Model(Mapping):
         else:
             object.__setattr__(self, key, val)
 
-    # --- modifiy this model --- 
+    # --- modifiy this model ---
 
     ident_by = None
     '''It defines how to identify a row. It should be column names in a tuple.'''

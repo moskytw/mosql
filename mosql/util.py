@@ -75,10 +75,12 @@ The main classes let you combine the bricks above to create a final SQL builder:
     It is rewritten and totally different from old version.
 '''
 
+from __future__ import print_function, unicode_literals
+
 __all__ = [
     'escape', 'format_param', 'stringify_bool',
     'delimit_identifier', 'escape_identifier',
-    'raw', 'param', 'default', '___', 'star',
+    'raw', 'param', 'default', '___', 'star', 'autoparam',
     'qualifier', 'paren', 'value',
     'DirectionError', 'allowed_directions',
     'identifier', 'identifier_as', 'identifier_dir',
@@ -91,21 +93,19 @@ __all__ = [
 ]
 
 import sys
-if sys.version_info >= (3,):
-    unicode = str
-    basestring = str
-
-from functools import wraps
 from datetime import datetime, date, time
+from functools import wraps
+
+from . import compat
 
 def warning(s):
-    print >> sys.stderr, 'Warning: {}'.format(s)
+    print('Warning: {}'.format(s), file=sys.stderr)
 
 def debug(s):
-    print >> sys.stderr, 'Debug: {}'.format(s)
+    print('Debug: {}'.format(s), file=sys.stderr)
 
 def echo(s):
-    print >> sys.stderr, s
+    print(s, file=sys.stderr)
 
 # core functions
 
@@ -124,14 +124,16 @@ def escape(s):
 
     It aims at avoiding SQL injection. Here are some examples:
 
-    >>> tmpl = "select * from person where person_id = '%s';"
-    >>> evil_value = "' or true; -- "
+    .. doctest::
 
-    >>> print tmpl % evil_value
-    select * from person where person_id = '' or true; -- ';
+        >>> tmpl = "select * from person where person_id = '%s';"
+        >>> evil_value = "' or true; -- "
 
-    >>> print tmpl % escape(evil_value)
-    select * from person where person_id = '\'' or true; -- ';
+        >>> print(tmpl % evil_value)
+        select * from person where person_id = '' or true; -- ';
+
+        >>> print(tmpl % escape(evil_value))
+        select * from person where person_id = '\'' or true; -- ';
 
     .. warning ::
         Please use UTF-8 as your connection encoing. Simple escaping will have
@@ -153,11 +155,11 @@ def format_param(s=''):
     By default, it formats the parameter in `pyformat
     <http://www.python.org/dev/peps/pep-0249/#paramstyle>`_.
 
-    >>> format_param('name')
-    '%(name)s'
+    >>> print(format_param('name'))
+    %(name)s
 
-    >>> format_param()
-    '%s'
+    >>> print(format_param())
+    %s
     '''
     return '%%(%s)s' % s if s else '%s'
 
@@ -194,14 +196,16 @@ def escape_identifier(s):
 
     It also aims at avoid SQL injection. Here are some examples:
 
-    >>> tmpl = 'select * from person where "%s" = \'mosky\';'
-    >>> evil_identifier = 'person_id" = \'\' or true; -- '
+    .. doctest::
 
-    >>> print tmpl % evil_identifier
-    select * from person where "person_id" = '' or true; -- " = 'mosky';
+        >>> tmpl = 'select * from person where "%s" = \'mosky\';'
+        >>> evil_identifier = 'person_id" = \'\' or true; -- '
 
-    >>> print tmpl % escape_identifier(evil_identifier)
-    select * from person where "person_id"" = '' or true; -- " = 'mosky';
+        >>> print(tmpl % evil_identifier)
+        select * from person where "person_id" = '' or true; -- " = 'mosky';
+
+        >>> print(tmpl % escape_identifier(evil_identifier))
+        select * from person where "person_id"" = '' or true; -- " = 'mosky';
 
     .. warning ::
         Please use UTF-8 as your connection encoing. Simple escaping will have
@@ -219,9 +223,9 @@ std_escape_identifier = escape_identifier
 
 # special str subclass
 
-class raw(str):
+class raw(compat.text_type):
     '''The qualifier functions do nothing when the input is an instance of this
-    class. This is a subclass of built-in :class:`str` type.
+    class. This is a subclass of the built-in text type.
 
     .. warning ::
         It's your responsibility to ensure the security when you use
@@ -229,7 +233,7 @@ class raw(str):
     '''
 
     def __repr__(self):
-        return 'raw(%r)' % str(self)
+        return str('raw(%s)' % super(raw, self).__repr__())
 
 default = raw('DEFAULT')
 'The ``DEFAULT`` keyword in SQL.'
@@ -237,80 +241,108 @@ default = raw('DEFAULT')
 star = raw('*')
 'The ``*`` keyword in SQL.'
 
-class param(str):
+class param(compat.text_type):
     '''The :func:`value` builds this type as a parameter for the prepared
     statement.
 
-    >>> value(param(''))
-    '%s'
-    >>> value(param('name'))
-    '%(name)s'
+    >>> print(value(param('')))
+    %s
+    >>> print(value(param('name')))
+    %(name)s
 
-    This is just a subclass of built-in :class:`str` type.
+    This is a subclass of the built-in text type.
 
     The :class:`___` is an alias of it.
     '''
 
     def __repr__(self):
-        return 'param(%r)' % self
+        return str('param(%s)' % super(param, self).__repr__())
 
-___ = param
+___ = autoparam = object()
+'''A special token that is converted to a parameter automatically by
+:func:`value` in a prepared statement.'''
 
 # qualifier functions
 
-def _is_iterable_not_str(x):
-    return not isinstance(x, basestring) and hasattr(x, '__iter__')
+if compat.PY2:
+    def _is_iterable_not_str(x):
+        return hasattr(x, '__iter__')
 
-def qualifier(f):
-    '''A decorator which makes all items in an `iterable` apply a qualifier
-    function, `f`, or simply apply the qualifier function to the input if the
-    input is not an `iterable`.
+    def _coerce_str(x):
+        if isinstance(x, compat.binary_type):
+            x = x.decode('utf-8')
+        return x
 
-    The `iterable` here means the iterable except string.
+    def _qualifier(f):
+        @wraps(f)
+        def qualifier_wrapper(x):
+            if isinstance(x, raw):
+                return x
+            elif _is_iterable_not_str(x):
+                return [
+                    item if isinstance(item, raw) else f(_coerce_str(item))
+                    for item in x
+                ]
+            else:
+                return f(_coerce_str(x))
 
-    It also makes a qualifier function returns the input without changes if the
-    input is an instance of :class:`raw`.
-    '''
+        return qualifier_wrapper
+else:
+    def _is_iterable_not_str(x):
+        return not isinstance(x, (str, bytes,)) and hasattr(x, '__iter__')
 
-    @wraps(f)
-    def qualifier_wrapper(x):
-        if isinstance(x, raw):
-            return x
-        elif _is_iterable_not_str(x):
-            return [item if isinstance(item, raw) else f(item) for item in x]
-        else:
-            if isinstance(x, unicode):
-                x = x.encode('utf-8')
-            return f(x)
+    def _qualifier(f):
+        @wraps(f)
+        def qualifier_wrapper(x):
+            if isinstance(x, raw):
+                return x
+            elif _is_iterable_not_str(x):
+                return [
+                    item if isinstance(item, raw) else f(item)
+                    for item in x
+                ]
+            else:
+                return f(x)
 
-    return qualifier_wrapper
+        return qualifier_wrapper
+
+qualifier = _qualifier
+'''A decorator which makes all items in an `iterable` apply a qualifier
+function, `f`, or simply apply the qualifier function to the input if the input
+is not an `iterable`.
+
+The `iterable` here means the iterable except string.
+
+It also makes a qualifier function returns the input without changes if the
+input is an instance of :class:`raw`.
+'''
 
 @qualifier
 def value(x):
     '''A qualifier function which formats Python object as SQL value.
 
-    >>> print value('normal string')
+    >>> print(value('normal string'))
     'normal string'
 
-    >>> print value(u'normal unicode')
+    >>> print(value(u'normal unicode'))
     'normal unicode'
 
-    >>> print value(True)
+    >>> print(value(True))
     TRUE
 
-    >>> print value(datetime(2013, 4, 19, 14, 41, 10))
+    >>> print(value(datetime(2013, 4, 19, 14, 41, 10)))
     '2013-04-19 14:41:10'
 
-    >>> print value(date(2013, 4, 19))
+    >>> print(value(date(2013, 4, 19)))
     '2013-04-19'
 
-    >>> print value(time(14, 41, 10))
+    >>> print(value(time(14, 41, 10)))
     '14:41:10'
 
-    >>> print value(raw('count(person_id) > 1'))
+    >>> print(value(raw('count(person_id) > 1')))
     count(person_id) > 1
 
-    >>> print value(param('myparam'))
+    >>> print(value(param('myparam')))
     %(myparam)s
     '''
 
@@ -321,14 +353,14 @@ def value(x):
         return 'NULL'
     elif isinstance(x, param):
         return format_param(x)
-    elif isinstance(x, basestring):
+    elif isinstance(x, compat.string_types):
         return "'%s'" % escape(x)
     elif isinstance(x, (datetime, date, time)):
         return "'%s'" % x
     elif isinstance(x, bool):
         return stringify_bool(x)
     else:
-        return str(x)
+        return compat.text_type(x)
 
 class DirectionError(Exception):
     '''The instance of it will be raised when :func:`identifier` detects an
@@ -341,7 +373,7 @@ class DirectionError(Exception):
         self.op = op
 
     def __str__(self):
-        return 'this direction is not allowed: %r' % self.op
+        return "this direction is not allowed: '%s'" % compat.text_type(self.op)
 
 allowed_directions = set(['DESC', 'ASC'])
 '''The directions which are allowed by :func:`identifier_dir`.
@@ -362,15 +394,15 @@ def identifier(s):
     It uses the :func:`delimit_identifier` and :func:`escape_identifier` to
     qualify the input.
 
-    >>> print identifier('column_name')
+    >>> print(identifier('column_name'))
     "column_name"
 
-    >>> print identifier('table_name.column_name')
+    >>> print(identifier('table_name.column_name'))
     "table_name"."column_name"
 
     It also supports to use pair in pair-list format.
 
-    >>> print identifier([('table_name', 'column_name')])[0]
+    >>> print(identifier([('table_name', 'column_name')])[0])
     "table_name"."column_name"
 
     .. versionchanged:: 0.10
@@ -398,8 +430,8 @@ def identifier(s):
         return delimit_identifier(escape_identifier(c))
     else:
         return (
-            delimit_identifier(escape_identifier(t))+
-            '.'+
+            delimit_identifier(escape_identifier(t)) +
+            '.' +
             delimit_identifier(escape_identifier(c))
         )
 
@@ -408,27 +440,27 @@ def identifier_as(s):
     '''A qualifier function which formats Python object as SQL identifiers with
     ``AS``.
 
-    >>> print identifier_as('column_name as c')
+    >>> print(identifier_as('column_name as c'))
     "column_name" AS "c"
 
-    >>> print identifier_as('table_name.column_name as c')
+    >>> print(identifier_as('table_name.column_name as c'))
     "table_name"."column_name" AS "c"
 
     It also supports to use pair in pair-list format. It is a qualifier
     function, so you have to put the pair in another list.
 
-    >>> print identifier_as([('table_name.column_name', 'c')])[0]
+    >>> print(identifier_as([('table_name.column_name', 'c')])[0])
     "table_name"."column_name" AS "c"
 
-    >>> print identifier_as([(raw('count(table_name.column_name)'), 'c')])[0]
+    >>> print(identifier_as([(raw('count(table_name.column_name)'), 'c')])[0])
     count(table_name.column_name) AS "c"
 
     It uses :func:`identifier` to build normal identifier string without ``AS``.
 
-    >>> print identifier_as('column_name')
+    >>> print(identifier_as('column_name'))
     "column_name"
 
-    >>> print identifier_as('table_name.column_name')
+    >>> print(identifier_as('table_name.column_name'))
     "table_name"."column_name"
 
     .. seealso ::
@@ -453,8 +485,8 @@ def identifier_as(s):
         return identifier(i)
     else:
         return (
-            identifier(i)+
-            ' AS '+
+            identifier(i) +
+            ' AS ' +
             delimit_identifier(escape_identifier(a))
         )
 
@@ -463,27 +495,27 @@ def identifier_dir(s):
     '''A qualifier function which formats Python object as SQL identifiers with
     order direction.
 
-    >>> print identifier_dir('table_name ASC')
+    >>> print(identifier_dir('table_name ASC'))
     "table_name" ASC
 
-    >>> print identifier_dir('table_name.column_name DESC')
+    >>> print(identifier_dir('table_name.column_name DESC'))
     "table_name"."column_name" DESC
 
     It also supports to use pair in pair-list format. It is a qualifier
     function, so you have to put the pair in another list.
 
-    >>> print identifier_dir([('table_name.column_name', 'ASC')])[0]
+    >>> print(identifier_dir([('table_name.column_name', 'ASC')])[0])
     "table_name"."column_name" ASC
 
-    >>> print identifier_dir([(raw('count(table_name.column_name)'), 'DESC')])[0]
+    >>> print(identifier_dir([(raw('count(table_name.column_name)'), 'DESC')])[0])
     count(table_name.column_name) DESC
 
     It uses :func:`identifier` to build normal identifier string without order direction.
 
-    >>> print identifier_dir('column_name')
+    >>> print(identifier_dir('column_name'))
     "column_name"
 
-    >>> print identifier_dir('table_name.column_name')
+    >>> print(identifier_dir('table_name.column_name'))
     "table_name"."column_name"
 
     .. seealso ::
@@ -510,7 +542,7 @@ def identifier_dir(s):
             d = d.upper()
             if d not in allowed_directions:
                 raise DirectionError(d)
-        return identifier(i)+ ' '+d
+        return identifier(i) + ' ' + d
 
 @qualifier
 def paren(s):
@@ -566,7 +598,7 @@ class OperatorError(Exception):
         self.op = op
 
     def __str__(self):
-        return 'this operator is not allowed: %r' % self.op
+        return 'this operator is not allowed: "%s"' % compat.text_type(self.op)
 
 allowed_operators = set([
     '<', '>', '<=', '>=', '=', '<>', '!=',
@@ -627,7 +659,6 @@ def _build_condition(x, key_qualifier=identifier, value_qualifier=value):
         # TODO: let user use subquery with operator in first (key) part
         # if k is raw, it means we can't modify the k and op
         if not isinstance(k, raw):
-
             if _is_pair(k):
                 # unpack the op out
                 k, op = k
@@ -653,7 +684,7 @@ def _build_condition(x, key_qualifier=identifier, value_qualifier=value):
                     raise OperatorError(op)
 
         # feature of autoparam
-        if isinstance(v, type) and v.__name__ == 'param':
+        if v is autoparam:
             v = param(k)
 
         # qualify the k
@@ -680,26 +711,26 @@ def build_where(x):
 
     The `x` can be a `dict` or `pairs`:
 
-    >>> print build_where({'detail_id': 1, 'age >= ': 20, 'created': date(2013, 4, 16)})
+    >>> print(build_where({'detail_id': 1, 'age >= ': 20, 'created': date(2013, 4, 16)}))  # doctest: +SKIP
     "created" = '2013-04-16' AND "detail_id" = 1 AND "age" >= 20
 
-    >>> print build_where((('detail_id', 1), ('age >= ', 20), ('created', date(2013, 4, 16))))
+    >>> print(build_where((('detail_id', 1), ('age >= ', 20), ('created', date(2013, 4, 16)))))
     "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
 
-    The key can be a `pair` to include an operator:
+    The key can be a `pair` to include an operator::
 
-    >>> print build_where({'detail_id': 1, ('age', '>='): 20, 'created': date(2013, 4, 16)})
-    "age" >= 20 AND "detail_id" = 1 AND "created" = '2013-04-16'
+        >>> print(build_where({'detail_id': 1, ('age', '>='): 20, 'created': date(2013, 4, 16)}))
+        "age" >= 20 AND "detail_id" = 1 AND "created" = '2013-04-16'
 
     The default operator will be decided by the value.
 
-    >>> print build_where({'name': None})
+    >>> print(build_where({'name': None}))
     "name" IS NULL
 
-    >>> print build_where({'person_id': ['andy', 'bob']})
+    >>> print(build_where({'person_id': ['andy', 'bob']}))
     "person_id" IN ('andy', 'bob')
 
-    >>> print build_where({'person_id': []})
+    >>> print(build_where({'person_id': []}))
     FALSE
 
     .. seealso ::
@@ -707,7 +738,7 @@ def build_where(x):
 
     It supports all common operators, such as ``LIKE``:
 
-    >>> print build_where({'email like': '%@gmail.com%'})
+    >>> print(build_where({'email like': '%@gmail.com%'}))
     "email" LIKE '%@gmail.com%'
 
     .. seealso ::
@@ -716,17 +747,17 @@ def build_where(x):
 
     If need, wrap key with :func:`raw` to use function:
 
-    >>> print build_where({raw('count(person_id) >'): 10})
+    >>> print(build_where({raw('count(person_id) >'): 10}))
     count(person_id) > 10
 
-    Build prepared where:
+    Build prepared where::
 
-    >>> print build_where({'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___})
-    "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
+        >>> print(build_where({'custom_param': param('my_param'), 'auto_param': param, 'using_alias': ___}))
+        "auto_param" = %(auto_param)s AND "using_alias" = %(using_alias)s AND "custom_param" = %(my_param)s
 
-    It does noting if `x` is a string:
+    It does nothing if `x` is a string:
 
-    >>> print build_where('"detail_id" = 1 AND "age" >= 20 AND "created" = \'2013-04-16\'')
+    >>> print(build_where('"detail_id" = 1 AND "age" >= 20 AND "created" = \'2013-04-16\''))
     "detail_id" = 1 AND "age" >= 20 AND "created" = '2013-04-16'
 
     .. versionchanged:: 0.10
@@ -745,20 +776,20 @@ def build_set(x):
 
     The `x` can be a `dict` or `pairs`:
 
-    >>> print build_set({'a': 1, 'b': True, 'c': date(2013, 4, 16)})
+    >>> print(build_set({'a': 1, 'b': True, 'c': date(2013, 4, 16)}))  # doctest: +SKIP
     "a"=1, "c"='2013-04-16', "b"=TRUE
 
-    >>> print build_set((('a', 1), ('b', True), ('c', date(2013, 4, 16))))
+    >>> print(build_set((('a', 1), ('b', True), ('c', date(2013, 4, 16)))))
     "a"=1, "b"=TRUE, "c"='2013-04-16'
 
-    Building prepared set:
+    Building prepared set::
 
-    >>> print build_set({'custom_param': param('myparam'), 'auto_param': param})
-    "auto_param"=%(auto_param)s, "custom_param"=%(myparam)s
+        >>> print(build_set({'custom_param': param('myparam'), 'auto_param': param}))
+        "auto_param"=%(auto_param)s, "custom_param"=%(myparam)s
 
-    It does noting if `x` is a string:
+    It does nothing if `x` is a string:
 
-    >>> print build_set('"a"=1, "b"=TRUE, "c"=\'2013-04-16\'')
+    >>> print(build_set('"a"=1, "b"=TRUE, "c"=\'2013-04-16\''))
     "a"=1, "b"=TRUE, "c"='2013-04-16'
     '''
 
@@ -768,7 +799,7 @@ def build_set(x):
     for k, v in ps:
 
         # feature of autoparam
-        if isinstance(v, type) and v.__name__ == 'param':
+        if v is autoparam:
             v = param(k)
 
         pieces.append('%s=%s' % (identifier(k), value(v)))
@@ -781,13 +812,13 @@ def build_on(x):
     The difference from :func:`build_where` is the value here will be treated as
     an identifier.
 
-    >>> print build_on({'person_id': 'friend_id'})
+    >>> print(build_on({'person_id': 'friend_id'}))
     "person_id" = "friend_id"
 
-    >>> print build_on((('person.person_id', 'detail.person_id'), ))
+    >>> print(build_on((('person.person_id', 'detail.person_id'), )))
     "person"."person_id" = "detail"."person_id"
 
-    >>> print build_on({'person.age >': raw(20)})
+    >>> print(build_on({'person.age >': raw(20)}))
     "person"."age" > 20
     '''
     return _build_condition(x, identifier, identifier)
@@ -797,7 +828,7 @@ def build_on(x):
 def or_(conditions):
     '''It concats the conditions by ``OR``.
 
-    >>> print or_(({'person_id': 'andy'}, {'person_id': 'bob'}))
+    >>> print(or_(({'person_id': 'andy'}, {'person_id': 'bob'})))
     ("person_id" = 'andy') OR ("person_id" = 'bob')
 
     .. versionchanged:: 0.7.2
@@ -811,7 +842,7 @@ def or_(conditions):
 def and_(conditions):
     '''It concats the conditions by ``AND``.
 
-    >>> print and_(({'person_id': 'andy'}, {'name': 'Andy'}))
+    >>> print(and_(({'person_id': 'andy'}, {'name': 'Andy'})))
     ("person_id" = 'andy') AND ("name" = 'Andy')
 
     .. versionadded:: 0.7.3
@@ -823,7 +854,7 @@ def dot(s, t):
     '''It treats `s` and `t` as identifiers, concats them by ``.``, and then
     makes the whole string as :class:`raw`.
 
-    >>> print dot('table', 'column')
+    >>> print(dot('table', 'column'))
     "table"."column"
 
     .. versionadded:: 0.10
@@ -834,10 +865,10 @@ def as_(s, t):
     '''It treats `s` and `t` as identifiers, concats them by ``AS``, and then
     makes the whole string as :class:`raw`.
 
-    >>> print as_('column', 'c')
+    >>> print(as_('column', 'c'))
     "column" AS "c"
 
-    >>> print as_('table.column', 'c')
+    >>> print(as_('table.column', 'c'))
     "table"."column" AS "c"
 
     .. versionadded:: 0.10
@@ -848,7 +879,7 @@ def asc(s):
     '''It treats `s` as an identifier, adds ``ASC`` after `s`, and then makes
     the whole string as :class:`raw`.
 
-    >>> print asc('score')
+    >>> print(asc('score'))
     "score" ASC
 
     .. versionadded:: 0.10
@@ -859,7 +890,7 @@ def desc(s):
     '''It treats `s` as an identifier, adds ``DESC`` after `s`, and then makes
     the whole string as :class:`raw`.
 
-    >>> print desc('score')
+    >>> print(desc('score'))
     "score" DESC
 
     .. versionadded:: 0.10
@@ -869,7 +900,7 @@ def desc(s):
 def subq(s):
     '''It adds parens and makes `s` as :class:`raw`.
 
-    >>> print subq("select person_id from person where join_ts >= '2014-11-27'")
+    >>> print(subq("select person_id from person where join_ts >= '2014-11-27'"))
     (select person_id from person where join_ts >= '2014-11-27')
 
     .. versionadded:: 0.10
@@ -879,7 +910,7 @@ def subq(s):
 def in_operand(x):
     '''It stringifies `x` as an right operand for ``IN``.
 
-    >>> print in_operand(['a', 'b', 'c'])
+    >>> print(in_operand(['a', 'b', 'c']))
     ('a', 'b', 'c')
 
     If you use MoSQL's :class:`Query`, please just put `x` as value. This
@@ -915,13 +946,13 @@ class Clause(object):
 
     >>> values = Clause('values', (value, concat_by_comma, paren))
 
-    >>> print values.format(('a', 'b', 'c'))
+    >>> print(values.format(('a', 'b', 'c')))
     VALUES ('a', 'b', 'c')
 
-    >>> print values.format((default, 'b', 'c'))
+    >>> print(values.format((default, 'b', 'c')))
     VALUES (DEFAULT, 'b', 'c')
 
-    >>> print values.format((raw('r'), 'b', 'c'))
+    >>> print(values.format((raw('r'), 'b', 'c')))
     VALUES (r, 'b', 'c')
 
     .. versionchanged:: 0.9
@@ -991,11 +1022,11 @@ class Statement(object):
 
     >>> insert_into_stat = Statement((insert_into, columns, values))
 
-    >>> print insert_into_stat.format({
+    >>> print(insert_into_stat.format({
     ...     'insert into': 'person',
     ...     'columns'    : ('person_id', 'name'),
     ...     'values'     : ('daniel', 'Diane Leonard'),
-    ... })
+    ... }))
     INSERT INTO "person" ("person_id", "name") VALUES ('daniel', 'Diane Leonard')
 
     .. versionchanged:: 0.6
@@ -1086,7 +1117,7 @@ class Query(object):
     You can use a :class:`Query` instance like a function:
 
     >>> from mosql.query import insert
-    >>> print insert
+    >>> print(insert)
     insert(table=None, set=None, *, insert_into=None, columns=None, values=None, returning=None, on_duplicate_key_update=None)
 
     .. versionadded:: 0.6

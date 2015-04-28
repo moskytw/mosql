@@ -18,9 +18,12 @@ The functions designed for cursor:
 
 '''
 
-from itertools import groupby, izip
+from itertools import groupby
 from collections import deque
 from threading import Lock
+
+from .compat import izip
+
 
 class Database(object):
     '''It is a context manager which manages the creation and destruction of a
