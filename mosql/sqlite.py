@@ -22,6 +22,14 @@ def format_param(s=''):
     '''It formats the parameter of prepared statement.'''
     return ':%s' % s if s else '?'
 
+def stringify_bool(b):
+    '''It stringifies the bool.
+
+    SQLite does not take ``TRUE`` and ``FALSE`` literals, only integers, so we
+    return ``1`` and ``0`` instead.
+    '''
+    return '1' if b else '0'
+
 import mosql.util
 
 def patch():
@@ -30,6 +38,7 @@ def patch():
     .. versionadded:: 0.10
     '''
     mosql.util.format_param = format_param
+    mosql.util.stringify_bool = stringify_bool
 
 patch() # patch it when load this module
 
