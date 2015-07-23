@@ -1,6 +1,17 @@
 The Change Log
 ==============
 
+v0.11
+-----
+
+This version is totally made by `Tzu-ping Chung (uranusjr) <https://github.com/uranusjr>`_. Thanks for his contribution.
+
+#. Supports Python 3!
+#. Combined the doctests and nose tests by the `sphinx-nose
+   <https://github.com/uranusjr/saim-al-dahr>`_ which is also made by `uranusjr <https://github.com/uranusjr>`_.
+#. Fixed the bug which caused the instllation on Windows failed.
+#. Works better on Windows.
+
 v0.10
 -----
 
