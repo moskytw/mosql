@@ -74,7 +74,7 @@ The Minor Changes
    :data:`~mosql.util.allowed_operators`, and
    :data:`~mosql.util.allowed_directions` don't allow to disable anymore. Use
    :class:`~mosql.util.raw` instead.
-#. The deprecated modules in :doc:`/deprecated` will be removed in 0.11.
+#. The deprecated modules in `/deprecated` will be removed in 0.11.
 #. Refined all the documentation.
 
 v0.9.1
@@ -165,10 +165,10 @@ v0.6
 ----
 
 .. note::
-    Some of the modules are deprecated after v0.6, check :doc:`/deprecated` for
+    Some of the modules are deprecated after v0.6, check `/deprecated` for
     more information.
 
-1. Deprecated some of the modules. Check :doc:`/deprecated` for detail.
+1. Deprecated some of the modules. Check `/deprecated` for detail.
 2. Made the :class:`mosql.util.Clause` and :class:`mosql.util.Statement` better.
 3. Added the :class:`mosql.util.Query`.
 4. Added the :mod:`mosql.query`, :mod:`mosql.statement`, :mod:`mosql.clause`,

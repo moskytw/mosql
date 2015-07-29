@@ -115,10 +115,6 @@ Read More
     patches
     db
 
-.. note::
-    Some of the modules are deprecated after v0.6, check :doc:`deprecated` for
-    more information.
-
 The Changes
 -----------
 
