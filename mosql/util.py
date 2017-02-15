@@ -658,49 +658,53 @@ def _build_condition(x, key_qualifier=identifier, value_qualifier=value):
 
         # TODO: let user use subquery with operator in first (key) part
         # if k is raw, it means we can't modify the k and op
-        if not isinstance(k, raw):
-            if _is_pair(k):
-                # unpack the op out
-                k, op = k
-
-            if not op:
-                # split the op out
-                k, _, op = k.partition(' ')
-
-            if not op:
-                # decide op automatically
-                if _is_iterable_not_str(v):
-                    op = 'IN'
-                elif v is None:
-                    op = 'IS'
-                else:
-                    op = '='
-
-            if not isinstance(op, raw):
-                # normalize the op
-                op = op.strip().upper()
-                # verify the op
-                if op not in allowed_operators:
-                    raise OperatorError(op)
-
-        # feature of autoparam
-        if v is autoparam:
-            v = param(k)
-
-        # qualify the k
-        k = key_qualifier(k)
-
-        # qualify the v
-        v = value_qualifier(v)
-        if _is_iterable_not_str(v):
-            v = paren(concat_by_comma(v))
-
-        if op == 'IN' and v == '()':
-            pieces.append(stringify_bool(False))
-        elif op:
-            pieces.append('%s %s %s' % (k, op, v))
+        if k == '|':
+            if isinstance(v, (tuple, list)):
+                pieces.append(paren(or_(v)))
         else:
-            pieces.append('%s %s' % (k, v))
+            if not isinstance(k, raw):
+                if _is_pair(k):
+                    # unpack the op out
+                    k, op = k
+
+                if not op:
+                    # split the op out
+                    k, _, op = k.partition(' ')
+
+                if not op:
+                    # decide op automatically
+                    if _is_iterable_not_str(v):
+                        op = 'IN'
+                    elif v is None:
+                        op = 'IS'
+                    else:
+                        op = '='
+
+                if not isinstance(op, raw):
+                    # normalize the op
+                    op = op.strip().upper()
+                    # verify the op
+                    if op not in allowed_operators:
+                        raise OperatorError(op)
+
+            # feature of autoparam
+            if v is autoparam:
+                v = param(k)
+
+            # qualify the k
+            k = key_qualifier(k)
+
+            # qualify the v
+            v = value_qualifier(v)
+            if _is_iterable_not_str(v):
+                v = paren(concat_by_comma(v))
+
+            if op == 'IN' and v == '()':
+                pieces.append(stringify_bool(False))
+            elif op:
+                pieces.append('%s %s %s' % (k, op, v))
+            else:
+                pieces.append('%s %s' % (k, v))
 
     return concat_by_and(pieces)
 
@@ -766,6 +770,10 @@ def build_where(x):
     .. versionchanged:: 0.10
         If the value is empty iterable, it translates it into ``FALSE`` rather
         than ``x IN ()`` which caused syntax error in SQL.
+
+    .. add OR support
+    >>> print(build_where({'name': 'zhangkun', '|': [{'age': 41, 'title': 'CEO'}, {'gender': 1}]}))
+    "name" = 'zhangkun' AND (("age" = 41 AND "title" = 'CEO') OR ("gender" = 1))
     '''
     return _build_condition(x, identifier, value)
 
