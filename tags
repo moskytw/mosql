@@ -1,0 +1,588 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+10_simplest.py	examples/10_simplest.py	1;"	kind:file	line:1
+20_db_mod.py	examples/20_db_mod.py	1;"	kind:file	line:1
+30_breed.py	examples/30_breed.py	1;"	kind:file	line:1
+40_join.py	examples/40_join.py	1;"	kind:file	line:1
+50_group_by.py	examples/50_group_by.py	1;"	kind:file	line:1
+60_class.py	examples/60_class.py	1;"	kind:file	line:1
+70_web.py	examples/70_web.py	1;"	kind:file	line:1
+Clause	mosql/clause.py	/^from .util import Clause, star$/;"	kind:namespace	line:6
+Clause	mosql/util.py	/^class Clause(object):$/;"	kind:class	line:937
+Column	benchmarks/benchmark_sqlalchemy.py	/^from sqlalchemy import create_engine, MetaData, Table, Column, String$/;"	kind:namespace	line:7
+DENO	oldtests/test_identifier.py	/^DENO = 100$/;"	kind:variable	line:51
+Database	examples/20_db_mod.py	/^from mosql.db import Database, one_to_dict$/;"	kind:namespace	line:7
+Database	examples/30_breed.py	/^from mosql.db import Database, one_to_dict$/;"	kind:namespace	line:7
+Database	examples/40_join.py	/^from mosql.db import Database, all_to_dicts$/;"	kind:namespace	line:7
+Database	examples/50_group_by.py	/^from mosql.db import Database, group$/;"	kind:namespace	line:7
+Database	examples/60_class.py	/^from mosql.db import Database, one_to_dict$/;"	kind:namespace	line:6
+Database	examples/70_web.py	/^from mosql.db import Database$/;"	kind:namespace	line:14
+Database	mosql/db.py	/^class Database(object):$/;"	kind:class	line:28
+Database	oldtests/test_sqlite.py	/^from mosql.db import Database, all_to_dicts$/;"	kind:namespace	line:9
+DirectionError	mosql/util.py	/^class DirectionError(Exception):$/;"	kind:class	line:365
+DirectionError	tests/test_query.py	/^from mosql.util import param, ___, raw, DirectionError, OperatorError, autoparam$/;"	kind:namespace	line:10
+Flask	examples/70_web.py	/^from flask import Flask, request, jsonify$/;"	kind:namespace	line:12
+Lock	mosql/db.py	/^from threading import Lock$/;"	kind:namespace	line:23
+MYSQL_SLICE_SIZE	oldtests/test_identifier.py	/^MYSQL_SLICE_SIZE = 64$/;"	kind:variable	line:172
+MYSQL_SPACE_CHAR_SET	oldtests/test_identifier.py	/^MYSQL_SPACE_CHAR_SET = set(u' \\t\\n\\x0b\\x0c\\r')$/;"	kind:variable	line:180
+MetaData	benchmarks/benchmark_sqlalchemy.py	/^from sqlalchemy import create_engine, MetaData, Table, Column, String$/;"	kind:namespace	line:7
+MySQLdb	oldtests/test_identifier.py	/^    import MySQLdb$/;"	kind:namespace	line:153
+MySQLdb	oldtests/test_value.py	/^    import MySQLdb$/;"	kind:namespace	line:139
+NoseExclude	runtests.py	/^from nose_exclude import NoseExclude$/;"	kind:namespace	line:8
+OperatorError	mosql/util.py	/^class OperatorError(Exception):$/;"	kind:class	line:590
+OperatorError	tests/test_query.py	/^from mosql.util import param, ___, raw, DirectionError, OperatorError, autoparam$/;"	kind:namespace	line:10
+OrderedDict	tests/test_basic.py	/^from collections import OrderedDict$/;"	kind:namespace	line:1
+OrderedDict	tests/test_query.py	/^from collections import OrderedDict$/;"	kind:namespace	line:5
+OrderedDict	tests/test_util.py	/^from collections import OrderedDict$/;"	kind:namespace	line:1
+POSTGRESQL_SLICE_SIZE	oldtests/test_identifier.py	/^POSTGRESQL_SLICE_SIZE = 21$/;"	kind:variable	line:59
+PY2	tests/test_encoding.py	/^from mosql.compat import PY2$/;"	kind:namespace	line:8
+Person	examples/60_class.py	/^class Person(dict):$/;"	kind:class	line:8
+Query	mosql/query.py	/^from .util import Query$/;"	kind:namespace	line:12
+Query	mosql/util.py	/^class Query(object):$/;"	kind:class	line:1115
+README	setup.py	/^    README = README.decode('utf-8')$/;"	kind:variable	line:16
+README	setup.py	/^    README = f.read()$/;"	kind:variable	line:10
+SphinxDoctest	runtests.py	/^from sphinxnose import SphinxDoctest$/;"	kind:namespace	line:9
+Statement	mosql/stmt.py	/^from .util import Statement$/;"	kind:namespace	line:6
+Statement	mosql/util.py	/^class Statement(object):$/;"	kind:class	line:1017
+String	benchmarks/benchmark_sqlalchemy.py	/^from sqlalchemy import create_engine, MetaData, Table, Column, String$/;"	kind:namespace	line:7
+Table	benchmarks/benchmark_sqlalchemy.py	/^from sqlalchemy import create_engine, MetaData, Table, Column, String$/;"	kind:namespace	line:7
+TestSQLite	oldtests/__main__.py	/^from .test_sqlite import TestSQLite$/;"	kind:namespace	line:5
+TestSQLite	oldtests/test_sqlite.py	/^class TestSQLite(unittest.TestCase):$/;"	kind:class	line:11
+VERSION	mosql/__init__.py	/^VERSION = (0, 11,)$/;"	kind:variable	line:3
+___	tests/test_query.py	/^from mosql.util import param, ___, raw, DirectionError, OperatorError, autoparam$/;"	kind:namespace	line:10
+__all__	mosql/func.py	/^__all__ = [$/;"	kind:variable	line:6
+__all__	mosql/query.py	/^__all__ = [$/;"	kind:variable	line:6
+__all__	mosql/util.py	/^__all__ = [$/;"	kind:variable	line:80
+__author__	mosql/__init__.py	/^__author__ = 'Mosky <http:\/\/mosky.tw>'$/;"	kind:variable	line:5
+__call__	mosql/util.py	/^    def __call__(self, *positional_values, **clause_args):$/;"	kind:member	line:1173
+__enter__	mosql/db.py	/^    def __enter__(self):$/;"	kind:member	line:111
+__exit__	mosql/db.py	/^    def __exit__(self, exc_type, exc_val, exc_tb):$/;"	kind:member	line:129
+__init__	examples/60_class.py	/^    def __init__(self, *args, **kargs):$/;"	kind:member	line:15
+__init__	mosql/db.py	/^    def __init__(self, module=None, *conn_args, **conn_kargs):$/;"	kind:member	line:92
+__init__	mosql/util.py	/^    def __init__(self, clauses, preprocessor=None):$/;"	kind:member	line:1044
+__init__	mosql/util.py	/^    def __init__(self, name, formatters=tuple(), hidden=False, alias=None, default=None, no_argument=False):$/;"	kind:member	line:973
+__init__	mosql/util.py	/^    def __init__(self, op):$/;"	kind:member	line:372
+__init__	mosql/util.py	/^    def __init__(self, op):$/;"	kind:member	line:597
+__init__	mosql/util.py	/^    def __init__(self, statement, positional_keys=None, clause_args=None):$/;"	kind:member	line:1134
+__init__.py	mosql/__init__.py	1;"	kind:file	line:1
+__init__.py	oldtests/__init__.py	1;"	kind:file	line:1
+__main__.py	oldtests/__main__.py	1;"	kind:file	line:1
+__repr__	mosql/util.py	/^    def __repr__(self):$/;"	kind:member	line:1014
+__repr__	mosql/util.py	/^    def __repr__(self):$/;"	kind:member	line:1106
+__repr__	mosql/util.py	/^    def __repr__(self):$/;"	kind:member	line:1177
+__repr__	mosql/util.py	/^    def __repr__(self):$/;"	kind:member	line:235
+__repr__	mosql/util.py	/^    def __repr__(self):$/;"	kind:member	line:258
+__str__	mosql/util.py	/^    def __str__(self):$/;"	kind:member	line:1180
+__str__	mosql/util.py	/^    def __str__(self):$/;"	kind:member	line:375
+__str__	mosql/util.py	/^    def __str__(self):$/;"	kind:member	line:600
+__version__	docs/conf.py	/^from mosql import __version__$/;"	kind:namespace	line:55
+__version__	mosql/__init__.py	/^__version__ = '.'.join(str(v) for v in VERSION)$/;"	kind:variable	line:6
+_build_condition	mosql/util.py	/^def _build_condition(x, key_qualifier=identifier, value_qualifier=value):$/;"	kind:function	line:647
+_coerce_str	mosql/util.py	/^    def _coerce_str(x):$/;"	kind:function	line:271
+_format	mosql/util.py	/^    _format = format$/;"	kind:variable	line:1192
+_format_n_echo	mosql/util.py	/^    def _format_n_echo(self, clause_args=None):$/;"	kind:member	line:1194
+_is_iterable_not_str	mosql/util.py	/^    def _is_iterable_not_str(x):$/;"	kind:function	line:268
+_is_iterable_not_str	mosql/util.py	/^    def _is_iterable_not_str(x):$/;"	kind:function	line:291
+_is_pair	mosql/util.py	/^def _is_pair(x):$/;"	kind:function	line:387
+_make_simple_function	mosql/func.py	/^def _make_simple_function(name):$/;"	kind:function	line:12
+_merge_dicts	mosql/util.py	/^def _merge_dicts(default, *updates):$/;"	kind:function	line:1109
+_qualifier	mosql/util.py	/^    def _qualifier(f):$/;"	kind:function	line:276
+_qualifier	mosql/util.py	/^    def _qualifier(f):$/;"	kind:function	line:294
+_to_pairs	mosql/util.py	/^def _to_pairs(x):$/;"	kind:function	line:638
+all_to_dicts	examples/40_join.py	/^from mosql.db import Database, all_to_dicts$/;"	kind:namespace	line:7
+all_to_dicts	mosql/db.py	/^def all_to_dicts(cur=None, rows=None, col_names=None):$/;"	kind:function	line:173
+all_to_dicts	oldtests/test_sqlite.py	/^from mosql.db import Database, all_to_dicts$/;"	kind:namespace	line:9
+allowed_directions	mosql/util.py	/^allowed_directions = set(['DESC', 'ASC'])$/;"	kind:variable	line:378
+allowed_operators	mosql/util.py	/^allowed_operators = set([$/;"	kind:variable	line:603
+and_	mosql/util.py	/^def and_(conditions):$/;"	kind:function	line:850
+app	examples/70_web.py	/^app = Flask(__name__)$/;"	kind:variable	line:18
+as_	mosql/util.py	/^def as_(s, t):$/;"	kind:function	line:872
+asc	mosql/util.py	/^def asc(s):$/;"	kind:function	line:886
+assert_false	tests/test_util.py	/^from nose.tools import eq_, assert_true, assert_false$/;"	kind:namespace	line:4
+assert_raises	tests/test_query.py	/^from nose.tools import eq_, assert_raises$/;"	kind:namespace	line:7
+assert_true	tests/test_basic.py	/^from nose.tools import eq_, assert_true$/;"	kind:namespace	line:3
+assert_true	tests/test_util.py	/^from nose.tools import eq_, assert_true, assert_false$/;"	kind:namespace	line:4
+author	setup.py	/^    author='Mosky',$/;"	kind:variable	line:24
+author_email	setup.py	/^    author_email='mosky.tw@gmail.com',$/;"	kind:variable	line:25
+autoparam	tests/test_query.py	/^from mosql.util import param, ___, raw, DirectionError, OperatorError, autoparam$/;"	kind:namespace	line:10
+avg	mosql/func.py	/^avg      = _make_simple_function('AVG')$/;"	kind:variable	line:22
+benchmark	benchmarks/benchmark_sqlalchemy.py	/^benchmark = Table('_benchmark', metadata,$/;"	kind:variable	line:16
+benchmark_mosql.py	benchmarks/benchmark_mosql.py	1;"	kind:file	line:1
+benchmark_raw_sql.py	benchmarks/benchmark_raw_sql.py	1;"	kind:file	line:1
+benchmark_sqlalchemy.py	benchmarks/benchmark_sqlalchemy.py	1;"	kind:file	line:1
+binary_type	mosql/compat.py	/^    binary_type = bytes$/;"	kind:variable	line:41
+binary_type	mosql/compat.py	/^    binary_type = str$/;"	kind:variable	line:47
+binary_type	tests/test_util.py	/^from mosql.compat import binary_type, text_type$/;"	kind:namespace	line:6
+breed	mosql/util.py	/^    def breed(self, clause_args=None):$/;"	kind:member	line:1144
+build_on	mosql/chain.py	/^from .util import concat_by_comma, concat_by_space, build_values_list, build_where, build_set, build_on$/;"	kind:namespace	line:7
+build_on	mosql/util.py	/^def build_on(x):$/;"	kind:function	line:818
+build_set	mosql/chain.py	/^from .util import concat_by_comma, concat_by_space, build_values_list, build_where, build_set, build_on$/;"	kind:namespace	line:7
+build_set	mosql/util.py	/^def build_set(x):$/;"	kind:function	line:781
+build_values_list	mosql/chain.py	/^from .util import concat_by_comma, concat_by_space, build_values_list, build_where, build_set, build_on$/;"	kind:namespace	line:7
+build_values_list	mosql/util.py	/^def build_values_list(x):$/;"	kind:function	line:620
+build_where	mosql/chain.py	/^from .util import concat_by_comma, concat_by_space, build_values_list, build_where, build_set, build_on$/;"	kind:namespace	line:7
+build_where	mosql/util.py	/^def build_where(x):$/;"	kind:function	line:712
+chain.py	mosql/chain.py	1;"	kind:file	line:1
+char_escape_map	mosql/mysql.py	/^char_escape_map = {$/;"	kind:variable	line:23
+class_types	mosql/compat.py	/^    class_types = (type, types.ClassType)$/;"	kind:variable	line:45
+class_types	mosql/compat.py	/^    class_types = type,$/;"	kind:variable	line:39
+classifiers	setup.py	/^    classifiers=[$/;"	kind:variable	line:28
+clause.py	mosql/clause.py	1;"	kind:file	line:1
+column_list	mosql/chain.py	/^column_list          = (identifier, concat_by_comma, paren)$/;"	kind:variable	line:15
+column_list	mosql/clause.py	/^from .chain import single_identifier, column_list, values_list, set_list$/;"	kind:namespace	line:8
+columns	mosql/clause.py	/^columns   = Clause('columns'    , column_list, hidden=True)$/;"	kind:variable	line:18
+columns	mosql/stmt.py	/^from .clause import insert, columns, values, on_duplicate_key_update, replace$/;"	kind:namespace	line:8
+compat	mosql/util.py	/^from . import compat$/;"	kind:namespace	line:99
+compat.py	mosql/compat.py	1;"	kind:file	line:1
+concat_by_and	mosql/util.py	/^def concat_by_and(i):$/;"	kind:function	line:571
+concat_by_comma	mosql/chain.py	/^from .util import concat_by_comma, concat_by_space, build_values_list, build_where, build_set, build_on$/;"	kind:namespace	line:7
+concat_by_comma	mosql/func.py	/^from .util import raw, concat_by_comma, identifier$/;"	kind:namespace	line:10
+concat_by_comma	mosql/util.py	/^def concat_by_comma(i):$/;"	kind:function	line:586
+concat_by_or	mosql/util.py	/^def concat_by_or(i):$/;"	kind:function	line:576
+concat_by_space	mosql/chain.py	/^from .util import concat_by_comma, concat_by_space, build_values_list, build_where, build_set, build_on$/;"	kind:namespace	line:7
+concat_by_space	mosql/util.py	/^def concat_by_space(i):$/;"	kind:function	line:581
+conf.py	docs/conf.py	1;"	kind:file	line:1
+conn	benchmarks/benchmark_mosql.py	/^conn = None$/;"	kind:variable	line:15
+conn	benchmarks/benchmark_raw_sql.py	/^conn = None$/;"	kind:variable	line:14
+conn	benchmarks/benchmark_sqlalchemy.py	/^conn = None$/;"	kind:variable	line:22
+conn	examples/10_simplest.py	/^conn = psycopg2.connect(host='127.0.0.1')$/;"	kind:variable	line:8
+connect_to_mysql	oldtests/test_identifier.py	/^def connect_to_mysql():$/;"	kind:function	line:151
+connect_to_mysql	oldtests/test_value.py	/^def connect_to_mysql():$/;"	kind:function	line:137
+connect_to_postgresql	oldtests/test_identifier.py	/^def connect_to_postgresql():$/;"	kind:function	line:11
+connect_to_postgresql	oldtests/test_value.py	/^def connect_to_postgresql():$/;"	kind:function	line:10
+copyright	docs/conf.py	/^copyright = u'2013, Mosky Liu'$/;"	kind:variable	line:49
+count	mosql/func.py	/^count    = _make_simple_function('COUNT')$/;"	kind:variable	line:23
+create	examples/60_class.py	/^    def create(cls, *args, **kargs):$/;"	kind:member	line:23
+create_engine	benchmarks/benchmark_sqlalchemy.py	/^from sqlalchemy import create_engine, MetaData, Table, Column, String$/;"	kind:namespace	line:7
+cross_join	mosql/query.py	/^cross_join = join.breed({'type': 'cross'})$/;"	kind:variable	line:23
+cur	benchmarks/benchmark_mosql.py	/^cur = None$/;"	kind:variable	line:16
+cur	benchmarks/benchmark_raw_sql.py	/^cur = None$/;"	kind:variable	line:15
+cur	examples/10_simplest.py	/^cur = conn.cursor()$/;"	kind:variable	line:9
+date	mosql/util.py	/^from datetime import datetime, date, time$/;"	kind:namespace	line:96
+date	tests/test_util.py	/^from datetime import date$/;"	kind:namespace	line:2
+datetime	mosql/util.py	/^from datetime import datetime, date, time$/;"	kind:namespace	line:96
+dave	examples/10_simplest.py	/^dave = {$/;"	kind:variable	line:11
+dave	examples/20_db_mod.py	/^dave = {$/;"	kind:variable	line:9
+dave	examples/30_breed.py	/^dave = {$/;"	kind:variable	line:12
+dave	examples/60_class.py	/^    dave = {$/;"	kind:variable	line:49
+db	examples/20_db_mod.py	/^db = Database(psycopg2, host='127.0.0.1')$/;"	kind:variable	line:14
+db	examples/30_breed.py	/^db = Database(psycopg2, host='127.0.0.1')$/;"	kind:variable	line:17
+db	examples/40_join.py	/^db = Database(psycopg2, host='127.0.0.1')$/;"	kind:variable	line:9
+db	examples/50_group_by.py	/^db = Database(psycopg2, host='127.0.0.1')$/;"	kind:variable	line:9
+db	examples/60_class.py	/^    db = Database(psycopg2, host='127.0.0.1')$/;"	kind:variable	line:10
+db	examples/70_web.py	/^db = Database(psycopg2, host='127.0.0.1')$/;"	kind:variable	line:16
+db.py	mosql/db.py	1;"	kind:file	line:1
+debug	mosql/util.py	/^def debug(s):$/;"	kind:function	line:104
+default	mosql/util.py	/^default = raw('DEFAULT')$/;"	kind:variable	line:238
+delete	examples/60_class.py	/^from mosql.query import insert, select, update, delete$/;"	kind:namespace	line:5
+delete	mosql/clause.py	/^delete = Clause('delete from', single_identifier_as, alias='table')$/;"	kind:variable	line:46
+delete	mosql/query.py	/^delete = Query(delete, ('table', 'where'))$/;"	kind:variable	line:18
+delete	mosql/query.py	/^from .stmt import insert, replace, select, update, delete, join$/;"	kind:namespace	line:13
+delete	mosql/stmt.py	/^delete = Statement([delete, where, returning])$/;"	kind:variable	line:53
+delete	mosql/stmt.py	/^from .clause import delete$/;"	kind:namespace	line:13
+delete	oldtests/test_sqlite.py	/^from mosql.query import insert, select, update, delete, replace$/;"	kind:namespace	line:8
+delimit_identifier	mosql/mysql.py	/^def delimit_identifier(s):$/;"	kind:function	line:75
+delimit_identifier	mosql/util.py	/^def delimit_identifier(s):$/;"	kind:function	line:178
+deque	mosql/db.py	/^from collections import deque$/;"	kind:namespace	line:22
+desc	mosql/util.py	/^def desc(s):$/;"	kind:function	line:897
+description	setup.py	/^    description='Build SQL with native Python data structure smoothly.',$/;"	kind:variable	line:22
+disable_echo	mosql/util.py	/^    def disable_echo(self):$/;"	kind:member	line:1205
+doctest	mosql/db.py	/^    import doctest$/;"	kind:namespace	line:251
+doctest	mosql/mysql.py	/^    import doctest$/;"	kind:namespace	line:97
+doctest	mosql/sqlite.py	/^    import doctest$/;"	kind:namespace	line:46
+doctest	mosql/util.py	/^    import doctest$/;"	kind:namespace	line:1212
+dot	mosql/util.py	/^def dot(s, t):$/;"	kind:function	line:861
+echo	mosql/util.py	/^def echo(s):$/;"	kind:function	line:107
+enable_echo	mosql/util.py	/^    def enable_echo(self):$/;"	kind:member	line:1199
+engine	benchmarks/benchmark_sqlalchemy.py	/^engine = None$/;"	kind:variable	line:21
+eq_	tests/test_basic.py	/^from nose.tools import eq_, assert_true$/;"	kind:namespace	line:3
+eq_	tests/test_encoding.py	/^from nose.tools import eq_$/;"	kind:namespace	line:6
+eq_	tests/test_query.py	/^from nose.tools import eq_, assert_raises$/;"	kind:namespace	line:7
+eq_	tests/test_util.py	/^from nose.tools import eq_, assert_true, assert_false$/;"	kind:namespace	line:4
+escape	mosql/mysql.py	/^def escape(s):$/;"	kind:function	line:42
+escape	mosql/util.py	/^def escape(s):$/;"	kind:function	line:119
+escape_identifier	mosql/mysql.py	/^def escape_identifier(s):$/;"	kind:function	line:80
+escape_identifier	mosql/util.py	/^def escape_identifier(s):$/;"	kind:function	line:191
+exclude	runtests.py	/^exclude = NoseExclude()$/;"	kind:variable	line:11
+exclude_patterns	docs/conf.py	/^exclude_patterns = ['_build']$/;"	kind:variable	line:74
+execute_select	benchmarks/benchmark_mosql.py	/^def execute_select():$/;"	kind:function	line:46
+execute_select	benchmarks/benchmark_raw_sql.py	/^def execute_select():$/;"	kind:function	line:39
+execute_select	benchmarks/benchmark_sqlalchemy.py	/^def execute_select():$/;"	kind:function	line:43
+extensions	docs/conf.py	/^extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.viewcode', 'sphinx.ext.autosummary', 'sphinx.ext.doctest']$/;"	kind:variable	line:28
+extract_col_names	mosql/db.py	/^def extract_col_names(cur):$/;"	kind:function	line:148
+fast_escape	mosql/mysql.py	/^def fast_escape(s):$/;"	kind:function	line:57
+fetch	examples/60_class.py	/^    def fetch(cls, person_id):$/;"	kind:member	line:30
+find_packages	setup.py	/^from setuptools import setup, find_packages$/;"	kind:namespace	line:4
+fix_mysql_space_char	oldtests/test_identifier.py	/^def fix_mysql_space_char(s):$/;"	kind:function	line:182
+for_	mosql/clause.py	/^for_   = Clause('for')$/;"	kind:variable	line:33
+for_	mosql/stmt.py	/^from .clause import for_, of, nowait$/;"	kind:namespace	line:10
+for_update	mosql/clause.py	/^for_update = Clause('for update', no_argument=True)$/;"	kind:variable	line:38
+for_update	mosql/stmt.py	/^from .clause import for_update, lock_in_share_mode$/;"	kind:namespace	line:11
+format	mosql/util.py	/^    def format(self, clause_args):$/;"	kind:member	line:1048
+format	mosql/util.py	/^    def format(self, clause_args=None):$/;"	kind:member	line:1153
+format	mosql/util.py	/^    def format(self, x):$/;"	kind:member	line:994
+format_param	mosql/mysql.py	/^def format_param(s=''):$/;"	kind:function	line:70
+format_param	mosql/sqlite.py	/^def format_param(s=''):$/;"	kind:function	line:21
+format_param	mosql/util.py	/^def format_param(s=''):$/;"	kind:function	line:152
+from_	mosql/clause.py	/^from_    = Clause('from'    , identifier_as_list, alias='table')$/;"	kind:variable	line:24
+from_	mosql/stmt.py	/^from .clause import select, from_, joins, group_by, having, order_by, limit, offset$/;"	kind:namespace	line:9
+func.py	mosql/func.py	1;"	kind:file	line:1
+gen_slice_for_mysql	oldtests/test_identifier.py	/^def gen_slice_for_mysql(s):$/;"	kind:function	line:174
+gen_slice_for_postgresql	oldtests/test_identifier.py	/^def gen_slice_for_postgresql(s):$/;"	kind:function	line:61
+getuser	benchmarks/benchmark_mosql.py	/^from getpass import getuser$/;"	kind:namespace	line:6
+getuser	benchmarks/benchmark_raw_sql.py	/^from getpass import getuser$/;"	kind:namespace	line:6
+getuser	benchmarks/benchmark_sqlalchemy.py	/^from getpass import getuser$/;"	kind:namespace	line:5
+getuser	oldtests/test_identifier.py	/^from getpass import getuser$/;"	kind:namespace	line:4
+getuser	oldtests/test_value.py	/^from getpass import getuser$/;"	kind:namespace	line:4
+group	examples/50_group_by.py	/^from mosql.db import Database, group$/;"	kind:namespace	line:7
+group	mosql/db.py	/^def group(by_col_names, cur=None, rows=None, col_names=None, to_dict=False):$/;"	kind:function	line:191
+group_by	examples/50_group_by.py	/^        group_by = 'person_id',$/;"	kind:variable	line:19
+group_by	mosql/clause.py	/^group_by = Clause('group by', identifier_list)$/;"	kind:variable	line:26
+group_by	mosql/stmt.py	/^from .clause import select, from_, joins, group_by, having, order_by, limit, offset$/;"	kind:namespace	line:9
+groupby	mosql/db.py	/^from itertools import groupby$/;"	kind:namespace	line:21
+having	mosql/clause.py	/^having   = Clause('having'  , where_list)$/;"	kind:variable	line:27
+having	mosql/stmt.py	/^from .clause import select, from_, joins, group_by, having, order_by, limit, offset$/;"	kind:namespace	line:9
+html_static_path	docs/conf.py	/^html_static_path = ['_static']$/;"	kind:variable	line:130
+html_theme	docs/conf.py	/^html_theme = 'nature'$/;"	kind:variable	line:101
+htmlhelp_basename	docs/conf.py	/^htmlhelp_basename = 'MoSQLdoc'$/;"	kind:variable	line:174
+identifier	mosql/chain.py	/^from .util import value, identifier, identifier_as, identifier_dir, paren$/;"	kind:namespace	line:6
+identifier	mosql/func.py	/^from .util import raw, concat_by_comma, identifier$/;"	kind:namespace	line:10
+identifier	mosql/util.py	/^def identifier(s):$/;"	kind:function	line:391
+identifier_as	mosql/chain.py	/^from .util import value, identifier, identifier_as, identifier_dir, paren$/;"	kind:namespace	line:6
+identifier_as	mosql/util.py	/^def identifier_as(s):$/;"	kind:function	line:439
+identifier_as_list	mosql/chain.py	/^identifier_as_list   = (identifier_as, concat_by_comma)$/;"	kind:variable	line:13
+identifier_as_list	mosql/clause.py	/^from .chain import identifier_as_list, where_list$/;"	kind:namespace	line:7
+identifier_dir	mosql/chain.py	/^from .util import value, identifier, identifier_as, identifier_dir, paren$/;"	kind:namespace	line:6
+identifier_dir	mosql/util.py	/^def identifier_dir(s):$/;"	kind:function	line:494
+identifier_dir_list	mosql/chain.py	/^identifier_dir_list  = (identifier_dir, concat_by_comma)$/;"	kind:variable	line:14
+identifier_dir_list	mosql/clause.py	/^from .chain import statement_list, identifier_list, identifier_dir_list, single_value$/;"	kind:namespace	line:9
+identifier_list	mosql/chain.py	/^identifier_list      = (identifier, concat_by_comma)$/;"	kind:variable	line:12
+identifier_list	mosql/clause.py	/^from .chain import statement_list, identifier_list, identifier_dir_list, single_value$/;"	kind:namespace	line:9
+in_operand	mosql/util.py	/^def in_operand(x):$/;"	kind:function	line:918
+index	examples/70_web.py	/^def index():$/;"	kind:function	line:21
+info	benchmarks/benchmark_mosql.py	/^def info(s, end='\\n'):$/;"	kind:function	line:11
+info	benchmarks/benchmark_raw_sql.py	/^def info(s, end='\\n'):$/;"	kind:function	line:10
+info	benchmarks/benchmark_sqlalchemy.py	/^def info(s, end='\\n'):$/;"	kind:function	line:11
+insert	examples/10_simplest.py	/^from mosql.query import insert$/;"	kind:namespace	line:6
+insert	examples/20_db_mod.py	/^from mosql.query import insert$/;"	kind:namespace	line:6
+insert	examples/30_breed.py	/^from mosql.query import insert$/;"	kind:namespace	line:6
+insert	examples/60_class.py	/^    insert = insert.breed(table_info)$/;"	kind:variable	line:13
+insert	examples/60_class.py	/^from mosql.query import insert, select, update, delete$/;"	kind:namespace	line:5
+insert	mosql/clause.py	/^insert    = Clause('insert into', single_identifier, alias='table')$/;"	kind:variable	line:17
+insert	mosql/query.py	/^from .stmt import insert, replace, select, update, delete, join$/;"	kind:namespace	line:13
+insert	mosql/query.py	/^insert = Query(insert, ('table', 'set'))$/;"	kind:variable	line:15
+insert	mosql/stmt.py	/^from .clause import insert, columns, values, on_duplicate_key_update, replace$/;"	kind:namespace	line:8
+insert	mosql/stmt.py	/^insert = Statement([insert, columns, values, returning, on_duplicate_key_update], preprocessor=insert_preprocessor)$/;"	kind:variable	line:31
+insert	oldtests/test_sqlite.py	/^from mosql.query import insert, select, update, delete, replace$/;"	kind:namespace	line:8
+insert	tests/test_basic.py	/^from mosql.query import insert$/;"	kind:namespace	line:6
+insert	tests/test_encoding.py	/^from mosql.query import insert$/;"	kind:namespace	line:9
+insert	tests/test_query.py	/^from mosql.query import select, insert, replace$/;"	kind:namespace	line:9
+insert_preprocessor	mosql/stmt.py	/^def insert_preprocessor(clause_args):$/;"	kind:function	line:16
+integer_types	mosql/compat.py	/^    integer_types = (int, long)$/;"	kind:variable	line:44
+integer_types	mosql/compat.py	/^    integer_types = int,$/;"	kind:variable	line:38
+izip	mosql/compat.py	/^    from itertools import izip$/;"	kind:namespace	line:51
+izip	mosql/compat.py	/^    izip = zip$/;"	kind:variable	line:53
+izip	mosql/db.py	/^from .compat import izip$/;"	kind:namespace	line:25
+join	mosql/clause.py	/^join  = Clause('join' , single_identifier_as, alias='table')$/;"	kind:variable	line:49
+join	mosql/query.py	/^from .stmt import insert, replace, select, update, delete, join$/;"	kind:namespace	line:13
+join	mosql/query.py	/^join       = Query(join, ('table', 'on'))$/;"	kind:variable	line:20
+join	mosql/stmt.py	/^from .clause import type_, join, on, using$/;"	kind:namespace	line:14
+join	mosql/stmt.py	/^join = Statement([type_, join, on, using], preprocessor=join_preprocessor)$/;"	kind:variable	line:65
+join_preprocessor	mosql/stmt.py	/^def join_preprocessor(clause_args):$/;"	kind:function	line:55
+joiner	mosql/util.py	/^def joiner(f):$/;"	kind:function	line:554
+joiner_wrapper	mosql/util.py	/^    def joiner_wrapper(x):$/;"	kind:function	line:562
+joins	examples/40_join.py	/^        joins = left_join('detail', using='person_id'),$/;"	kind:variable	line:20
+joins	examples/50_group_by.py	/^        joins = left_join('detail', using='person_id'),$/;"	kind:variable	line:17
+joins	examples/50_group_by.py	/^        joins = left_join('detail', using='person_id'),$/;"	kind:variable	line:34
+joins	mosql/clause.py	/^joins    = Clause('joins'   , statement_list, hidden=True)$/;"	kind:variable	line:25
+joins	mosql/stmt.py	/^from .clause import select, from_, joins, group_by, having, order_by, limit, offset$/;"	kind:namespace	line:9
+jsonify	examples/70_web.py	/^from flask import Flask, request, jsonify$/;"	kind:namespace	line:12
+latex_documents	docs/conf.py	/^latex_documents = [$/;"	kind:variable	line:192
+latex_elements	docs/conf.py	/^latex_elements = {$/;"	kind:variable	line:179
+left_join	examples/40_join.py	/^from mosql.query import select, left_join$/;"	kind:namespace	line:6
+left_join	examples/50_group_by.py	/^from mosql.query import select, left_join$/;"	kind:namespace	line:6
+left_join	examples/70_web.py	/^from mosql.query import select, left_join$/;"	kind:namespace	line:13
+left_join	mosql/query.py	/^left_join  = join.breed({'type': 'left'})$/;"	kind:variable	line:21
+license	setup.py	/^    license='MIT',$/;"	kind:variable	line:27
+limit	mosql/clause.py	/^limit    = Clause('limit'   , single_value)$/;"	kind:variable	line:29
+limit	mosql/stmt.py	/^from .clause import select, from_, joins, group_by, having, order_by, limit, offset$/;"	kind:namespace	line:9
+lock_in_share_mode	mosql/clause.py	/^lock_in_share_mode = Clause('lock in share mode', no_argument=True)$/;"	kind:variable	line:39
+lock_in_share_mode	mosql/stmt.py	/^from .clause import for_update, lock_in_share_mode$/;"	kind:namespace	line:11
+long_description	setup.py	/^    long_description=README,$/;"	kind:variable	line:23
+make_identifier	oldtests/test_identifier.py	/^def make_identifier(s):$/;"	kind:function	line:30
+man_pages	docs/conf.py	/^man_pages = [$/;"	kind:variable	line:222
+master_doc	docs/conf.py	/^master_doc = 'index'$/;"	kind:variable	line:45
+max	mosql/func.py	/^max      = _make_simple_function('MAX')$/;"	kind:variable	line:25
+metadata	benchmarks/benchmark_sqlalchemy.py	/^metadata = MetaData()$/;"	kind:variable	line:15
+min	mosql/func.py	/^min      = _make_simple_function('MIN')$/;"	kind:variable	line:24
+mosql	mosql/mysql.py	/^import mosql.util$/;"	kind:namespace	line:21
+mosql	mosql/sqlite.py	/^import mosql.util$/;"	kind:namespace	line:33
+mosql	mosql/std.py	/^import mosql.util$/;"	kind:namespace	line:23
+mosql	oldtests/test_identifier.py	/^import mosql.mysql$/;"	kind:namespace	line:8
+mosql	oldtests/test_identifier.py	/^import mosql.std$/;"	kind:namespace	line:9
+mosql	oldtests/test_identifier.py	/^import mosql.util$/;"	kind:namespace	line:7
+mosql	oldtests/test_sqlite.py	/^import mosql.sqlite$/;"	kind:namespace	line:6
+mosql	oldtests/test_value.py	/^import mosql.mysql$/;"	kind:namespace	line:8
+mosql	oldtests/test_value.py	/^import mosql.std$/;"	kind:namespace	line:7
+mosql	oldtests/test_value.py	/^import mosql.util$/;"	kind:namespace	line:6
+mosql	setup.py	/^import mosql$/;"	kind:namespace	line:6
+mysql	oldtests/test_identifier.py	/^import mosql.mysql$/;"	kind:namespace	line:8
+mysql	oldtests/test_value.py	/^import mosql.mysql$/;"	kind:namespace	line:8
+mysql.py	mosql/mysql.py	1;"	kind:file	line:1
+name	setup.py	/^    name='mosql',$/;"	kind:variable	line:20
+nose	runtests.py	/^import nose$/;"	kind:namespace	line:6
+nowait	mosql/clause.py	/^nowait = Clause('nowait', no_argument=True)$/;"	kind:variable	line:35
+nowait	mosql/stmt.py	/^from .clause import for_, of, nowait$/;"	kind:namespace	line:10
+of	mosql/clause.py	/^of     = Clause('of'    , identifier_list)$/;"	kind:variable	line:34
+of	mosql/stmt.py	/^from .clause import for_, of, nowait$/;"	kind:namespace	line:10
+offset	mosql/clause.py	/^offset   = Clause('offset'  , single_value)$/;"	kind:variable	line:30
+offset	mosql/stmt.py	/^from .clause import select, from_, joins, group_by, having, order_by, limit, offset$/;"	kind:namespace	line:9
+ok	runtests.py	/^    ok = nose.run(argv=argv, plugins=[exclude, sphinxtests])$/;"	kind:variable	line:17
+on	mosql/clause.py	/^on    = Clause('on'   , on_list)$/;"	kind:variable	line:51
+on	mosql/stmt.py	/^from .clause import type_, join, on, using$/;"	kind:namespace	line:14
+on_duplicate_key_update	mosql/clause.py	/^on_duplicate_key_update = Clause('on duplicate key update', set_list)$/;"	kind:variable	line:20
+on_duplicate_key_update	mosql/stmt.py	/^from .clause import insert, columns, values, on_duplicate_key_update, replace$/;"	kind:namespace	line:8
+on_list	mosql/chain.py	/^on_list              = (build_on, )$/;"	kind:variable	line:19
+on_list	mosql/clause.py	/^from .chain import single_identifier_as, on_list$/;"	kind:namespace	line:10
+one_to_dict	examples/20_db_mod.py	/^from mosql.db import Database, one_to_dict$/;"	kind:namespace	line:7
+one_to_dict	examples/30_breed.py	/^from mosql.db import Database, one_to_dict$/;"	kind:namespace	line:7
+one_to_dict	examples/60_class.py	/^from mosql.db import Database, one_to_dict$/;"	kind:namespace	line:6
+one_to_dict	mosql/db.py	/^def one_to_dict(cur=None, row=None, col_names=None):$/;"	kind:function	line:155
+or_	mosql/util.py	/^def or_(conditions):$/;"	kind:function	line:836
+order_by	examples/50_group_by.py	/^        order_by = 'person_id',$/;"	kind:variable	line:22
+order_by	examples/50_group_by.py	/^        order_by = 'person_id',$/;"	kind:variable	line:38
+order_by	mosql/clause.py	/^order_by = Clause('order by', identifier_dir_list)$/;"	kind:variable	line:28
+order_by	mosql/stmt.py	/^from .clause import select, from_, joins, group_by, having, order_by, limit, offset$/;"	kind:namespace	line:9
+os	docs/conf.py	/^import sys, os$/;"	kind:namespace	line:14
+p	examples/60_class.py	/^    p = Person.create(dave)$/;"	kind:variable	line:55
+p	examples/60_class.py	/^    p = Person.fetch('dave')$/;"	kind:variable	line:59
+p	examples/60_class.py	/^    p = Person.fetch('dave')$/;"	kind:variable	line:70
+packages	setup.py	/^    packages=find_packages(exclude=['oldtests']),$/;"	kind:variable	line:42
+param	mosql/util.py	/^class param(compat.text_type):$/;"	kind:class	line:244
+param	oldtests/test_sqlite.py	/^from mosql.util import param$/;"	kind:namespace	line:7
+param	tests/test_encoding.py	/^from mosql.util import param, raw$/;"	kind:namespace	line:10
+param	tests/test_query.py	/^from mosql.util import param, ___, raw, DirectionError, OperatorError, autoparam$/;"	kind:namespace	line:10
+paren	mosql/chain.py	/^from .util import value, identifier, identifier_as, identifier_dir, paren$/;"	kind:namespace	line:6
+paren	mosql/util.py	/^def paren(s):$/;"	kind:function	line:548
+patch	mosql/mysql.py	/^def patch():$/;"	kind:function	line:84
+patch	mosql/sqlite.py	/^def patch():$/;"	kind:function	line:35
+patch	mosql/std.py	/^def patch():$/;"	kind:function	line:25
+person_insert	examples/30_breed.py	/^person_insert = insert.breed({'table': 'person'})$/;"	kind:variable	line:10
+pprint	examples/40_join.py	/^from pprint import pprint$/;"	kind:namespace	line:5
+print_function	mosql/util.py	/^from __future__ import print_function, unicode_literals$/;"	kind:namespace	line:78
+product	oldtests/test_identifier.py	/^from itertools import product$/;"	kind:namespace	line:6
+product	oldtests/test_value.py	/^from itertools import product$/;"	kind:namespace	line:5
+project	docs/conf.py	/^project = u'MoSQL'$/;"	kind:variable	line:48
+psycopg2	benchmarks/benchmark_mosql.py	/^import psycopg2$/;"	kind:namespace	line:5
+psycopg2	benchmarks/benchmark_raw_sql.py	/^import psycopg2$/;"	kind:namespace	line:5
+psycopg2	examples/10_simplest.py	/^import psycopg2$/;"	kind:namespace	line:4
+psycopg2	examples/20_db_mod.py	/^import psycopg2$/;"	kind:namespace	line:4
+psycopg2	examples/30_breed.py	/^import psycopg2$/;"	kind:namespace	line:4
+psycopg2	examples/40_join.py	/^import psycopg2$/;"	kind:namespace	line:4
+psycopg2	examples/50_group_by.py	/^import psycopg2$/;"	kind:namespace	line:4
+psycopg2	examples/60_class.py	/^import psycopg2$/;"	kind:namespace	line:4
+psycopg2	examples/70_web.py	/^import psycopg2$/;"	kind:namespace	line:11
+psycopg2	oldtests/test_identifier.py	/^    import psycopg2$/;"	kind:namespace	line:13
+psycopg2	oldtests/test_value.py	/^    import psycopg2$/;"	kind:namespace	line:12
+pygments_style	docs/conf.py	/^pygments_style = 'sphinx'$/;"	kind:variable	line:91
+qualifier	mosql/util.py	/^qualifier = _qualifier$/;"	kind:variable	line:309
+qualifier_wrapper	mosql/util.py	/^        def qualifier_wrapper(x):$/;"	kind:function	line:278
+qualifier_wrapper	mosql/util.py	/^        def qualifier_wrapper(x):$/;"	kind:function	line:296
+query.py	mosql/query.py	1;"	kind:file	line:1
+raise_for_null_byte	mosql/util.py	/^def raise_for_null_byte(s):$/;"	kind:function	line:112
+randrange	oldtests/test_identifier.py	/^from random import randrange$/;"	kind:namespace	line:5
+raw	examples/50_group_by.py	/^from mosql.util import raw$/;"	kind:namespace	line:5
+raw	mosql/func.py	/^from .util import raw, concat_by_comma, identifier$/;"	kind:namespace	line:10
+raw	mosql/util.py	/^class raw(compat.text_type):$/;"	kind:class	line:226
+raw	tests/test_encoding.py	/^from mosql.util import param, raw$/;"	kind:namespace	line:10
+raw	tests/test_query.py	/^from mosql.util import param, ___, raw, DirectionError, OperatorError, autoparam$/;"	kind:namespace	line:10
+release	docs/conf.py	/^release = 'v' + __version__$/;"	kind:variable	line:60
+remove	examples/60_class.py	/^    def remove(self):$/;"	kind:member	line:43
+replace	mosql/clause.py	/^replace = Clause('replace into', single_identifier, alias='table')$/;"	kind:variable	line:55
+replace	mosql/query.py	/^from .stmt import insert, replace, select, update, delete, join$/;"	kind:namespace	line:13
+replace	mosql/query.py	/^replace = Query(replace, ('table', 'set'))$/;"	kind:variable	line:25
+replace	mosql/stmt.py	/^from .clause import insert, columns, values, on_duplicate_key_update, replace$/;"	kind:namespace	line:8
+replace	mosql/stmt.py	/^replace = Statement([replace, columns, values], preprocessor=insert_preprocessor)$/;"	kind:variable	line:67
+replace	oldtests/test_sqlite.py	/^from mosql.query import insert, select, update, delete, replace$/;"	kind:namespace	line:8
+replace	tests/test_query.py	/^from mosql.query import select, insert, replace$/;"	kind:namespace	line:9
+request	examples/70_web.py	/^from flask import Flask, request, jsonify$/;"	kind:namespace	line:12
+returning	mosql/clause.py	/^returning = Clause('returning' , identifier_as_list)$/;"	kind:variable	line:13
+returning	mosql/stmt.py	/^from .clause import returning, where$/;"	kind:namespace	line:7
+right_join	mosql/query.py	/^right_join = join.breed({'type': 'right'})$/;"	kind:variable	line:22
+runtests.py	runtests.py	1;"	kind:file	line:1
+save	examples/60_class.py	/^    def save(self):$/;"	kind:member	line:39
+select	benchmarks/benchmark_mosql.py	/^from mosql.query import select$/;"	kind:namespace	line:7
+select	benchmarks/benchmark_sqlalchemy.py	/^from sqlalchemy.sql import select$/;"	kind:namespace	line:6
+select	examples/40_join.py	/^from mosql.query import select, left_join$/;"	kind:namespace	line:6
+select	examples/50_group_by.py	/^        select = ('person_id', 'val'),$/;"	kind:variable	line:36
+select	examples/50_group_by.py	/^        select = ('person_id', raw('array_agg(val)')),$/;"	kind:variable	line:20
+select	examples/50_group_by.py	/^from mosql.query import select, left_join$/;"	kind:namespace	line:6
+select	examples/60_class.py	/^    select = select.breed(table_info)$/;"	kind:variable	line:12
+select	examples/60_class.py	/^from mosql.query import insert, select, update, delete$/;"	kind:namespace	line:5
+select	examples/70_web.py	/^from mosql.query import select, left_join$/;"	kind:namespace	line:13
+select	mosql/clause.py	/^select   = Clause('select'  , identifier_as_list, default=star, alias='columns')$/;"	kind:variable	line:23
+select	mosql/query.py	/^from .stmt import insert, replace, select, update, delete, join$/;"	kind:namespace	line:13
+select	mosql/query.py	/^select = Query(select, ('table', 'where'))$/;"	kind:variable	line:16
+select	mosql/stmt.py	/^from .clause import select, from_, joins, group_by, having, order_by, limit, offset$/;"	kind:namespace	line:9
+select	mosql/stmt.py	/^select = Statement([$/;"	kind:variable	line:46
+select	oldtests/test_sqlite.py	/^from mosql.query import insert, select, update, delete, replace$/;"	kind:namespace	line:8
+select	tests/test_query.py	/^from mosql.query import select, insert, replace$/;"	kind:namespace	line:9
+select_preprocessor	mosql/stmt.py	/^def select_preprocessor(clause_args):$/;"	kind:function	line:33
+setUp	oldtests/test_sqlite.py	/^    def setUp(self):$/;"	kind:member	line:13
+set_	mosql/clause.py	/^set_   = Clause('set'   , set_list)$/;"	kind:variable	line:43
+set_	mosql/stmt.py	/^from .clause import update, set_$/;"	kind:namespace	line:12
+set_list	mosql/chain.py	/^set_list             = (build_set, )$/;"	kind:variable	line:18
+set_list	mosql/clause.py	/^from .chain import single_identifier, column_list, values_list, set_list$/;"	kind:namespace	line:8
+setup	benchmarks/benchmark_mosql.py	/^def setup():$/;"	kind:function	line:18
+setup	benchmarks/benchmark_raw_sql.py	/^def setup():$/;"	kind:function	line:17
+setup	benchmarks/benchmark_sqlalchemy.py	/^def setup():$/;"	kind:function	line:24
+setup	setup.py	/^from setuptools import setup, find_packages$/;"	kind:namespace	line:4
+setup.py	setup.py	1;"	kind:file	line:1
+simple_function	mosql/func.py	/^    def simple_function(*args):$/;"	kind:function	line:14
+single_identifier	mosql/chain.py	/^single_identifier    = (identifier, )$/;"	kind:variable	line:10
+single_identifier	mosql/clause.py	/^from .chain import single_identifier, column_list, values_list, set_list$/;"	kind:namespace	line:8
+single_identifier_as	mosql/chain.py	/^single_identifier_as = (identifier_as, )$/;"	kind:variable	line:11
+single_identifier_as	mosql/clause.py	/^from .chain import single_identifier_as, on_list$/;"	kind:namespace	line:10
+single_value	mosql/chain.py	/^single_value         = (value, )$/;"	kind:variable	line:9
+single_value	mosql/clause.py	/^from .chain import statement_list, identifier_list, identifier_dir_list, single_value$/;"	kind:namespace	line:9
+source_suffix	docs/conf.py	/^source_suffix = '.rst'$/;"	kind:variable	line:39
+sphinxtests	runtests.py	/^sphinxtests = SphinxDoctest()$/;"	kind:variable	line:12
+sqlite	oldtests/test_sqlite.py	/^import mosql.sqlite$/;"	kind:namespace	line:6
+sqlite.py	mosql/sqlite.py	1;"	kind:file	line:1
+sqlite3	oldtests/test_sqlite.py	/^import sqlite3$/;"	kind:namespace	line:5
+star	examples/10_simplest.py	/^from mosql.util import star$/;"	kind:namespace	line:5
+star	examples/20_db_mod.py	/^from mosql.util import star$/;"	kind:namespace	line:5
+star	examples/30_breed.py	/^from mosql.util import star$/;"	kind:namespace	line:5
+star	mosql/clause.py	/^from .util import Clause, star$/;"	kind:namespace	line:6
+star	mosql/util.py	/^star = raw('*')$/;"	kind:variable	line:241
+statement_list	mosql/chain.py	/^statement_list       = (concat_by_space, )$/;"	kind:variable	line:20
+statement_list	mosql/clause.py	/^from .chain import statement_list, identifier_list, identifier_dir_list, single_value$/;"	kind:namespace	line:9
+std	oldtests/test_identifier.py	/^import mosql.std$/;"	kind:namespace	line:9
+std	oldtests/test_value.py	/^import mosql.std$/;"	kind:namespace	line:7
+std.py	mosql/std.py	1;"	kind:file	line:1
+std_delimit_identifier	mosql/util.py	/^std_delimit_identifier = delimit_identifier$/;"	kind:variable	line:189
+std_escape	mosql/util.py	/^std_escape = escape$/;"	kind:variable	line:150
+std_escape_identifier	mosql/util.py	/^std_escape_identifier = escape_identifier$/;"	kind:variable	line:222
+std_format_param	mosql/util.py	/^std_format_param = format_param$/;"	kind:variable	line:166
+std_stringify_bool	mosql/util.py	/^std_stringify_bool = stringify_bool$/;"	kind:variable	line:176
+stddev	mosql/func.py	/^stddev   = _make_simple_function('STDDEV')$/;"	kind:variable	line:26
+stmt.py	mosql/stmt.py	1;"	kind:file	line:1
+stream	benchmarks/benchmark_mosql.py	/^stream = sys.stderr$/;"	kind:variable	line:9
+stream	benchmarks/benchmark_raw_sql.py	/^stream = sys.stderr$/;"	kind:variable	line:8
+stream	benchmarks/benchmark_sqlalchemy.py	/^stream = sys.stderr$/;"	kind:variable	line:9
+string_types	mosql/compat.py	/^    string_types = basestring,$/;"	kind:variable	line:43
+string_types	mosql/compat.py	/^    string_types = str,$/;"	kind:variable	line:37
+stringify	mosql/util.py	/^    def stringify(self, *positional_values, **clause_args):$/;"	kind:member	line:1159
+stringify_bool	mosql/sqlite.py	/^def stringify_bool(b):$/;"	kind:function	line:25
+stringify_bool	mosql/util.py	/^def stringify_bool(b):$/;"	kind:function	line:168
+subq	mosql/util.py	/^def subq(s):$/;"	kind:function	line:908
+sum	mosql/func.py	/^sum      = _make_simple_function('SUM')$/;"	kind:variable	line:27
+sys	benchmarks/benchmark_mosql.py	/^import sys$/;"	kind:namespace	line:4
+sys	benchmarks/benchmark_raw_sql.py	/^import sys$/;"	kind:namespace	line:4
+sys	benchmarks/benchmark_sqlalchemy.py	/^import sys$/;"	kind:namespace	line:4
+sys	docs/conf.py	/^import sys, os$/;"	kind:namespace	line:14
+sys	mosql/compat.py	/^import sys$/;"	kind:namespace	line:29
+sys	mosql/util.py	/^import sys$/;"	kind:namespace	line:95
+sys	runtests.py	/^import sys$/;"	kind:namespace	line:4
+table_info	examples/60_class.py	/^    table_info = {'table': 'person'}$/;"	kind:variable	line:11
+teardown	benchmarks/benchmark_mosql.py	/^def teardown():$/;"	kind:function	line:50
+teardown	benchmarks/benchmark_raw_sql.py	/^def teardown():$/;"	kind:function	line:43
+teardown	benchmarks/benchmark_sqlalchemy.py	/^def teardown():$/;"	kind:function	line:48
+templates_path	docs/conf.py	/^templates_path = ['_templates']$/;"	kind:variable	line:36
+test_basic.py	tests/test_basic.py	1;"	kind:file	line:1
+test_binary_input	tests/test_encoding.py	/^    def test_binary_input():$/;"	kind:function	line:19
+test_build_set	tests/test_util.py	/^def test_build_set():$/;"	kind:function	line:52
+test_build_set_prepared	tests/test_util.py	/^def test_build_set_prepared():$/;"	kind:function	line:59
+test_build_where	tests/test_util.py	/^def test_build_where():$/;"	kind:function	line:28
+test_build_where_operator	tests/test_util.py	/^def test_build_where_operator():$/;"	kind:function	line:35
+test_build_where_prepared	tests/test_util.py	/^def test_build_where_prepared():$/;"	kind:function	line:42
+test_delete	oldtests/test_sqlite.py	/^    def test_delete(self):$/;"	kind:member	line:48
+test_encoding.py	tests/test_encoding.py	1;"	kind:file	line:1
+test_escape	oldtests/test_sqlite.py	/^    def test_escape(self):$/;"	kind:member	line:89
+test_fetch_all_data	oldtests/test_sqlite.py	/^    def test_fetch_all_data(self):$/;"	kind:member	line:108
+test_identifier.py	oldtests/test_identifier.py	1;"	kind:file	line:1
+test_identifier_in_mysql	oldtests/test_identifier.py	/^def test_identifier_in_mysql():$/;"	kind:function	line:203
+test_identifier_in_postgresql	oldtests/test_identifier.py	/^def test_identifier_in_postgresql():$/;"	kind:function	line:66
+test_insert	oldtests/test_sqlite.py	/^    def test_insert(self):$/;"	kind:member	line:27
+test_insert_dict	tests/test_query.py	/^def test_insert_dict():$/;"	kind:function	line:56
+test_insert_returing	tests/test_query.py	/^def test_insert_returing():$/;"	kind:function	line:65
+test_is_iterable_not_str	tests/test_util.py	/^def test_is_iterable_not_str():$/;"	kind:function	line:13
+test_native_escape	oldtests/test_sqlite.py	/^    def test_native_escape(self):$/;"	kind:member	line:70
+test_param_query	oldtests/test_sqlite.py	/^    def test_param_query(self):$/;"	kind:member	line:58
+test_param_repr	tests/test_encoding.py	/^    def test_param_repr():$/;"	kind:function	line:41
+test_param_repr	tests/test_encoding.py	/^    def test_param_repr():$/;"	kind:function	line:57
+test_query.py	tests/test_query.py	1;"	kind:file	line:1
+test_query_output	tests/test_basic.py	/^def test_query_output():$/;"	kind:function	line:18
+test_raw_repr	tests/test_encoding.py	/^    def test_raw_repr():$/;"	kind:function	line:38
+test_raw_repr	tests/test_encoding.py	/^    def test_raw_repr():$/;"	kind:function	line:54
+test_replace	oldtests/test_sqlite.py	/^    def test_replace(self):$/;"	kind:member	line:35
+test_replace	tests/test_query.py	/^def test_replace():$/;"	kind:function	line:74
+test_select	oldtests/test_sqlite.py	/^    def test_select(self):$/;"	kind:member	line:53
+test_select_customize	tests/test_query.py	/^def test_select_customize():$/;"	kind:function	line:13
+test_select_customize_operator	tests/test_query.py	/^def test_select_customize_operator():$/;"	kind:function	line:21
+test_select_directionerror	tests/test_query.py	/^def test_select_directionerror():$/;"	kind:function	line:36
+test_select_operationerror	tests/test_query.py	/^def test_select_operationerror():$/;"	kind:function	line:29
+test_select_param	tests/test_query.py	/^def test_select_param():$/;"	kind:function	line:44
+test_simple_insert	tests/test_basic.py	/^def test_simple_insert():$/;"	kind:function	line:9
+test_sqlite.py	oldtests/test_sqlite.py	1;"	kind:file	line:1
+test_str_input	tests/test_encoding.py	/^    def test_str_input():$/;"	kind:function	line:28
+test_str_input	tests/test_encoding.py	/^    def test_str_input():$/;"	kind:function	line:45
+test_text_input	tests/test_encoding.py	/^def test_text_input():$/;"	kind:function	line:13
+test_update	oldtests/test_sqlite.py	/^    def test_update(self):$/;"	kind:member	line:43
+test_util.py	tests/test_util.py	1;"	kind:file	line:1
+test_value.py	oldtests/test_value.py	1;"	kind:file	line:1
+test_value_in_mysql	oldtests/test_value.py	/^def test_value_in_mysql():$/;"	kind:function	line:157
+test_value_in_postgresql	oldtests/test_value.py	/^def test_value_in_postgresql():$/;"	kind:function	line:29
+texinfo_documents	docs/conf.py	/^texinfo_documents = [$/;"	kind:variable	line:236
+text_type	mosql/compat.py	/^    text_type = str$/;"	kind:variable	line:40
+text_type	mosql/compat.py	/^    text_type = unicode$/;"	kind:variable	line:46
+text_type	tests/test_basic.py	/^from mosql.compat import text_type$/;"	kind:namespace	line:5
+text_type	tests/test_util.py	/^from mosql.compat import binary_type, text_type$/;"	kind:namespace	line:6
+time	mosql/util.py	/^from datetime import datetime, date, time$/;"	kind:namespace	line:96
+timeit	benchmarks/benchmark_mosql.py	/^    from timeit import timeit$/;"	kind:namespace	line:57
+timeit	benchmarks/benchmark_raw_sql.py	/^    from timeit import timeit$/;"	kind:namespace	line:50
+timeit	benchmarks/benchmark_sqlalchemy.py	/^    from timeit import timeit$/;"	kind:namespace	line:54
+type_	mosql/clause.py	/^type_ = Clause('type' , hidden=True)$/;"	kind:variable	line:50
+type_	mosql/stmt.py	/^from .clause import type_, join, on, using$/;"	kind:namespace	line:14
+types	mosql/compat.py	/^import types$/;"	kind:namespace	line:30
+unicode_literals	mosql/util.py	/^from __future__ import print_function, unicode_literals$/;"	kind:namespace	line:78
+unittest	oldtests/__main__.py	/^import unittest$/;"	kind:namespace	line:4
+unittest	oldtests/test_sqlite.py	/^import unittest$/;"	kind:namespace	line:4
+update	examples/60_class.py	/^from mosql.query import insert, select, update, delete$/;"	kind:namespace	line:5
+update	mosql/clause.py	/^update = Clause('update', single_identifier_as, alias='table')$/;"	kind:variable	line:42
+update	mosql/query.py	/^from .stmt import insert, replace, select, update, delete, join$/;"	kind:namespace	line:13
+update	mosql/query.py	/^update = Query(update, ('table', 'where', 'set'))$/;"	kind:variable	line:17
+update	mosql/stmt.py	/^from .clause import update, set_$/;"	kind:namespace	line:12
+update	mosql/stmt.py	/^update = Statement([update, set_, where, returning])$/;"	kind:variable	line:52
+update	oldtests/test_sqlite.py	/^from mosql.query import insert, select, update, delete, replace$/;"	kind:namespace	line:8
+url	setup.py	/^    url='http:\/\/mosql.mosky.tw\/',$/;"	kind:variable	line:26
+using	mosql/clause.py	/^using = Clause('using', column_list)$/;"	kind:variable	line:52
+using	mosql/stmt.py	/^from .clause import type_, join, on, using$/;"	kind:namespace	line:14
+util	mosql/mysql.py	/^import mosql.util$/;"	kind:namespace	line:21
+util	mosql/sqlite.py	/^import mosql.util$/;"	kind:namespace	line:33
+util	mosql/std.py	/^import mosql.util$/;"	kind:namespace	line:23
+util	oldtests/test_identifier.py	/^import mosql.util$/;"	kind:namespace	line:7
+util	oldtests/test_value.py	/^import mosql.util$/;"	kind:namespace	line:6
+util.py	mosql/util.py	1;"	kind:file	line:1
+value	mosql/chain.py	/^from .util import value, identifier, identifier_as, identifier_dir, paren$/;"	kind:namespace	line:6
+value	mosql/util.py	/^def value(x):$/;"	kind:function	line:321
+values	mosql/clause.py	/^values    = Clause('values'     , values_list)$/;"	kind:variable	line:19
+values	mosql/stmt.py	/^from .clause import insert, columns, values, on_duplicate_key_update, replace$/;"	kind:namespace	line:8
+values_list	mosql/chain.py	/^values_list          = (build_values_list, )$/;"	kind:variable	line:16
+values_list	mosql/clause.py	/^from .chain import single_identifier, column_list, values_list, set_list$/;"	kind:namespace	line:8
+variance	mosql/func.py	/^variance = _make_simple_function('VARIANCE')$/;"	kind:variable	line:28
+version	docs/conf.py	/^version = 'v' + '.'.join(__version__.split('.')[:2])$/;"	kind:variable	line:58
+version	setup.py	/^    version=mosql.__version__,$/;"	kind:variable	line:21
+warning	mosql/util.py	/^def warning(s):$/;"	kind:function	line:101
+where	examples/50_group_by.py	/^        where = {'key': 'email'},$/;"	kind:variable	line:18
+where	examples/50_group_by.py	/^        where = {'key': 'email'},$/;"	kind:variable	line:35
+where	mosql/clause.py	/^where     = Clause('where'     , where_list)$/;"	kind:variable	line:14
+where	mosql/stmt.py	/^from .clause import returning, where$/;"	kind:namespace	line:7
+where_list	mosql/chain.py	/^where_list           = (build_where, )$/;"	kind:variable	line:17
+where_list	mosql/clause.py	/^from .chain import identifier_as_list, where_list$/;"	kind:namespace	line:7
+wraps	mosql/util.py	/^from functools import wraps$/;"	kind:namespace	line:97
+zip_safe	setup.py	/^    zip_safe=True,$/;"	kind:variable	line:43
