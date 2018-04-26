@@ -20,7 +20,7 @@ The functions designed for cursor:
 
 from itertools import groupby
 from collections import deque
-from threading import Lock
+from threading import Lock, local
 
 from .compat import izip
 
@@ -103,10 +103,30 @@ class Database(object):
         # cache conn or not
         self.to_keep_conn = False
 
-        self._conn = None
-        self._cur_stack = deque()
-
+        self._local = local()
         self._lock = Lock()
+
+    @property
+    def _cur_stack(self):
+
+        if hasattr(self._local, '_cur_stack'):
+            return getattr(self._local, '_cur_stack')
+
+        _cur_stack = deque()
+        setattr(self._local, '_cur_stack', _cur_stack)
+        return _cur_stack
+
+    @property
+    def _conn(self):
+
+        if hasattr(self._local, '_conn'):
+            return getattr(self._local, '_conn')
+        return None
+
+    @_conn.setter
+    def _conn(self, value):
+
+        setattr(self._local, '_conn', value)
 
     def __enter__(self):
 
