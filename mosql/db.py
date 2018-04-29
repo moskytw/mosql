@@ -18,6 +18,7 @@ The functions designed for cursor:
 
 '''
 
+
 from itertools import groupby
 from collections import deque
 from threading import Lock
@@ -75,8 +76,8 @@ class Database(object):
         db.putcur  = lambda cur : cur.close()
 
     By default, the connection will be closed when you leave with-block. If you
-    want to keep the connection open, set `to_keep_conn` as ``True``. It will be
-    useful in single threading environment.
+    want to keep the connection open, set `to_keep_conn` as ``True``. It will
+    be useful in single threading environment.
 
     ::
 
@@ -145,12 +146,14 @@ class Database(object):
                 self.putconn(self._conn)
                 self._conn = None
 
+
 def extract_col_names(cur):
     '''Extracts the column names from a cursor.
 
     :rtype: list
     '''
     return [desc[0] for desc in cur.description]
+
 
 def one_to_dict(cur=None, row=None, col_names=None):
     '''Fetch one row from a cursor and make it as a dict.
@@ -170,6 +173,7 @@ def one_to_dict(cur=None, row=None, col_names=None):
 
     return dict(izip(col_names, row))
 
+
 def all_to_dicts(cur=None, rows=None, col_names=None):
     '''Fetch all rows from a cursor and make them as dicts in a list.
 
@@ -187,6 +191,7 @@ def all_to_dicts(cur=None, rows=None, col_names=None):
         rows = cur
 
     return [dict(izip(col_names, row)) for row in rows]
+
 
 def group(by_col_names, cur=None, rows=None, col_names=None, to_dict=False):
     '''Groups the rows in application-level.
@@ -230,7 +235,7 @@ def group(by_col_names, cur=None, rows=None, col_names=None, to_dict=False):
         assert cur is not None, 'You must specify cur or rows.'
         rows = cur
 
-    name_index_map = dict((name,idx) for idx,name in enumerate(col_names))
+    name_index_map = dict((name, idx) for idx, name in enumerate(col_names))
     key_indexes = tuple(name_index_map.get(name) for name in by_col_names)
     key_func = lambda row: tuple(row[i] for i in key_indexes)
 
@@ -246,6 +251,7 @@ def group(by_col_names, cur=None, rows=None, col_names=None, to_dict=False):
             yield one_to_dict(row=row, col_names=col_names)
         else:
             yield tuple(row)
+
 
 if __name__ == '__main__':
     import doctest
