@@ -92,16 +92,15 @@ class Database(object):
 
     def __init__(self, module=None, *conn_args, **conn_kargs):
 
+        self.getconn = None
         if module is not None:
             self.getconn = lambda: module.connect(*conn_args, **conn_kargs)
-        else:
-            self.getconn = None
 
         self.putconn = lambda conn: conn.close()
         self.getcur  = lambda conn: conn.cursor()
         self.putcur  = lambda cur : cur.close()
 
-        # cache conn or not
+        # TODO: reimp this feature
         self.to_keep_conn = False
 
         self._conn = None
@@ -112,37 +111,24 @@ class Database(object):
     def __enter__(self):
 
         with self._lock:
-
-            # check if we need to create connection
-            if not self._conn:
-                assert callable(self.getconn), "You must set getconn if you \
-                don't specify a module."
-                self._conn = self.getconn()
-
-            # get the cursor
+            self._conn = self.getconn()
             cur = self.getcur(self._conn)
-
-            # push it into stack
             self._cur_stack.append(cur)
-
             return cur
 
     def __exit__(self, exc_type, exc_val, exc_tb):
 
         with self._lock:
 
-            # close the cursor
             cur = self._cur_stack.pop()
             self.putcur(cur)
 
-            # rollback or commit
             if exc_type:
                 self._conn.rollback()
             else:
                 self._conn.commit()
 
-            # close the connection if all cursors are closed and not to keep
-            if self._conn and not self._cur_stack and not self.to_keep_conn:
+            if not self._cur_stack:
                 self.putconn(self._conn)
                 self._conn = None
 
