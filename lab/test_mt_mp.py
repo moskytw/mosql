@@ -13,8 +13,8 @@ import multiprocessing as mp
 import sqlite3
 
 import funcy as fy
-# import pymysql
-# import sqlalchemy.pool
+import pymysql
+import sqlalchemy.pool
 
 import mosql.db as modb
 
@@ -94,7 +94,20 @@ if __name__ == '__main__':
     db = modb.Database(sqlite3, database)
     inc_sql = 'update counters set count = count + 1;'
 
-    # sqlalchemy.pool.manage(sqlite3, use_threadlocal=True)
+    kwargs = {
+        'host': 'localhost',
+        'db': 'test',
+    }
+    conn_f = fy.partial(pymysql.connect, **kwargs)
+    db = modb.Database(pymysql, **kwargs)
+
+    kwargs = {
+        'host': 'localhost',
+        'db': 'test',
+    }
+    pooled_pymysql = sqlalchemy.pool.manage(pymysql)
+    conn_f = fy.partial(pooled_pymysql.connect, **kwargs)
+    db = modb.Database(pooled_pymysql, **kwargs)
 
     print('test spst')
     tear_down_and_set_up(conn_f)
