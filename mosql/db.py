@@ -24,11 +24,15 @@ import threading
 from itertools import groupby
 from collections import deque, defaultdict
 
-from .compat import izip
+from .compat import PY2, izip
 
 
-def _get_pid_tid_pair():
-    return (os.getpid(), threading.get_ident())
+if PY2:
+    def _get_pid_tid_pair():
+        return (os.getpid(), threading.current_thread().ident)
+else:
+    def _get_pid_tid_pair():
+        return (os.getpid(), threading.get_ident())
 
 
 class Database(object):
