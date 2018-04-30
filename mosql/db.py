@@ -19,11 +19,16 @@ The functions designed for cursor:
 '''
 
 
+import os
+import threading
 from itertools import groupby
-from collections import deque
-from threading import Lock
+from collections import deque, defaultdict
 
 from .compat import izip
+
+
+def _get_pid_tid_pair():
+    return (os.getpid(), threading.get_ident())
 
 
 class Database(object):
@@ -92,45 +97,48 @@ class Database(object):
 
     def __init__(self, module=None, *conn_args, **conn_kargs):
 
-        self.getconn = None
-        if module is not None:
-            self.getconn = lambda: module.connect(*conn_args, **conn_kargs)
-
+        self.getconn = lambda: module.connect(*conn_args, **conn_kargs)
         self.putconn = lambda conn: conn.close()
         self.getcur  = lambda conn: conn.cursor()
         self.putcur  = lambda cur : cur.close()
 
-        # TODO: reimp this feature
         self.to_keep_conn = False
 
-        self._conn = None
-        self._cur_stack = deque()
-
-        self._lock = Lock()
+        # consider multithreading and multiprocessing environment
+        # built-in thread local doesn't have the default feature
+        self._thread_local = defaultdict(lambda: {
+            'conn': None,
+            'cur_stack': deque()
+        })
 
     def __enter__(self):
 
-        with self._lock:
-            self._conn = self.getconn()
-            cur = self.getcur(self._conn)
-            self._cur_stack.append(cur)
-            return cur
+        tl = self._thread_local[_get_pid_tid_pair()]
+        conn = tl['conn'] = self.getconn()
+        cur_stack = tl['cur_stack']
+
+        cur = self.getcur(conn)
+        cur_stack.append(cur)
+
+        return cur
 
     def __exit__(self, exc_type, exc_val, exc_tb):
 
-        with self._lock:
+        tl = self._thread_local[_get_pid_tid_pair()]
+        conn = tl['conn']
+        cur_stack = tl['cur_stack']
 
-            cur = self._cur_stack.pop()
-            self.putcur(cur)
+        cur = cur_stack.pop()
+        self.putcur(cur)
 
-            if exc_type:
-                self._conn.rollback()
-            else:
-                self._conn.commit()
+        if exc_type:
+            conn.rollback()
+        else:
+            conn.commit()
 
-            if not self._cur_stack:
-                self.putconn(self._conn)
-                self._conn = None
+        if not cur_stack and not self.to_keep_conn:
+            self.putconn(conn)
+            conn = tl['conn'] = None
 
 
 def extract_col_names(cur):
