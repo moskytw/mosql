@@ -1,6 +1,14 @@
 The Change Log
 ==============
 
+v0.12
+-----
+
+Thanks for the contribution from `Toki Tseng <https://github.com/tokikanno>`_
+and `Pinkoi <http://pinkoi.com/>`_.
+
+#. Enhance multithreading and multiprocessing support.
+
 v0.11
 -----
 
