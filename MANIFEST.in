@@ -4,5 +4,6 @@ graft oldtests
 graft tests
 graft docs
 prune docs/_build
+prune lab
 global-exclude *.pyc
 global-exclude __pycache__
