@@ -1,6 +1,11 @@
 The Change Log
 ==============
 
+v0.12.1
+-------
+
+#. Fix the Python 2 support.
+
 v0.12
 -----
 
