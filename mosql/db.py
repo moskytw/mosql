@@ -121,8 +121,12 @@ class Database(object):
     def __enter__(self):
 
         tl = self._thread_local[_get_pid_tid_pair()]
-        conn = tl['conn'] = self.getconn()
+        conn = tl['conn']
         cur_stack = tl['cur_stack']
+
+        # conn won't be cleared if nested with or to_keep_conn is True
+        if conn is None:
+            conn = tl['conn'] = self.getconn()
 
         cur = self.getcur(conn)
         cur_stack.append(cur)
