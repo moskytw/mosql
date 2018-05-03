@@ -97,6 +97,9 @@ class Database(object):
 
     .. versionchanged:: 0.10
         This class is thread-safe now.
+
+    .. versionchanged:: 0.12
+        This class supports multithreading and multiprocessing better now.
     '''
 
     def __init__(self, module=None, *conn_args, **conn_kargs):
