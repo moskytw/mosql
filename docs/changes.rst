@@ -1,6 +1,12 @@
 The Change Log
 ==============
 
+v0.12.2
+-------
+
+#. Fix the connection leaking issue.
+
+
 v0.12.1
 -------
 
