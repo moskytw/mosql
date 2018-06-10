@@ -360,7 +360,7 @@ def value(x):
     elif isinstance(x, bool):
         return stringify_bool(x)
     else:
-        return compat.text_type(x)
+        return "'%s'" % escape(compat.text_type(x))
 
 class DirectionError(Exception):
     '''The instance of it will be raised when :func:`identifier` detects an
