@@ -360,6 +360,7 @@ def value(x):
     elif isinstance(x, bool):
         return stringify_bool(x)
     else:
+        # TODO: int goes here, but it will be better to handle explicitly
         return compat.text_type(x)
 
 class DirectionError(Exception):
