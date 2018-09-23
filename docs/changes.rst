@@ -1,6 +1,12 @@
 The Change Log
 ==============
 
+v0.12.3
+-------
+
+#. When `~mosql.db.Database` goes nest, only commit the changes after exit the
+   first with.
+
 v0.12.2
 -------
 
