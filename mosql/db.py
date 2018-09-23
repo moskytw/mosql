@@ -144,7 +144,8 @@ class Database(object):
 
         if exc_type:
             conn.rollback()
-        else:
+        # only commit when the exit of the first with
+        elif not cur_stack:
             conn.commit()
 
         if not cur_stack and not self.to_keep_conn:
