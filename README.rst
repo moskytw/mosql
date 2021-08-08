@@ -1,12 +1,3 @@
-.. image:: https://travis-ci.org/moskytw/mosql.png
-   :target: https://travis-ci.org/moskytw/mosql
-
-.. .. image:: https://pypip.in/v/mosql/badge.png
-..    :target: https://pypi.python.org/pypi/mosql
-..
-.. .. image:: https://pypip.in/d/mosql/badge.png
-   :target: https://pypi.python.org/pypi/mosql
-
 The full version of this documentation is at `mosql.mosky.tw
 <http://mosql.mosky.tw>`_.
 
